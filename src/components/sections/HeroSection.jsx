@@ -75,8 +75,16 @@ export default function HeroSection({ onScrollTo }) {
   return (
     <section id="hero">
 
-      {/* Animated photo background */}
-      <div className="hero-bg" />
+      {/* Background Video */}
+      <video
+        className="hero-video-bg"
+        src="/hero-section-2sec-no-logo.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
+      />
+      <div className="hero-video-overlay" />
 
       {/* Water caustics light effect */}
       <div className="hero-caustics" />
@@ -123,7 +131,6 @@ export default function HeroSection({ onScrollTo }) {
 
       {/* ── Scroll Indicator ── */}
       <div className="hero-scroll-indicator">
-        <span>Scroll</span>
         <div className="scroll-bar" />
       </div>
     </section>
