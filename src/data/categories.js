@@ -76,13 +76,6 @@ export const HERO_CATEGORIES = [
     hint: 'Aluminum · PVC · LED Mirrors',
     icon: '🪞',
   },
-  {
-    slug: 'pipes-fittings',
-    no: '05 · Category',
-    name: 'Pipes & Fittings',
-    hint: 'PPRC · UPVC · Minhas · Turk Plast',
-    icon: '🔧',
-  },
 ];
 
 // ═══════════════════════════════════════════════════════════
