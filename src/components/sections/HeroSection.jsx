@@ -21,14 +21,14 @@ export default function HeroSection({ onScrollTo }) {
     const cont = document.getElementById('particles');
     if (cont) {
       cont.innerHTML = '';
-      const ptCount = prefersReduced ? 0 : isMobile ? 8 : 20;
+      const ptCount = prefersReduced ? 0 : isMobile ? 12 : 24;
       for (let i = 0; i < ptCount; i++) {
         const p = document.createElement('div');
         p.className = 'pt';
-        const sz = (1 + Math.random() * 2.5) + 'px';
+        const sz = (1.5 + Math.random() * 2.5) + 'px';
         p.style.cssText = `left:${Math.random() * 100}%;width:${sz};height:${sz};
-          animation-duration:${10 + Math.random() * 16}s;
-          animation-delay:${Math.random() * 20}s;`;
+          animation-duration:${8 + Math.random() * 12}s;
+          animation-delay:-${Math.random() * 15}s;`;
         cont.appendChild(p);
       }
     }
@@ -37,16 +37,16 @@ export default function HeroSection({ onScrollTo }) {
     const drops = document.getElementById('hero-drops-cont');
     if (drops) {
       drops.innerHTML = '';
-      const dropCount = prefersReduced ? 0 : isMobile ? 10 : 28;
+      const dropCount = prefersReduced ? 0 : isMobile ? 16 : 35;
       for (let i = 0; i < dropCount; i++) {
         const d = document.createElement('div');
         d.className = 'water-drop';
-        const h = 25 + Math.random() * 100;
+        const h = 35 + Math.random() * 110;
         d.style.cssText = `
           left:${Math.random() * 100}%;
           height:${h}px;
-          animation-duration:${2.5 + Math.random() * 5}s;
-          animation-delay:${Math.random() * 10}s;`;
+          animation-duration:${2 + Math.random() * 4}s;
+          animation-delay:-${Math.random() * 6}s;`;
         drops.appendChild(d);
       }
     }
