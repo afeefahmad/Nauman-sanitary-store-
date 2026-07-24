@@ -652,8 +652,7 @@ body::after {
   opacity:0; animation:riseUp .8s 1.2s ease both;
 }
 .hero-scroll-indicator span {
-  font-size:7px; letter-spacing:5px; text-transform:uppercase; color:var(--smoke);
-  writing-mode:vertical-rl; transform:rotate(180deg);
+  display: none;
 }
 .scroll-bar {
   width:1px; height:52px;
