@@ -72,7 +72,7 @@ export default function Navbar() {
         {/* Logo */}
         <div className="logo-wrap" onClick={goHome} role="button" tabIndex={0}
           onKeyDown={e => e.key === 'Enter' && goHome()}>
-          <img src="/website-logo.png" alt="Nauman Sanitary Store Logo" className="logo-img" />
+          <img src="/website-new-logo.png" alt="Nauman Sanitary Store Logo" className="logo-img" />
           <div>
             <div className="logo-text">Nauman Sanitary Store</div>
           </div>
@@ -92,7 +92,6 @@ export default function Navbar() {
 
         <div className="nav-right">
           <ThemeToggle />
-          <button className="nav-cta" onClick={() => scrollTo('contact')}>Get Quote</button>
         </div>
 
         {/* Hamburger */}
