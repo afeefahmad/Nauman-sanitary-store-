@@ -51,7 +51,7 @@ export const HERO_CATEGORIES = [
   {
     slug: 'toilets',
     no: '01 · Category',
-    name: 'Commodes\n& Toilets',
+    name: 'Commodes & Toilets',
     hint: 'One Piece · Two Piece · Wall Hung',
     icon: '🚽',
   },
@@ -65,7 +65,7 @@ export const HERO_CATEGORIES = [
   {
     slug: 'taps',
     no: '03 · Category',
-    name: 'Taps &\nFittings',
+    name: 'Taps & Fittings',
     hint: 'Bath Sets · Mixers · Muslim Showers · Sensor Taps',
     icon: '🚰',
   },
@@ -79,7 +79,7 @@ export const HERO_CATEGORIES = [
   {
     slug: 'pipes-fittings',
     no: '05 · Category',
-    name: 'Pipes &\nFittings',
+    name: 'Pipes & Fittings',
     hint: 'PPRC · UPVC · Minhas · Turk Plast',
     icon: '🔧',
   },

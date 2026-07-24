@@ -29,32 +29,6 @@ export default function Home() {
   const navigate = useNavigate();
   useScrollReveal([]);
 
-  /* ── 3D card tilt on mouse move ── */
-  useEffect(() => {
-    const cards = document.querySelectorAll('.cat-card,.prod-card');
-    const onMove = (e) => {
-      const r = e.currentTarget.getBoundingClientRect();
-      const x = (e.clientX - r.left - r.width  / 2) / r.width;
-      const y = (e.clientY - r.top  - r.height / 2) / r.height;
-      e.currentTarget.style.transform =
-        `perspective(900px) rotateX(${-y * 8}deg) rotateY(${x * 8}deg) translateZ(8px)`;
-    };
-    const onLeave = (e) => {
-      e.currentTarget.style.transform =
-        'perspective(900px) rotateX(0) rotateY(0) translateZ(0)';
-      e.currentTarget.style.transition = 'transform .5s ease';
-      setTimeout(() => { e.currentTarget.style.transition = ''; }, 500);
-    };
-    cards.forEach(c => {
-      c.addEventListener('mousemove', onMove);
-      c.addEventListener('mouseleave', onLeave);
-    });
-    return () => cards.forEach(c => {
-      c.removeEventListener('mousemove', onMove);
-      c.removeEventListener('mouseleave', onLeave);
-    });
-  }, []);
-
   /* ── Shared helpers passed to sections ── */
   const scrollTo = (id) => {
     const el = document.getElementById(id);

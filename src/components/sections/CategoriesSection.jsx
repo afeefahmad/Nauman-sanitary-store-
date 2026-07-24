@@ -47,11 +47,7 @@ export default function CategoriesSection({ onScrollTo, onGoCategory }) {
             <div className="cat-link">↗</div>
             <div className="cat-body">
               <div className="cat-no">{cat.no}</div>
-              <div className="cat-name">
-                {cat.name.split('\n').map((line, j, arr) => (
-                  <span key={j}>{line}{j < arr.length - 1 && <br />}</span>
-                ))}
-              </div>
+              <div className="cat-name">{cat.name}</div>
               <div className="cat-hint">{cat.hint}</div>
             </div>
           </div>

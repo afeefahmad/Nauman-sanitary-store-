@@ -5,7 +5,7 @@
 ───────────────────────────────────────────── */
 const PROD_IMAGES = {
   /* ── Hero category cards (luxury AI studio shots) ── */
-  'toilets':          '/prod-commode.png',
+  'toilets':          '/cat-commode-luxury.png',
   'basins':           '/cat-basin-luxury.png',
   'taps':             '/cat-taps-luxury.png',
   'vanities':         '/cat-vanity-luxury.png',
@@ -16,8 +16,8 @@ const PROD_IMAGES = {
   'muslim-showers':   '/prod-shower.png',
   'water-geysers':    '/prod-geyser.png',
   'kitchen-ware':     '/prod-kitchensink.png',
-  'flush-tanks':      '/prod-commode.png',
-  'accessories':      '/prod-faucet.png',
+  'flush-tanks':      '/cat-commode-luxury.png',
+  'accessories':      '/cat-taps-luxury.png',
   'mirrors':          '/prod-mirror.png',
   'bath-tubs':        '/prod-bathtub.png',
 };
