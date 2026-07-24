@@ -12,7 +12,7 @@ export default function BrandsStrip() {
       <p className="brands-eyebrow">Trusted Brands We Stock</p>
       <div className="brands-row stg">
         {BRANDS.map(b => (
-          <div key={b.id} className={`brand-pill${b.hero ? ' hero-pill' : ''}`}>
+          <div key={b.id} className="brand-pill hero-pill">
             <span>{b.name}</span>
           </div>
         ))}
