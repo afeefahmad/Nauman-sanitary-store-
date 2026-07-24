@@ -19,7 +19,7 @@ export default function CategoriesSection({ onScrollTo, onGoCategory }) {
       <div className="cats-head">
         <div>
           <span className="sec-label sr">Browse Collections</span>
-          <h2 className="sec-title sr">Shop by<br /><em>Category</em></h2>
+          <h2 className="sec-title sr">Shop by <em>Category</em></h2>
         </div>
         <button
           className="btn-ghost text-[9.5px] py-[11px] px-[26px]"
