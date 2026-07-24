@@ -35,7 +35,7 @@ export default function Footer() {
         {/* About */}
         <div className="ft-about">
           <div className="logo-wrap no-underline pointer-events-none">
-            <div className="logo-mark w-[44px] h-[44px] text-[21px]">N</div>
+            <img src="/website-logo.png" alt="Nauman Sanitary Store Logo" className="logo-img" />
             <div>
               <div className="logo-text text-[17px]">Nauman Sanitary Store</div>
             </div>

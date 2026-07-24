@@ -259,21 +259,19 @@ body::after {
 .nav-right {
   display:flex; align-items:center; gap:1rem;
 }
-.logo-wrap { display:flex; align-items:center; gap:14px; text-decoration:none; cursor:pointer; }
-.logo-mark {
-  width:44px; height:44px;
-  border:1.5px solid var(--bronze);
-  display:grid; place-items:center;
-  font-family:'Cormorant Garamond',serif;
-  font-size:22px; color:var(--bronze);
-  transition:transform .45s ease, background .3s, box-shadow .3s;
-  flex-shrink:0;
-  box-shadow:inset 0 0 0 0 var(--bronze-dim);
+.logo-wrap { display:flex; align-items:center; gap:12px; text-decoration:none; cursor:pointer; }
+.logo-img {
+  height: 46px;
+  width: auto;
+  max-width: 140px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+  transition: transform 0.35s ease, filter 0.35s ease;
+  flex-shrink: 0;
 }
-.logo-wrap:hover .logo-mark {
-  transform:rotate(90deg);
-  background:var(--bronze-dim);
-  box-shadow:0 0 20px var(--bronze-glow);
+.logo-wrap:hover .logo-img {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 12px var(--bronze-glow));
 }
 .logo-text  { font-family:'Cormorant Garamond',serif; font-size:17px; letter-spacing:3.5px; text-transform:uppercase; color:var(--ivory); }
 .logo-sub   { font-family:'Jost',sans-serif; font-size:10px; letter-spacing:6px; color:var(--bronze); text-transform:uppercase; margin-top:3px; }
@@ -1722,6 +1720,8 @@ footer {
   .ft-grid { grid-template-columns:1fr 1fr; }
 }
 @media (max-width:768px) {
+  .logo-img { height: 40px; }
+  .logo-text { font-size: 15px; letter-spacing: 2.5px; }
   .nav-links, .nav-cta { display:none; }
   .nav-right { gap:0.6rem; }
   .hamburger { display:flex; }
@@ -1743,6 +1743,8 @@ footer {
   .why-card { backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
 }
 @media (max-width:520px) {
+  .logo-img { height: 35px; }
+  .logo-text { font-size: 13px; letter-spacing: 1.5px; }
   .cats-grid { grid-template-columns:1fr; }
   .cat-card:nth-child(1), .cat-card:nth-child(5) { grid-column:span 1; }
   .stats-row { grid-template-columns:1fr 1fr; }
