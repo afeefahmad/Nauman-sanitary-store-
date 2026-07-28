@@ -13,8 +13,8 @@ export default function WhyUsSection() {
         <span className="sec-label block text-center">
           Why Choose Us
         </span>
-        <h2 className="sec-title text-center">
-          The Nauman<br /><em>Difference</em>
+        <h2 className="sec-title">
+          The Nauman <em>Difference</em>
         </h2>
       </div>
       <div className="why-grid">

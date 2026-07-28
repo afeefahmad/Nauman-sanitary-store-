@@ -30,7 +30,7 @@ export default function LegacySection({ onScrollTo }) {
       {/* Text right column */}
       <div className="sr-r">
         <span className="sec-label">Our Story</span>
-        <h2 className="sec-title">Built on Trust<br />&amp; <em>Quality</em></h2>
+        <h2 className="sec-title">Built on Trust &amp; <em>Quality</em></h2>
         <div className="rule" />
         <p className="sec-desc">
           For over 25 years, Nauman Sanitary Store has been a preferred destination for premium

@@ -16,8 +16,8 @@ export default function AllCategoriesSection({ onGoCategory }) {
         <span className="sec-label block text-center">
           Complete Range
         </span>
-        <h2 className="sec-title text-center">
-          All Product<br /><em>Categories</em>
+        <h2 className="sec-title">
+          All Product <em>Categories</em>
         </h2>
       </div>
       <div className="all-cats-grid stg">

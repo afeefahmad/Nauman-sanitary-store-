@@ -111,8 +111,8 @@ export default function HeroSection({ onScrollTo }) {
 
 
         <h1 className="hero-h1">
-          Elegance in<br /><em>Every Detail</em>
-          <span>Premium Sanitary · Ceramics · Fittings</span>
+          Elegance in <em>Every Detail</em>
+          <span>Premium Sanitary Wares</span>
         </h1>
 
         <p className="hero-sub">

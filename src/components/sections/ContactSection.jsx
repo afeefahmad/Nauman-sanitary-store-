@@ -67,7 +67,7 @@ export default function ContactSection() {
       {/* Left — contact details */}
       <div className="sr-l">
         <span className="sec-label">Get In Touch</span>
-        <h2 className="sec-title">Visit Us or<br /><em>Call Us</em></h2>
+        <h2 className="sec-title">Visit Us or <em>Call Us</em></h2>
         <div className="rule" />
         <p className="sec-desc">
           Come visit our stores in Lahore &amp; Multan, or reach out for pricing, availability

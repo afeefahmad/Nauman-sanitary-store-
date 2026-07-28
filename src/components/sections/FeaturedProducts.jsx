@@ -20,7 +20,7 @@ export default function FeaturedProducts({ onScrollTo, onGoCategory, onProdAdd }
       <div className="sr flex justify-between items-end flex-wrap gap-4">
         <div>
           <span className="sec-label">Featured Products</span>
-          <h2 className="sec-title">Popular<br /><em>Picks</em></h2>
+          <h2 className="sec-title">Popular <em>Picks</em></h2>
         </div>
         <button
           className="btn-ghost py-[11px] px-[24px] text-[9.5px]"
@@ -35,9 +35,9 @@ export default function FeaturedProducts({ onScrollTo, onGoCategory, onProdAdd }
           <div key={i} className="prod-card" onClick={() => onGoCategory(prod.category)}>
             <div className="prod-img">
               <div className="prod-img-inner">
-                {getProductImage(prod.category, prod.name, prod.brand) || PROD_IMAGES[prod.category]
+                {prod.image || getProductImage(prod.category, prod.name, prod.brand) || PROD_IMAGES[prod.category]
                   ? <img
-                      src={getProductImage(prod.category, prod.name, prod.brand) || PROD_IMAGES[prod.category]}
+                      src={prod.image || getProductImage(prod.category, prod.name, prod.brand) || PROD_IMAGES[prod.category]}
                       alt={prod.name}
                       loading="lazy"
                       decoding="async"

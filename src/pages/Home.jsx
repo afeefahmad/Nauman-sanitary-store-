@@ -51,10 +51,10 @@ export default function Home() {
       <TickerSection />
       <BrandsStrip />
       <CategoriesSection    onScrollTo={scrollTo}  onGoCategory={goCategory} />
+      <FeaturedProducts     onScrollTo={scrollTo}  onGoCategory={goCategory} onProdAdd={handleProdAdd} />
+      <AllCategoriesSection onGoCategory={goCategory} />
       <StatsSection />
       <BrandShowcase />
-      <AllCategoriesSection onGoCategory={goCategory} />
-      <FeaturedProducts     onScrollTo={scrollTo}  onGoCategory={goCategory} onProdAdd={handleProdAdd} />
       <LegacySection        onScrollTo={scrollTo} />
       <WhyUsSection />
       <ContactSection />

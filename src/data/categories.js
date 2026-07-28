@@ -586,11 +586,11 @@ export const ALL_CATEGORIES = [
 export const FEATURED_PRODUCTS = [
   {
     icon: '🚽',
-    brand: 'Pool Sanitary Ware',
-    brandTag: 'Pool',
-    name: 'GALAXY Commode — Pool Sanitary',
+    brand: 'Nesco Ceramics',
+    brandTag: 'Premium',
+    name: 'Royal Commode — Floor Standing',
     category: 'toilets',
-    image: '/prod-commode.png',
+    image: '/popular-commode.png',
   },
   {
     icon: '🪣',
@@ -598,7 +598,7 @@ export const FEATURED_PRODUCTS = [
     brandTag: 'Nesco',
     name: 'Basin Pedestal — Classic White',
     category: 'basins',
-    image: '/prod-basin.png',
+    image: '/popular-basin.png',
   },
   {
     icon: '🔧',
@@ -606,15 +606,15 @@ export const FEATURED_PRODUCTS = [
     brandTag: 'New',
     name: 'Single Lever Bath Set — Gold Finish',
     category: 'taps',
-    image: '/prod-taps.png',
+    image: '/popular-taps.png',
   },
   {
-    icon: '🚿',
-    brand: 'Showers',
-    brandTag: 'Sale',
-    name: 'Concealed Muslim Shower Chrome Finish',
-    category: 'muslim-showers',
-    image: '/prod-shower.png',
+    icon: '🪞',
+    brand: 'Signature Collection',
+    brandTag: 'Premium',
+    name: 'Modern Vanity Cabinet',
+    category: 'vanities',
+    image: '/popular-vanity.png',
   },
 ];
 

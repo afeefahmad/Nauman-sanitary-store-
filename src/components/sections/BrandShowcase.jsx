@@ -67,7 +67,7 @@ export default function BrandShowcase() {
     <section className="sec" id="brand-showcase">
       <div className="brand-head sr">
         <span className="sec-label">Our Ceramic Lines</span>
-        <h2 className="sec-title">Featured<br /><em>Brands</em></h2>
+        <h2 className="sec-title">Featured <em>Brands</em></h2>
         <div className="rule" />
       </div>
       <BrandTabs />
