@@ -1,7 +1,8 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useScrollReveal from '../hooks/useScrollReveal';
-import { ALL_CATEGORIES, CONTACT, getProductImage } from '../data/categories';
+import { getProductImage } from '../data/categories';
+import { useCatalog } from '../context/CatalogContext';
 
 /* ── Image map ──────────────────────────────────────────── */
 const PROD_IMAGES = {
@@ -144,7 +145,8 @@ function classifyProduct(slug, name = '', brand = '') {
 export default function CategoryPage() {
   const { slug }    = useParams();
   const navigate    = useNavigate();
-  const category    = ALL_CATEGORIES.find(c => c.slug === slug);
+  const { categories, CONTACT } = useCatalog();
+  const category    = categories.find(c => c.slug === slug);
 
   const [activeBrand, setActiveBrand] = useState('all');
   const [activeSubCat, setActiveSubCat] = useState('all');
@@ -225,16 +227,13 @@ export default function CategoryPage() {
   }
 
   const handleEnquire = (prod) => {
-    navigate('/');
-    setTimeout(() => {
-      const el = document.getElementById('contact');
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-      setTimeout(() => {
-        const txt = document.querySelector('.cf-txt');
-        if (txt && !txt.value)
-          txt.value = `Enquiring about: ${prod.name}${prod.brand ? ` (${prod.brand})` : ''}`;
-      }, 800);
-    }, 400);
+    const prodImg = getProductImage(slug, prod.name, prod.brand) || PROD_IMAGES[slug] || '/prod-commode.png';
+    addToInquiry({
+      id: prod.id || `${prod.name}-${prod.brand}`,
+      name: prod.name,
+      brand: prod.brand,
+      image: prodImg
+    });
   };
 
   const nameParts = category.name.split(' ');
@@ -414,8 +413,8 @@ export default function CategoryPage() {
             <h2 className="sec-title">Other <em>Categories</em></h2>
           </div>
           <div className="all-cats-grid stg">
-            {ALL_CATEGORIES
-              .filter(c => c.slug !== slug)
+            {categories
+              .filter(cat => cat.slug !== slug)
               .slice(0, 6)
               .map(cat => (
                 <div

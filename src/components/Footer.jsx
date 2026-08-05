@@ -1,11 +1,11 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { CONTACT } from '../data/categories';
-import { ALL_CATEGORIES } from '../data/categories';
+import { useCatalog } from '../context/CatalogContext';
 
 export default function Footer() {
   const navigate  = useNavigate();
   const location  = useLocation();
   const isHome    = location.pathname === '/';
+  const { categories, CONTACT } = useCatalog();
 
   const scrollTo = (id) => {
     if (!isHome) {
@@ -22,12 +22,12 @@ export default function Footer() {
 
   const goCategory = (slug) => navigate(`/category/${slug}`);
 
-  const ceramicCats = ['commodes-toilets', 'basins', 'flush-tanks'];
-  const fittingCats = ['faucets-taps', 'muslim-showers', 'pprc-pipes', 'upvc-pipes'];
-  const moreCats    = ['vanities', 'kitchen-sinks', 'water-geysers', 'accessories'];
+  const ceramicCats = ['toilets', 'basins', 'flush-tanks'];
+  const fittingCats = ['taps', 'muslim-showers', 'pipes-fittings'];
+  const moreCats    = ['vanities', 'kitchen-ware', 'bath-tubs', 'accessories'];
 
   const catName = (slug) =>
-    ALL_CATEGORIES.find(c => c.slug === slug)?.name || slug;
+    categories.find(c => c.slug === slug)?.name || slug;
 
   return (
     <footer>

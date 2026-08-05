@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { STATS } from '../../data/categories';
+import { useCatalog } from '../../context/CatalogContext';
 
 /* ─────────────────────────────────────────────
    STAT BLOCK — animated counting number
@@ -41,11 +41,12 @@ function StatBlock({ count, label }) {
 
 /* ─────────────────────────────────────────────
    STATS SECTION
-   Animated counters bar.
-   Edit STATS in data/categories.js to change
-   the numbers and labels shown here.
+   Animated counting numbers for social proof.
+   Edit STATS in Admin Portal to change
+   numbers and labels dynamically.
 ───────────────────────────────────────────── */
 export default function StatsSection() {
+  const { STATS } = useCatalog();
   return (
     <section className="sec-sm" id="stats">
       <div className="stats-row stg">

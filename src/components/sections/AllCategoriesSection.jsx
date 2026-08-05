@@ -1,4 +1,4 @@
-import { ALL_CATEGORIES } from '../../data/categories';
+import { useCatalog } from '../../context/CatalogContext';
 
 /* ─────────────────────────────────────────────
    ALL CATEGORIES SECTION
@@ -10,6 +10,7 @@ import { ALL_CATEGORIES } from '../../data/categories';
      onGoCategory(slug) — navigate to category page
 ───────────────────────────────────────────── */
 export default function AllCategoriesSection({ onGoCategory }) {
+  const { categories } = useCatalog();
   return (
     <section className="sec" id="all-cats">
       <div className="sr text-center">
@@ -21,7 +22,7 @@ export default function AllCategoriesSection({ onGoCategory }) {
         </h2>
       </div>
       <div className="all-cats-grid stg">
-        {ALL_CATEGORIES.map(cat => (
+        {categories.map(cat => (
           <div key={cat.slug} className="ac-item" onClick={() => onGoCategory(cat.slug)}>
             <div className="ac-icon">
               {typeof cat.icon === 'string' &&
@@ -34,7 +35,7 @@ export default function AllCategoriesSection({ onGoCategory }) {
                 : cat.icon}
             </div>
             <div className="ac-name">{cat.name}</div>
-            <div className="ac-subs">{cat.subs}</div>
+            <div className="ac-subs">{cat.hint || cat.subs}</div>
             <div className="ac-cta">Explore →</div>
           </div>
         ))}

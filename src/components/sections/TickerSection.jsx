@@ -1,12 +1,12 @@
-import { TICKER_ITEMS } from '../../data/categories';
+import { useCatalog } from '../../context/CatalogContext';
 
 /* ─────────────────────────────────────────────
-   TICKER SECTION
-   The scrolling bronze band below the hero.
-   Edit TICKER_ITEMS in data/categories.js
-   to change the text that scrolls.
+   TICKER SECTION (Marquee)
+   A continuous scrolling bar for announcements.
+   Edit TICKER_ITEMS in Admin Portal
 ───────────────────────────────────────────── */
 export default function TickerSection() {
+  const { TICKER_ITEMS } = useCatalog();
   return (
     <div className="ticker">
       <div className="ticker-inner">

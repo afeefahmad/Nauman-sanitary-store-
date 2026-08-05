@@ -25,8 +25,11 @@ import ContactSection      from '../components/sections/ContactSection';
    open the matching file in:
      src/components/sections/
 ───────────────────────────────────────────── */
+import { useInquiry } from '../context/InquiryContext';
+
 export default function Home() {
   const navigate = useNavigate();
+  const { addToInquiry } = useInquiry();
   useScrollReveal([]);
 
   /* ── Shared helpers passed to sections ── */
@@ -38,11 +41,12 @@ export default function Home() {
   const goCategory = (slug) => navigate(`/category/${slug}`);
 
   const handleProdAdd = (prod) => {
-    scrollTo('contact');
-    setTimeout(() => {
-      const txt = document.querySelector('.cf-txt');
-      if (txt && !txt.value) txt.value = 'Enquiring about: ' + prod.name;
-    }, 900);
+    addToInquiry({
+      id: prod.id || `${prod.name}-${prod.brand || ''}`,
+      name: prod.name,
+      brand: prod.brand || 'Nauman Sanitary',
+      image: prod.image || prod.img || '/prod-commode.png'
+    });
   };
 
   return (

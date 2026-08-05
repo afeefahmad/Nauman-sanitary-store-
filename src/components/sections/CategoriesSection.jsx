@@ -1,19 +1,14 @@
-import { HERO_CATEGORIES } from '../../data/categories';
+import { useCatalog } from '../../context/CatalogContext';
 import PROD_IMAGES from '../../constants/productImages';
+import { Link } from 'react-router-dom';
 
 /* ─────────────────────────────────────────────
-   CATEGORIES SECTION
-   The large hero grid of category cards.
-   Edit HERO_CATEGORIES in data/categories.js
-   to change which categories appear here.
-   Edit PROD_IMAGES in constants/productImages.js
-   to change the card background images.
-
-   Props:
-     onScrollTo(id)    — smooth-scroll helper
-     onGoCategory(slug) — navigate to category page
+   CATEGORIES GRID (HERO)
+   Displays top featured categories on the homepage.
+   Edit HERO_CATEGORIES in Admin Portal
 ───────────────────────────────────────────── */
 export default function CategoriesSection({ onScrollTo, onGoCategory }) {
+  const { HERO_CATEGORIES } = useCatalog();
   return (
     <section className="sec" id="categories">
       <div className="cats-head">
@@ -30,13 +25,13 @@ export default function CategoriesSection({ onScrollTo, onGoCategory }) {
       </div>
 
       <div className="cats-grid">
-        {HERO_CATEGORIES.map((cat) => (
-          <div key={cat.slug} className="cat-card" onClick={() => onGoCategory(cat.slug)}>
+        {HERO_CATEGORIES.map((cat, index) => (
+          <div key={cat.slug || index} className="cat-card" onClick={() => onGoCategory(cat.slug)}>
             <div className="cat-fill">
-              {PROD_IMAGES[cat.slug] && (
+              {(cat.img || PROD_IMAGES[cat.slug]) && (
                 <img
-                  src={PROD_IMAGES[cat.slug]}
-                  alt={cat.name}
+                  src={cat.img || PROD_IMAGES[cat.slug]}
+                  alt={cat.title || cat.name}
                   loading="lazy"
                   decoding="async"
                 />
@@ -46,9 +41,9 @@ export default function CategoriesSection({ onScrollTo, onGoCategory }) {
             <div className="cat-shade" />
             <div className="cat-link">↗</div>
             <div className="cat-body">
-              <div className="cat-no">{cat.no}</div>
-              <div className="cat-name">{cat.name}</div>
-              <div className="cat-hint">{cat.hint}</div>
+              <div className="cat-no">{'0' + (index + 1) + ' · Category'}</div>
+              <div className="cat-name">{cat.title || cat.name}</div>
+              <div className="cat-hint">{cat.subtitle || cat.hint}</div>
             </div>
           </div>
         ))}

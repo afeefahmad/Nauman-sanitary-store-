@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ALL_CATEGORIES, CONTACT } from '../../data/categories';
+import { useCatalog } from '../../context/CatalogContext';
 
 /* ─────────────────────────────────────────────
    CONTACT FORM
@@ -10,6 +10,7 @@ import { ALL_CATEGORIES, CONTACT } from '../../data/categories';
 ───────────────────────────────────────────── */
 function ContactForm() {
   const [sent, setSent] = useState(false);
+  const { categories, CONTACT } = useCatalog();
   return (
     <div className="contact-form-wrap">
       <h3 className="form-title">Request a Quote</h3>
@@ -21,14 +22,14 @@ function ContactForm() {
           </div>
           <div className="cf-field">
             <label className="cf-lbl">Phone</label>
-            <input className="cf-input" type="tel" placeholder="+92 300 …" />
+            <input className="cf-input" type="text" placeholder="0300 0000000" />
           </div>
         </div>
         <div className="cf-field">
-          <label className="cf-lbl">Category of Interest</label>
-          <select className="cf-sel">
-            <option value="">Select a category…</option>
-            {ALL_CATEGORIES.map(c => (
+          <label className="cf-lbl">Interested In</label>
+          <select className="cf-input">
+            <option>Select a category...</option>
+            {categories.map(c => (
               <option key={c.slug}>{c.name}</option>
             ))}
             <option>Other</option>
@@ -62,6 +63,8 @@ function ContactForm() {
    from CONTACT in data/categories.js.
 ───────────────────────────────────────────── */
 export default function ContactSection() {
+  const { CONTACT } = useCatalog();
+
   return (
     <section className="sec" id="contact">
       {/* Left — contact details */}
