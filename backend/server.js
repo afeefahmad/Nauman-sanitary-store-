@@ -206,6 +206,8 @@ app.post('/api/products', (req, res) => {
       [id, cat.id, name, brand, price, stock, code, color, image], 
       function(err2) {
         if (err2) return res.status(500).json({ error: err2.message });
+        res.json({ success: true });
+      });
   });
 });
 

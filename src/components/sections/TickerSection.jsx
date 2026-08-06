@@ -11,7 +11,7 @@ export default function TickerSection() {
     <div className="ticker">
       <div className="ticker-inner">
         {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (
-          <span key={i}>{item}</span>
+          <span key={i}>{typeof item === 'object' ? item.message : item}</span>
         ))}
       </div>
     </div>

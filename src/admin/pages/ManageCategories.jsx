@@ -57,9 +57,11 @@ export default function ManageCategories() {
       })();
 
   const handleEditClick = (product, catSlug) => {
+    const slug = catSlug || product.categorySlug || 'toilets';
     setEditModalProduct({
       ...product,
-      categorySlug: catSlug || product.categorySlug || 'toilets',
+      categorySlug: slug,
+      originalCategorySlug: slug,
       brand: product.brand || 'Unbranded'
     });
     setEditModalFile(null);
@@ -83,11 +85,16 @@ export default function ManageCategories() {
         imageUrl = uploadData.url;
       }
 
-      await updateProduct(editModalProduct.categorySlug, editModalProduct.id, {
-        name: editModalProduct.name,
-        brand: editModalProduct.brand,
-        image: imageUrl
-      });
+      await updateProduct(
+        editModalProduct.originalCategorySlug,
+        editModalProduct.categorySlug,
+        editModalProduct.id,
+        {
+          name: editModalProduct.name,
+          brand: editModalProduct.brand,
+          image: imageUrl
+        }
+      );
 
       addToast(`Product "${editModalProduct.name}" updated! ✏️`, 'success');
       setEditModalProduct(null);

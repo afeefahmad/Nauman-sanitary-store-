@@ -14,13 +14,14 @@ function StatBlock({ count, label }) {
     const io = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting && !observed.current) {
         observed.current = true;
-        const isLarge = count > 99;
+        const numValue = parseFloat(count) || 0;
+        const suffix = String(count).replace(/[0-9.]/g, '');
         const dur     = 1800;
         const start   = performance.now();
         const step = (now) => {
           const t    = Math.min((now - start) / dur, 1);
           const ease = 1 - Math.pow(1 - t, 3);
-          el.textContent = Math.round(ease * count) + (isLarge ? '+' : '');
+          el.textContent = Math.round(ease * numValue) + suffix;
           if (t < 1) requestAnimationFrame(step);
         };
         requestAnimationFrame(step);
@@ -51,7 +52,7 @@ export default function StatsSection() {
     <section className="sec-sm" id="stats">
       <div className="stats-row stg">
         {STATS.map((s, i) => (
-          <StatBlock key={i} count={s.count} label={s.label} />
+          <StatBlock key={i} count={s.value} label={s.label} />
         ))}
       </div>
     </section>

@@ -37,8 +37,7 @@ export function CatalogProvider({ children }) {
         setCategories(c);
         setHeroCategories(h);
         setContact(cnt);
-        // Ticker API returns objects {id, message}, frontend expects array of strings
-        setTickerItems(t.map(i => i.message));
+        setTickerItems(t);
         setStats(s);
         setBrands(b);
       } catch (err) {
@@ -50,7 +49,39 @@ export function CatalogProvider({ children }) {
     loadData();
   }, []);
 
-  // Update Methods (We re-fetch or optimistically update)
+  const refreshTicker = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/ticker`);
+      const t = await res.json();
+      setTickerItems(t);
+    } catch (e) { console.error(e); }
+  };
+
+  const refreshStats = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/stats`);
+      const s = await res.json();
+      setStats(s);
+    } catch (e) { console.error(e); }
+  };
+
+  const refreshBrands = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/brands`);
+      const b = await res.json();
+      setBrands(b);
+    } catch (e) { console.error(e); }
+  };
+
+  const refreshHeroCategories = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/hero`);
+      const h = await res.json();
+      setHeroCategories(h);
+    } catch (e) { console.error(e); }
+  };
+
+  // Update Methods
   const updateContact = async (newData) => {
     try {
       const res = await fetch(`${API_BASE}/contact`, {
@@ -64,9 +95,6 @@ export function CatalogProvider({ children }) {
   };
 
   const updateTicker = async (items) => {
-    // For simplicity, ticker in frontend passes full array. In backend it's rows.
-    // Real implementation would delete all and re-insert, or frontend handles one by one.
-    // For now we just set frontend state to avoid full sync complexity on array.
     setTickerItems(items);
   };
 
@@ -182,18 +210,22 @@ export function CatalogProvider({ children }) {
       TICKER_ITEMS: tickerItems, 
       tickerItems,
       updateTicker,
+      refreshTicker,
       
       STATS: stats, 
       stats,
       updateStats,
+      refreshStats,
       
       BRANDS: brands, 
       brands,
       updateBrands,
+      refreshBrands,
       
       HERO_CATEGORIES: heroCategories, 
       heroCategories,
-      updateHeroCategories
+      updateHeroCategories,
+      refreshHeroCategories
     }}>
       {children}
     </CatalogContext.Provider>
