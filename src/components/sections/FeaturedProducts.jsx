@@ -59,13 +59,7 @@ export default function FeaturedProducts({ onScrollTo, onGoCategory, onProdAdd }
                 <div className="prod-price">
                   <small>from</small>{prod.price}
                 </div>
-                <button
-                  className="prod-add"
-                  title="Enquire"
-                  onClick={e => { e.stopPropagation(); onProdAdd(prod); }}
-                >
-                  +
-                </button>
+
               </div>
             </div>
           </div>

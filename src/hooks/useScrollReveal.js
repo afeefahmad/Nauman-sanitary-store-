@@ -10,7 +10,10 @@ export default function useScrollReveal(deps = []) {
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
-          if (e.isIntersecting) e.target.classList.add('vis');
+          if (e.isIntersecting) {
+            e.target.classList.add('vis');
+            io.unobserve(e.target);
+          }
         });
       },
       { threshold: 0.01, rootMargin: '0px 0px -40px 0px' }

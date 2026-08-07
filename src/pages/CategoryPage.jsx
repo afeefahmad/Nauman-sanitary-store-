@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import useScrollReveal from '../hooks/useScrollReveal';
 import { getProductImage } from '../data/categories';
 import { useCatalog } from '../context/CatalogContext';
+import { useInquiry } from '../context/InquiryContext';
 
 /* ── Image map ──────────────────────────────────────────── */
 const PROD_IMAGES = {
@@ -146,12 +147,13 @@ export default function CategoryPage() {
   const { slug }    = useParams();
   const navigate    = useNavigate();
   const { categories, CONTACT } = useCatalog();
+  const { addToInquiry } = useInquiry();
   const category    = categories.find(c => c.slug === slug);
 
   const [activeBrand, setActiveBrand] = useState('all');
   const [activeSubCat, setActiveSubCat] = useState('all');
 
-  useScrollReveal([slug]);
+  useScrollReveal([slug, activeBrand, activeSubCat]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -190,29 +192,40 @@ export default function CategoryPage() {
   /* 3D tilt on cards */
   useEffect(() => {
     const cards = document.querySelectorAll('.cat-prod-card');
+    let frameId;
     const onMove = (e) => {
-      const r = e.currentTarget.getBoundingClientRect();
-      const x = (e.clientX - r.left - r.width  / 2) / r.width;
-      const y = (e.clientY - r.top  - r.height / 2) / r.height;
-      e.currentTarget.style.transform =
-        `perspective(900px) rotateX(${-y*6}deg) rotateY(${x*6}deg) translateZ(4px)`;
+      if (frameId) cancelAnimationFrame(frameId);
+      const el = e.currentTarget;
+      const rect = el.getBoundingClientRect();
+      const x = (e.clientX - rect.left - rect.width  / 2) / rect.width;
+      const y = (e.clientY - rect.top  - rect.height / 2) / rect.height;
+      
+      frameId = requestAnimationFrame(() => {
+        el.style.transform = `perspective(900px) rotateX(${-y*6}deg) rotateY(${x*6}deg) translateZ(4px)`;
+      });
     };
     const onLeave = (e) => {
+      if (frameId) cancelAnimationFrame(frameId);
       const el = e.currentTarget;
-      el.style.transform = 'perspective(900px) rotateX(0) rotateY(0) translateZ(0)';
-      el.style.transition = 'transform .5s ease';
-      setTimeout(() => {
-        if (el) el.style.transition = '';
-      }, 500);
+      requestAnimationFrame(() => {
+        el.style.transform = 'perspective(900px) rotateX(0) rotateY(0) translateZ(0)';
+        el.style.transition = 'transform .5s ease';
+        setTimeout(() => {
+          if (el) el.style.transition = '';
+        }, 500);
+      });
     };
     cards.forEach(c => {
-      c.addEventListener('mousemove', onMove);
-      c.addEventListener('mouseleave', onLeave);
+      c.addEventListener('mousemove', onMove, { passive: true });
+      c.addEventListener('mouseleave', onLeave, { passive: true });
     });
-    return () => cards.forEach(c => {
-      c.removeEventListener('mousemove', onMove);
-      c.removeEventListener('mouseleave', onLeave);
-    });
+    return () => {
+      if (frameId) cancelAnimationFrame(frameId);
+      cards.forEach(c => {
+        c.removeEventListener('mousemove', onMove);
+        c.removeEventListener('mouseleave', onLeave);
+      });
+    };
   }, [slug, activeBrand, activeSubCat]);
 
   /* Early return AFTER all hooks */
@@ -227,7 +240,7 @@ export default function CategoryPage() {
   }
 
   const handleEnquire = (prod) => {
-    const prodImg = getProductImage(slug, prod.name, prod.brand) || PROD_IMAGES[slug] || '/prod-commode.png';
+    const prodImg = prod.image || getProductImage(slug, prod.name, prod.brand) || PROD_IMAGES[slug] || '/prod-commode.png';
     addToInquiry({
       id: prod.id || `${prod.name}-${prod.brand}`,
       name: prod.name,
@@ -245,41 +258,34 @@ export default function CategoryPage() {
 
       {/* ══ HERO BANNER ══ */}
       <div className="cat-page-hero">
-        <div className="cat-page-breadcrumb">
-          <a onClick={() => navigate('/')} role="button" tabIndex={0}>Home</a>
-          <span>›</span>
-          <span>Categories</span>
-          <span>›</span>
-          <span className="text-[var(--ivory)]">{category.name}</span>
+        <div className="flex justify-between items-center w-full mb-[2.2rem] flex-wrap gap-4">
+          <div className="cat-page-breadcrumb" style={{ marginBottom: 0 }}>
+            <a onClick={() => navigate('/')} role="button" tabIndex={0}>Home</a>
+            <span>›</span>
+            <span>Categories</span>
+            <span>›</span>
+            <span className="text-[var(--ivory)]">{category.name}</span>
+          </div>
+
+          {/* Product count badge */}
+          <div className="cat-page-meta" style={{ marginTop: 0 }}>
+            <span className="cat-count-badge">{category.products.length} Products</span>
+            {hasBrands && (
+              <span className="cat-count-badge">{brandList.length} Brands</span>
+            )}
+          </div>
         </div>
-        <div className="cat-page-icon">
-          {typeof category.icon === 'string' && (category.icon.startsWith('data:image') || category.icon.startsWith('/') || category.icon.startsWith('http'))
-            ? <img src={category.icon} alt={category.name} className="w-[1em] h-[1em] object-contain invert" />
-            : category.icon}
-        </div>
+
         <h1 className="cat-page-title">
           {firstWord}{restWords && <> <em>{restWords}</em></>}
         </h1>
         <p className="cat-page-subs">{category.subs}</p>
 
-        {/* Product count badge */}
-        <div className="cat-page-meta">
-          <span className="cat-count-badge">{category.products.length} Products</span>
-          {hasBrands && (
-            <span className="cat-count-badge">{brandList.length} Brands</span>
-          )}
-        </div>
-      </div>
-
-      {/* ══ BODY ══ */}
-      <div className="cat-page-body">
-        <button className="cat-back-btn" onClick={() => navigate(-1)}>← Back</button>
-
         {/* ── BRAND FILTER TABS ── */}
         {hasBrands && (
-          <div className="cat-brand-filter">
-            <div className="cbf-label">Filter by Brand</div>
-            <div className="cbf-tabs">
+          <div className="cat-brand-filter mt-6">
+            <div className="cbf-label text-center mb-4">Filter by Brand</div>
+            <div className="cbf-tabs justify-center">
               <button
                 className={`cbf-btn${activeBrand === 'all' ? ' active' : ''}`}
                 onClick={() => setActiveBrand('all')}
@@ -307,6 +313,11 @@ export default function CategoryPage() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* ══ BODY ══ */}
+      <div className="cat-page-body">
+        <button className="cat-back-btn" onClick={() => navigate(-1)}>← Back</button>
 
         {/* ── SUB-CATEGORIES PILLS ── */}
         {hasSubCats && (
@@ -343,7 +354,7 @@ export default function CategoryPage() {
               <div className="cat-prod-img">
                 <div className="cat-prod-img-inner">
                   <img
-                    src={getProductImage(slug, prod.name, prod.brand) || PROD_IMAGES[slug] || '/prod-commode.png'}
+                    src={prod.image || getProductImage(slug, prod.name, prod.brand) || PROD_IMAGES[slug] || '/prod-commode.png'}
                     alt={prod.name}
                     onError={(e) => {
                       e.target.onerror = null;
@@ -360,29 +371,39 @@ export default function CategoryPage() {
                     {prod.tag}
                   </div>
                 )}
-              </div>
-              <div className="cat-prod-info">
                 {prod.brand && (
                   <div
-                    className="cat-prod-brand"
-                    style={{ color: BRAND_COLORS[prod.brand] || 'var(--bronze)' }}
+                    className="cat-prod-brand-tag"
+                    style={{ background: BRAND_COLORS[prod.brand] ? `${BRAND_COLORS[prod.brand]}cc` : 'rgba(200,160,96,0.85)' }}
                   >
                     {prod.brand}
                   </div>
                 )}
+              </div>
+              <div className="cat-prod-info">
                 <div className="cat-prod-name">{prod.name}</div>
                 {prod.model && (
                   <div className="cat-prod-model">Model: {prod.model}</div>
                 )}
                 <div className="cat-prod-footer">
-                  <span className="cat-prod-enquire-hint">Call / WhatsApp for price</span>
                   <button
                     className="cat-prod-btn"
-                    title="Enquire about this product"
+                    title="Add to Inquiry Cart"
                     onClick={() => handleEnquire(prod)}
                   >
-                    +
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    Add to Inquiry Cart
                   </button>
+                  <a
+                    href={CONTACT?.whatsappUrl || '#'}
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="cat-prod-whatsapp-btn"
+                    title="Call or WhatsApp for Price"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    Call / WhatsApp
+                  </a>
                 </div>
               </div>
             </div>

@@ -24,12 +24,14 @@ function ThemeToggle() {
 }
 
 import { useInquiry } from '../context/InquiryContext';
+import { useCatalog } from '../context/CatalogContext';
 import { ShoppingBag } from 'lucide-react';
 
 export default function Navbar() {
   const [solid, setSolid] = useState(false);
   const [open, setOpen] = useState(false);
   const { totalCount, setIsOpen } = useInquiry();
+  const { categories, brands } = useCatalog();
   const navigate = useNavigate();
   const location = useLocation();
   const isHome = location.pathname === '/';
@@ -63,10 +65,10 @@ export default function Navbar() {
   };
 
   const navLinks = [
+    { label: 'Home', id: 'hero' },
     { label: 'Categories', id: 'categories' },
     { label: 'Brands', id: 'brand-showcase' },
     { label: 'Products', id: 'products' },
-    { label: 'About', id: 'legacy' },
     { label: 'Contact', id: 'contact' },
   ];
 
@@ -85,11 +87,40 @@ export default function Navbar() {
         {/* Desktop Links */}
         <ul className="nav-links">
           {navLinks.map(l => (
-            <li key={l.id}>
-              <a onClick={() => scrollTo(l.id)} tabIndex={0}
-                onKeyDown={e => e.key === 'Enter' && scrollTo(l.id)}>
+            <li key={l.id} className={l.id === 'categories' || l.id === 'brand-showcase' ? 'nav-item-dropdown' : ''}>
+              <a 
+                onClick={() => scrollTo(l.id)} 
+                tabIndex={0}
+                onKeyDown={e => e.key === 'Enter' && scrollTo(l.id)}
+              >
                 {l.label}
               </a>
+              {l.id === 'categories' && categories && categories.length > 0 && (
+                <div className="nav-dropdown">
+                  {categories.map(cat => (
+                    <a 
+                      key={cat.slug} 
+                      onClick={() => { setOpen(false); navigate(`/category/${cat.slug}`); window.scrollTo(0,0); }}
+                      className="nav-dropdown-item"
+                    >
+                      {cat.name}
+                    </a>
+                  ))}
+                </div>
+              )}
+              {l.id === 'brand-showcase' && brands && brands.length > 0 && (
+                <div className="nav-dropdown">
+                  {brands.map(brand => (
+                    <a 
+                      key={brand.id || brand.name} 
+                      onClick={() => { setOpen(false); navigate(`/brand/${encodeURIComponent(brand.name)}`); window.scrollTo(0,0); }}
+                      className="nav-dropdown-item"
+                    >
+                      {brand.name}
+                    </a>
+                  ))}
+                </div>
+              )}
             </li>
           ))}
         </ul>
@@ -98,36 +129,12 @@ export default function Navbar() {
           <button
             onClick={() => setIsOpen(true)}
             className="inquiry-btn"
-            style={{
-              position: 'relative',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.45rem 0.85rem',
-              borderRadius: '9999px',
-              border: '1px solid rgba(200,160,96,0.4)',
-              background: 'rgba(200,160,96,0.1)',
-              color: '#c8a060',
-              fontWeight: 600,
-              fontSize: '0.825rem',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
             title="View WhatsApp Inquiry Cart"
           >
             <ShoppingBag style={{ width: '1rem', height: '1rem' }} />
             <span>Inquiry</span>
             {totalCount > 0 && (
-              <span
-                style={{
-                  background: '#c8a060',
-                  color: '#000',
-                  borderRadius: '9999px',
-                  padding: '0.1rem 0.4rem',
-                  fontSize: '0.7rem',
-                  fontWeight: 700
-                }}
-              >
+              <span className="inquiry-badge">
                 {totalCount}
               </span>
             )}

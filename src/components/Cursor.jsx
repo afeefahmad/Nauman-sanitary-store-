@@ -20,11 +20,11 @@ export default function Cursor() {
     document.addEventListener('mousemove', onMove, { passive: true });
 
     const loop = () => {
-      // Use transform instead of left/top — no layout recalculation, GPU composited
-      dot.style.transform  = `translate(calc(${mx.current}px - 50%), calc(${my.current}px - 50%))`;
+      // Use translate3d to enforce hardware acceleration on GPU
+      dot.style.transform  = `translate3d(calc(${mx.current}px - 50%), calc(${my.current}px - 50%), 0)`;
       rx.current += (mx.current - rx.current) * 0.12;
       ry.current += (my.current - ry.current) * 0.12;
-      ring.style.transform = `translate(calc(${rx.current}px - 50%), calc(${ry.current}px - 50%))`;
+      ring.style.transform = `translate3d(calc(${rx.current}px - 50%), calc(${ry.current}px - 50%), 0)`;
       rafRef.current = requestAnimationFrame(loop);
     };
     rafRef.current = requestAnimationFrame(loop);

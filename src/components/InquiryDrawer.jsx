@@ -1,88 +1,152 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useInquiry } from '../context/InquiryContext';
-import { ShoppingBag, X, Plus, Minus, Trash2, MessageSquare, Send } from 'lucide-react';
+import { ShoppingBag, X, Plus, Minus, Trash2, MessageSquare, ShieldCheck } from 'lucide-react';
+import './InquiryDrawer.css';
 
 export default function InquiryDrawer() {
   const { items, isOpen, setIsOpen, removeFromInquiry, updateQuantity, clearInquiry, sendWhatsAppInquiry, totalCount } = useInquiry();
 
+  // Scroll lock & Escape key listener
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, setIsOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex justify-end animate-in fade-in">
-      <div className="bg-slate-900 text-slate-100 w-full max-w-md h-full flex flex-col shadow-2xl border-l border-slate-800 animate-in slide-in-from-right duration-300">
+    <div className="inquiry-drawer-root animate-in fade-in duration-300">
+      {/* Backdrop overlay click to close */}
+      <div 
+        className="inquiry-drawer-backdrop" 
+        onClick={() => setIsOpen(false)} 
+        title="Close cart overlay" 
+      />
+
+      {/* Drawer Container */}
+      <div className="inquiry-drawer-container animate-in slide-in-from-right duration-300">
         
         {/* Header */}
-        <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-[#c8a060]/10 text-[#c8a060] rounded-xl border border-[#c8a060]/20">
+        <div className="inquiry-drawer-header">
+          {/* Subtle gold ambient glow */}
+          <div className="inquiry-drawer-header-glow" />
+
+          <div className="inquiry-drawer-header-content">
+            <div className="inquiry-drawer-header-icon">
               <ShoppingBag className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-lg text-white">Inquiry Cart</h3>
-              <p className="text-xs text-slate-400">{totalCount} item{totalCount !== 1 ? 's' : ''} selected</p>
+              <div className="inquiry-drawer-header-title-row">
+                <h3 className="inquiry-drawer-title">Inquiry Cart</h3>
+                <span className="inquiry-drawer-badge">
+                  Quote
+                </span>
+              </div>
+              <p className="inquiry-drawer-subtitle">
+                <span className="inquiry-drawer-status-dot animate-pulse" />
+                <span style={{ fontWeight: 600, color: '#e2e8f0' }}>{totalCount}</span> item{totalCount !== 1 ? 's' : ''} in quote request
+              </p>
             </div>
           </div>
+          
           <button
             onClick={() => setIsOpen(false)}
-            className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            className="inquiry-drawer-close-btn"
+            title="Close Cart"
+            aria-label="Close Inquiry Cart"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Item List */}
-        <div className="flex-1 overflow-auto p-5 space-y-4">
+        <div className="inquiry-drawer-body">
           {items.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-400">
-              <div className="p-4 bg-slate-800/50 rounded-full mb-3 text-slate-500">
-                <ShoppingBag className="w-8 h-8" />
+            <div className="inquiry-drawer-empty">
+              <div className="inquiry-drawer-empty-icon-wrap">
+                <div className="inquiry-drawer-empty-icon-glow" />
+                <ShoppingBag className="inquiry-drawer-empty-icon" />
               </div>
-              <h4 className="font-semibold text-white text-base">Your Inquiry List is Empty</h4>
-              <p className="text-xs text-slate-400 mt-1 max-w-xs">
-                Browse our luxury sanitaryware catalog and click "Inquire" to build your quote request.
+              <h4 className="inquiry-drawer-empty-title">Your Quote List is Empty</h4>
+              <p className="inquiry-drawer-empty-desc">
+                Browse our luxury sanitaryware catalog and click <span className="inquiry-drawer-highlight">"Inquire"</span> to build your quote request.
               </p>
             </div>
           ) : (
             items.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center justify-between p-3 rounded-xl bg-slate-800/60 border border-slate-700/50 hover:border-[#c8a060]/40 transition-all group"
-              >
-                <div className="flex items-center gap-3 min-w-0 flex-1">
-                  {item.image ? (
-                    <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded-lg border border-slate-700 bg-white shrink-0" />
-                  ) : (
-                    <div className="w-12 h-12 rounded-lg bg-slate-700/50 border border-slate-600 flex items-center justify-center text-xs font-bold text-slate-300 shrink-0">
-                      SANITARY
+              <div key={item.id} className="inquiry-drawer-item">
+                <div className="inquiry-drawer-item-info">
+                  <div className="inquiry-drawer-item-img-wrap">
+                    {item.image ? (
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="inquiry-drawer-item-img"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = '/prod-commode.png';
+                        }}
+                      />
+                    ) : (
+                      <div className="inquiry-drawer-item-placeholder">
+                        <span>SANITARY</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="inquiry-drawer-item-text">
+                    <h4 className="inquiry-drawer-item-name" title={item.name}>
+                      {item.name}
+                    </h4>
+                    <div className="inquiry-drawer-item-brand-wrap">
+                      <span className="inquiry-drawer-item-brand">
+                        {item.brand || 'Unbranded'}
+                      </span>
                     </div>
-                  )}
-                  <div className="min-w-0 flex-1">
-                    <h4 className="text-sm font-semibold text-white truncate">{item.name}</h4>
-                    <p className="text-xs text-[#c8a060]">{item.brand || 'Unbranded'}</p>
                   </div>
                 </div>
 
                 {/* Controls */}
-                <div className="flex items-center gap-3 shrink-0 pl-2">
-                  <div className="flex items-center gap-1 border border-slate-700 rounded-lg p-1 bg-slate-900">
+                <div className="inquiry-drawer-item-controls">
+                  <div className="inquiry-drawer-qty-box">
                     <button
                       onClick={() => updateQuantity(item.id, -1)}
-                      className="p-1 text-slate-400 hover:text-white rounded hover:bg-slate-800"
+                      className="inquiry-drawer-qty-btn"
+                      title="Decrease Quantity"
+                      aria-label="Decrease quantity"
                     >
                       <Minus className="w-3 h-3" />
                     </button>
-                    <span className="text-xs font-bold w-6 text-center text-white">{item.qty}</span>
+                    <span className="inquiry-drawer-qty-val">{item.qty}</span>
                     <button
                       onClick={() => updateQuantity(item.id, 1)}
-                      className="p-1 text-slate-400 hover:text-white rounded hover:bg-slate-800"
+                      className="inquiry-drawer-qty-btn"
+                      title="Increase Quantity"
+                      aria-label="Increase quantity"
                     >
                       <Plus className="w-3 h-3" />
                     </button>
                   </div>
+                  
                   <button
                     onClick={() => removeFromInquiry(item.id)}
-                    className="text-red-400 hover:text-red-300 p-1.5 rounded-lg hover:bg-red-500/10 transition-colors"
-                    title="Remove"
+                    className="inquiry-drawer-del-btn"
+                    title="Remove Item"
+                    aria-label="Remove item"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -94,21 +158,26 @@ export default function InquiryDrawer() {
 
         {/* Footer Actions */}
         {items.length > 0 && (
-          <div className="p-5 border-t border-slate-800 bg-slate-950 space-y-3">
+          <div className="inquiry-drawer-footer">
             <button
               onClick={sendWhatsAppInquiry}
-              className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm rounded-xl shadow-lg shadow-emerald-950/50 flex items-center justify-center gap-2 transition-all transform active:scale-95"
+              className="inquiry-drawer-submit-btn"
             >
-              <MessageSquare className="w-4 h-4" /> Send Inquiry via WhatsApp
+              <MessageSquare className="w-4 h-4 inquiry-drawer-submit-icon" />
+              <span>Send Inquiry via WhatsApp</span>
             </button>
-            <div className="flex justify-between items-center text-xs text-slate-400 pt-1">
+
+            <div className="inquiry-drawer-footer-row">
               <button
                 onClick={clearInquiry}
-                className="hover:text-red-400 transition-colors"
+                className="inquiry-drawer-clear-btn"
               >
-                Clear Cart
+                <Trash2 className="w-3.5 h-3.5 inquiry-drawer-clear-icon" /> Clear All
               </button>
-              <span>Instant WhatsApp Quote</span>
+
+              <span className="inquiry-drawer-support">
+                <ShieldCheck className="w-3.5 h-3.5 inquiry-drawer-support-icon" /> Official Direct Support
+              </span>
             </div>
           </div>
         )}

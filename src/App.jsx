@@ -6,6 +6,7 @@ import Navbar   from './components/Navbar';
 import Footer   from './components/Footer';
 import Home     from './pages/Home';
 import CategoryPage from './pages/CategoryPage';
+import BrandPage from './pages/BrandPage';
 
 function NotFound() {
   return (
@@ -54,6 +55,7 @@ export default function App() {
             <Route element={<PublicLayout />}>
               <Route path="/" element={<Home />} />
               <Route path="/category/:slug" element={<CategoryPage />} />
+              <Route path="/brand/:brandName" element={<BrandPage />} />
               <Route path="*" element={<NotFound />} />
             </Route>
 
