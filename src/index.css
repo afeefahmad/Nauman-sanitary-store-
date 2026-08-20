@@ -2395,3 +2395,106 @@ aside nav a {
     padding: 0 3% !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE SPACING & VERTICAL RHYTHM AUDIT OVERRIDES
+   Covering: 1920px+, 1440px, 1280px, 1024px, 768px, 480px, 375px, 320px
+   ═══════════════════════════════════════════════════════════ */
+
+/* 1. Ultra-Wide & 4K Displays (1921px+) */
+@media (min-width: 1921px) {
+  .sec { padding: 9rem 10% !important; }
+  .sec-sm { padding: 6rem 10% !important; }
+  .cats-head { margin-bottom: 3.5rem !important; }
+  .cats-grid, .prod-grid, .all-cats-grid, .why-grid { gap: 2.2rem !important; }
+  #legacy, #contact { gap: 6rem !important; }
+  .contact-form-wrap { padding: 4.5rem !important; }
+  #footer { padding: 6rem 10% 3.5rem !important; }
+  .cat-page-body { padding: 6rem 10% !important; }
+  .cat-page-hero { padding: 3.5rem 10% 2.8rem !important; }
+}
+
+/* 2. Large Desktop (1440px - 1920px) */
+@media (min-width: 1440px) and (max-width: 1920px) {
+  .sec { padding: 7rem 7% !important; }
+  .sec-sm { padding: 4.5rem 7% !important; }
+  .cats-head { margin-bottom: 2.8rem !important; }
+  .cats-grid, .prod-grid, .why-grid { gap: 1.8rem !important; }
+  #legacy, #contact { gap: 4.5rem !important; }
+  #footer { padding: 5rem 7% 3rem !important; }
+  .cat-page-body { padding: 5rem 7% !important; }
+  .cat-page-hero { padding: 2.8rem 7% 2.2rem !important; }
+}
+
+/* 3. Medium Desktop & Laptops (1025px - 1439px) */
+@media (min-width: 1025px) and (max-width: 1439px) {
+  .sec { padding: 5.5rem 5.5% !important; }
+  .sec-sm { padding: 3.8rem 5.5% !important; }
+  .cats-head { margin-bottom: 2.2rem !important; }
+  .cats-grid, .prod-grid, .why-grid { gap: 1.5rem !important; }
+  #legacy, #contact { gap: 3.5rem !important; }
+  .contact-form-wrap { padding: 3rem !important; }
+  #footer { padding: 4.2rem 5.5% 2.5rem !important; }
+  .cat-page-body { padding: 4rem 5.5% !important; }
+  .cat-page-hero { padding: 2.4rem 5.5% 1.8rem !important; }
+}
+
+/* 4. Tablets & iPad Pro (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .sec { padding: 4.5rem 5% !important; }
+  .sec-sm { padding: 3rem 5% !important; }
+  .cats-head { margin-bottom: 2rem !important; }
+  .cats-grid, .prod-grid, .why-grid { gap: 1.25rem !important; }
+  #legacy, #contact { gap: 2.8rem !important; }
+  .contact-form-wrap { padding: 2.5rem 2rem !important; }
+  #footer { padding: 3.5rem 5% 2.2rem !important; }
+  .cat-page-body { padding: 3.2rem 5% !important; }
+  .cat-page-hero { padding: 2rem 5% 1.6rem !important; }
+}
+
+/* 5. Small Tablets & Large Mobile (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .sec { padding: 3.5rem 4.5% !important; }
+  .sec-sm { padding: 2.5rem 4.5% !important; }
+  .cats-head { margin-bottom: 1.6rem !important; }
+  .cats-grid, .prod-grid, .why-grid { gap: 1rem !important; }
+  #legacy, #contact { gap: 2rem !important; }
+  .contact-form-wrap { padding: 2rem 1.5rem !important; }
+  #footer { padding: 3rem 4.5% 2rem !important; }
+  .cat-page-body { padding: 2.5rem 4.5% !important; }
+  .cat-page-hero { padding: 1.8rem 4.5% 1.4rem !important; }
+}
+
+/* 6. Standard Mobile / iPhones (376px - 480px) */
+@media (min-width: 376px) and (max-width: 480px) {
+  .sec { padding: 2.8rem 4% !important; }
+  .sec-sm { padding: 2rem 4% !important; }
+  .cats-head { margin-bottom: 1.4rem !important; gap: 1rem !important; }
+  .cats-grid { gap: 0.9rem !important; }
+  .prod-grid, .why-grid { gap: 1rem !important; }
+  .why-card { padding: 1.8rem 1.25rem !important; }
+  #legacy, #contact { gap: 1.8rem !important; }
+  .contact-form-wrap { padding: 1.8rem 1.2rem !important; }
+  .stat-block { padding: 1.5rem 0.5rem !important; }
+  #footer { padding: 2.5rem 4% 1.8rem !important; }
+  .ft-grid { gap: 1.8rem !important; }
+  .cat-page-hero { padding: 1.6rem 4% 1.4rem !important; }
+  .cat-page-body { padding: 2.2rem 4% !important; }
+}
+
+/* 7. Ultra-Small Mobile / iPhone SE (320px - 375px) */
+@media (max-width: 375px) {
+  .sec { padding: 2.2rem 3.5% !important; }
+  .sec-sm { padding: 1.6rem 3.5% !important; }
+  .cats-head { margin-bottom: 1.2rem !important; gap: 0.8rem !important; }
+  .cats-grid { gap: 0.75rem !important; }
+  .prod-grid, .why-grid { gap: 0.85rem !important; }
+  .why-card { padding: 1.5rem 1rem !important; }
+  #legacy, #contact { gap: 1.5rem !important; }
+  .contact-form-wrap { padding: 1.5rem 1rem !important; }
+  .stat-block { padding: 1.2rem 0.25rem !important; }
+  #footer { padding: 2rem 3.5% 1.5rem !important; }
+  .ft-grid { gap: 1.5rem !important; }
+  .cat-page-hero { padding: 1.4rem 3.5% 1.2rem !important; }
+  .cat-page-body { padding: 1.8rem 3.5% !important; }
+}
