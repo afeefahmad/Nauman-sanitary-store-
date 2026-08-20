@@ -1016,12 +1016,17 @@ html {
 
 /* In Dark Mode: ALL 10 brand items keep the highlighted bronze design (first 4 items style) */
 .brand-pill, .brand-pill.hero-pill {
-  border:1px solid var(--bronze); padding:13px 30px;
-  font-size:11.5px; letter-spacing:3px; text-transform:uppercase;
+  border:1px solid var(--bronze); padding:12px 24px; min-width: 135px;
+  font-size:11.5px; letter-spacing:2.5px; text-transform:uppercase;
   color:var(--bronze-lt); background:var(--bronze-dim);
   cursor:pointer; transition:all .3s ease; position:relative; overflow:hidden;
   box-shadow: 0 0 12px rgba(200, 160, 96, 0.12);
   border-radius: 999px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
 }
 .brand-pill::before {
   content:''; position:absolute; inset:0;
@@ -2238,6 +2243,8 @@ html {
   }
   .brand-pill, .brand-pill.hero-pill {
     padding: 7px 3px !important;
+    min-width: 0 !important;
+    width: 100% !important;
     font-size: 8.5px !important;
     letter-spacing: 0.5px !important;
     text-align: center !important;
