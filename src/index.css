@@ -638,7 +638,7 @@ html {
    HERO SECTION — Full Photo + Water Animations
 ══════════════════════════════════════════════ */
 #hero {
-  height:100vh; min-height:680px;
+  height:100vh; height:100dvh; min-height:clamp(600px, 80vh, 760px);
   position:relative; display:flex;
   align-items:center; justify-content:flex-start;
   overflow:hidden;
@@ -2185,8 +2185,25 @@ html {
   .legacy-feats { grid-template-columns:1fr; }
   .hero-locations { flex-wrap:wrap; gap:1rem; }
   .hero-btns { justify-content:flex-start; }
+  #hero { min-height: 480px !important; }
   /* Reduce heavy backdrop blur on mobile for perf */
   .why-card { backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
+}
+@media (max-width:768px) {
+  #hero { height: auto !important; min-height: 400px !important; padding-top: 80px !important; padding-bottom: 2.5rem !important; }
+}
+@media (max-width:520px) {
+  #hero { height: auto !important; min-height: 350px !important; padding-top: 75px !important; padding-bottom: 2rem !important; }
+}
+@media (max-width:360px) {
+  #hero { height: auto !important; min-height: 310px !important; padding-top: 70px !important; padding-bottom: 1.5rem !important; }
+}
+@media (min-width: 1440px) and (max-width: 1920px) {
+  #hero { min-height: 720px !important; }
+}
+@media (min-width: 1921px) {
+  #hero { min-height: 850px !important; }
+  .hero-content { max-width: 1100px !important; }
 }
 @media (max-width:520px) {
   .logo-img { height: 35px; }
