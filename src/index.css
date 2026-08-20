@@ -2439,6 +2439,8 @@ aside nav a {
   #footer { padding: 6rem 10% 3.5rem !important; }
   .cat-page-body { padding: 6rem 10% !important; }
   .cat-page-hero { padding: 3.5rem 10% 2.8rem !important; }
+  .btn-primary, .btn-ghost, .contact-submit { padding: 16px 48px !important; font-size: 11px !important; letter-spacing: 4px !important; }
+  .hero-btns { gap: 1.5rem !important; }
 }
 
 /* 2. Large Desktop (1440px - 1920px) */
@@ -2451,6 +2453,8 @@ aside nav a {
   #footer { padding: 5rem 7% 3rem !important; }
   .cat-page-body { padding: 5rem 7% !important; }
   .cat-page-hero { padding: 2.8rem 7% 2.2rem !important; }
+  .btn-primary, .btn-ghost, .contact-submit { padding: 14px 40px !important; font-size: 10.5px !important; letter-spacing: 3.5px !important; }
+  .hero-btns { gap: 1.2rem !important; }
 }
 
 /* 3. Medium Desktop & Laptops (1025px - 1439px) */
@@ -2464,6 +2468,8 @@ aside nav a {
   #footer { padding: 4.2rem 5.5% 2.5rem !important; }
   .cat-page-body { padding: 4rem 5.5% !important; }
   .cat-page-hero { padding: 2.4rem 5.5% 1.8rem !important; }
+  .btn-primary, .btn-ghost, .contact-submit { padding: 13px 34px !important; font-size: 10px !important; letter-spacing: 3px !important; }
+  .hero-btns { gap: 1rem !important; }
 }
 
 /* 4. Tablets & iPad Pro (769px - 1024px) */
@@ -2477,6 +2483,8 @@ aside nav a {
   #footer { padding: 3.5rem 5% 2.2rem !important; }
   .cat-page-body { padding: 3.2rem 5% !important; }
   .cat-page-hero { padding: 2rem 5% 1.6rem !important; }
+  .btn-primary, .btn-ghost, .contact-submit { padding: 12px 28px !important; font-size: 9.5px !important; letter-spacing: 2.5px !important; }
+  .hero-btns { gap: 0.8rem !important; }
 }
 
 /* 5. Small Tablets & Large Mobile (481px - 768px) */
@@ -2490,6 +2498,8 @@ aside nav a {
   #footer { padding: 3rem 4.5% 2rem !important; }
   .cat-page-body { padding: 2.5rem 4.5% !important; }
   .cat-page-hero { padding: 1.8rem 4.5% 1.4rem !important; }
+  .btn-primary, .btn-ghost, .contact-submit { padding: 11px 22px !important; font-size: 9px !important; letter-spacing: 2px !important; }
+  .hero-btns { gap: 0.6rem !important; }
 }
 
 /* 6. Standard Mobile / iPhones (376px - 480px) */
@@ -2507,6 +2517,9 @@ aside nav a {
   .ft-grid { gap: 1.8rem !important; }
   .cat-page-hero { padding: 1.6rem 4% 1.4rem !important; }
   .cat-page-body { padding: 2.2rem 4% !important; }
+  .btn-primary, .btn-ghost { padding: 10px 18px !important; font-size: 8.5px !important; letter-spacing: 1.5px !important; }
+  .contact-submit { padding: 10px 18px !important; font-size: 8.5px !important; width: 100% !important; }
+  .hero-btns { gap: 0.5rem !important; }
 }
 
 /* 7. Ultra-Small Mobile / iPhone SE (320px - 375px) */
@@ -2524,4 +2537,7 @@ aside nav a {
   .ft-grid { gap: 1.5rem !important; }
   .cat-page-hero { padding: 1.4rem 3.5% 1.2rem !important; }
   .cat-page-body { padding: 1.8rem 3.5% !important; }
+  .btn-primary, .btn-ghost { padding: 9px 14px !important; font-size: 8px !important; letter-spacing: 1px !important; }
+  .contact-submit { padding: 9px 14px !important; font-size: 8px !important; width: 100% !important; }
+  .hero-btns { gap: 0.4rem !important; }
 }
