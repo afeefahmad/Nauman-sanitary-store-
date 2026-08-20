@@ -2331,28 +2331,48 @@ aside nav a {
     display: none !important;
   }
 
-  /* Fixed floating theme mode toggle button at bottom right corner on mobile */
+  /* Fixed compact floating theme mode toggle button at bottom right corner on mobile */
   .mobile-floating-theme-toggle {
     display: flex !important;
     position: fixed !important;
     top: auto !important;
-    bottom: 24px !important;
-    right: 20px !important;
+    bottom: 16px !important;
+    right: 14px !important;
     left: auto !important;
     z-index: 99999 !important;
     background: rgba(12, 14, 18, 0.90) !important;
     backdrop-filter: blur(14px) !important;
     -webkit-backdrop-filter: blur(14px) !important;
-    border: 1.5px solid var(--border) !important;
-    padding: 8px 12px !important;
+    border: 1px solid var(--border) !important;
+    padding: 5px 7px !important;
     border-radius: 999px !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 15px rgba(200, 160, 96, 0.3) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 12px rgba(200, 160, 96, 0.25) !important;
     transition: all 0.3s ease !important;
+  }
+  .mobile-floating-theme-toggle .tt-track {
+    width: 38px !important;
+    height: 20px !important;
+    border-width: 1px !important;
+  }
+  .mobile-floating-theme-toggle .tt-thumb {
+    width: 14px !important;
+    height: 14px !important;
+    top: 2px !important;
+    left: 2px !important;
+  }
+  .mobile-floating-theme-toggle .theme-toggle.light .tt-thumb {
+    transform: translateX(18px) !important;
+  }
+  .mobile-floating-theme-toggle .theme-toggle.light:active .tt-thumb {
+    transform: translateX(18px) scale(0.92) !important;
+  }
+  .mobile-floating-theme-toggle .tt-icon {
+    font-size: 8px !important;
   }
   [data-theme="light"] .mobile-floating-theme-toggle {
     background: rgba(255, 255, 255, 0.92) !important;
     border-color: rgba(0, 0, 0, 0.15) !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 0 15px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15), 0 0 12px rgba(0, 0, 0, 0.08) !important;
   }
 
   /* Compact circular inquiry button */
