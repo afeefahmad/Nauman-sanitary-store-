@@ -175,7 +175,7 @@ export default function Navbar() {
               </span>
             )}
           </button>
-          <span className="theme-toggle-wrap"><ThemeToggle /></span>
+          <span className="theme-toggle-wrap desktop-theme-toggle"><ThemeToggle /></span>
 
           {/* Hamburger */}
           <button
@@ -190,6 +190,11 @@ export default function Navbar() {
           </button>
         </div>
       </nav>
+
+      {/* Floating Theme Mode Toggle for Mobile Devices */}
+      <div className="mobile-floating-theme-toggle">
+        <ThemeToggle />
+      </div>
 
       {/* Mobile Nav */}
       <div id="mobile-nav" className={open ? 'open' : ''}>
