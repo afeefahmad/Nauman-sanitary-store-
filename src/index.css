@@ -821,7 +821,7 @@ html {
   font-size:clamp(3.6rem,9vw,8rem);
   font-weight:300; line-height:.92;
   color:var(--white); letter-spacing:-1.5px;
-  margin-bottom:1.8rem;
+  margin-bottom:1rem;
   opacity:0; animation:riseUp 1s .4s ease both;
   text-shadow:0 4px 40px rgba(0,0,0,0.6);
   transition: text-shadow 0.35s ease;
@@ -837,11 +837,11 @@ html {
   display:block; font-size:.36em; letter-spacing:6px;
   text-transform:uppercase; color:var(--mist);
   font-family:'Jost',sans-serif; font-weight:200;
-  margin-top:.4em; text-shadow:none;
+  margin-top:.4em; text-shadow:none; white-space:nowrap;
 }
 .hero-sub {
   font-size:11px; letter-spacing:4.5px; text-transform:uppercase;
-  color:rgba(154,157,170,0.8); margin-bottom:3rem;
+  color:rgba(154,157,170,0.8); margin-bottom:1.5rem;
   opacity:0; animation:riseUp .9s .6s ease both;
 }
 .hero-btns {
@@ -2201,10 +2201,12 @@ html {
   .cat-hint { font-size: 10px !important; letter-spacing: 1px !important; }
   .stats-row { grid-template-columns:1fr 1fr; }
   .all-cats-grid { grid-template-columns:1fr; }
-  .hero-h1 { font-size:clamp(1.8rem,11vw,3.8rem) !important; }
-  .hero-sub { font-size: 9px !important; letter-spacing: 2px !important; }
+  .hero-h1 { font-size:clamp(1.8rem,11vw,3.8rem) !important; margin-bottom: 0.8rem !important; }
+  .hero-h1 span { font-size: clamp(8.5px, 2.7vw, 13px) !important; letter-spacing: clamp(1px, 1.2vw, 4px) !important; white-space: nowrap !important; }
+  .hero-sub { font-size: 9px !important; letter-spacing: 2px !important; margin-bottom: 1.2rem !important; }
   .hero-badge { font-size: 8px !important; letter-spacing: 2.5px !important; padding: 6px 14px !important; }
-  .btn-primary, .btn-ghost { padding: 10px 24px !important; font-size: 10px !important; }
+  .hero-btns { flex-wrap: nowrap !important; width: 100% !important; gap: 0.5rem !important; }
+  .hero-btns .btn-primary, .hero-btns .btn-ghost { flex: 1 !important; padding: 10px 6px !important; font-size: 9px !important; letter-spacing: 0.8px !important; white-space: nowrap !important; text-align: center !important; justify-content: center !important; }
   .cat-page-title { font-size: clamp(1.8rem, 10vw, 3.2rem) !important; }
   .brand-pill, .brand-pill.hero-pill { padding: 8px 16px !important; font-size: 9.5px !important; letter-spacing: 1.5px !important; }
   .brands-eyebrow { font-size: 10px !important; letter-spacing: 3px !important; margin-bottom: 1.5rem !important; }
