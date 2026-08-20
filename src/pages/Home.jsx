@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import useScrollReveal from '../hooks/useScrollReveal';
 
 /* ─── Section Components ─── */
@@ -29,8 +29,21 @@ import { useInquiry } from '../context/InquiryContext';
 
 export default function Home() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { addToInquiry } = useInquiry();
   useScrollReveal([]);
+
+  // Cross-page anchor scroll listener
+  useEffect(() => {
+    if (location.state?.scrollTo) {
+      const id = location.state.scrollTo;
+      window.history.replaceState({}, document.title);
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [location]);
 
   /* ── Shared helpers passed to sections ── */
   const scrollTo = (id) => {

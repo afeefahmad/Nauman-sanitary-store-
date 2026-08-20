@@ -365,7 +365,7 @@
   color: #c8a060;
   background-color: rgba(200, 160, 96, 0.1);
   padding: 2px 8px;
-  border-radius: 6px;
+  border-radius: 999px;
   border: 1px solid rgba(200, 160, 96, 0.3);
   letter-spacing: 0.05em;
   text-transform: uppercase;

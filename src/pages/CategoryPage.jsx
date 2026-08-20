@@ -24,7 +24,7 @@ const PROD_IMAGES = {
 const BRAND_COLORS = {
   'Pool Sanitary Ware':    '#1a6fa8',
   'Nesco Ceramics':        '#8b5e3c',
-  'Porta':                 '#5b7a3c',
+  'Porta':                 '#1D3557',
   'Master Sanitary Ware':  '#7a3c8b',
   'Dell Sanitary Ware':    '#3c6b8b',
   'Brite Sanitary Ware':   '#8b6e3c',
@@ -143,6 +143,8 @@ function classifyProduct(slug, name = '', brand = '') {
   return '';
 }
 
+import { normalizeBrand } from '../utils/brandUtils';
+
 export default function CategoryPage() {
   const { slug }    = useParams();
   const navigate    = useNavigate();
@@ -152,20 +154,26 @@ export default function CategoryPage() {
 
   const [activeBrand, setActiveBrand] = useState('all');
   const [activeSubCat, setActiveSubCat] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
 
-  useScrollReveal([slug, activeBrand, activeSubCat]);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeBrand, activeSubCat]);
+
+  useScrollReveal([slug, activeBrand, activeSubCat, currentPage]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
     setActiveBrand('all');
     setActiveSubCat('all');
+    setCurrentPage(1);
   }, [slug]);
 
   /* Unique brands in this category — hooks MUST be called before any early return */
   const brandList = useMemo(() => {
     if (!category) return [];
     const set = new Set(
-      category.products.map(p => p.brand).filter(Boolean)
+      category.products.map(p => normalizeBrand(p.brand)).filter(Boolean)
     );
     return Array.from(set);
   }, [category]);
@@ -178,7 +186,7 @@ export default function CategoryPage() {
     if (!category) return [];
     let prods = category.products;
     if (activeBrand !== 'all' && activeBrand !== '') {
-      prods = prods.filter(p => p.brand === activeBrand);
+      prods = prods.filter(p => normalizeBrand(p.brand) === activeBrand);
     }
     if (activeSubCat !== 'all' && activeSubCat !== '') {
       prods = prods.filter(p => {
@@ -188,6 +196,10 @@ export default function CategoryPage() {
     }
     return prods;
   }, [category, slug, activeBrand, activeSubCat]);
+
+  const ITEMS_PER_PAGE = 9;
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  const paginatedProducts = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   /* 3D tilt on cards */
   useEffect(() => {
@@ -226,7 +238,7 @@ export default function CategoryPage() {
         c.removeEventListener('mouseleave', onLeave);
       });
     };
-  }, [slug, activeBrand, activeSubCat]);
+  }, [slug, activeBrand, activeSubCat, currentPage]);
 
   /* Early return AFTER all hooks */
   if (!category) {
@@ -288,16 +300,24 @@ export default function CategoryPage() {
             <div className="cbf-tabs justify-center">
               <button
                 className={`cbf-btn${activeBrand === 'all' ? ' active' : ''}`}
-                onClick={() => setActiveBrand('all')}
+                onClick={() => {
+                  setActiveBrand('all');
+                  setActiveSubCat('all');
+                  setCurrentPage(1);
+                }}
               >
                 All Products
-                <span className="cbf-count">{category.products.length}</span>
+                <span className="cbf-count" style={{ pointerEvents: 'none' }}>{category.products.length}</span>
               </button>
               {brandList.map(brand => (
                 <button
                   key={brand}
                   className={`cbf-btn${activeBrand === brand ? ' active' : ''}`}
-                  onClick={() => setActiveBrand(brand)}
+                  onClick={() => {
+                    setActiveBrand(brand);
+                    setActiveSubCat('all');
+                    setCurrentPage(1);
+                  }}
                   style={activeBrand === brand ? {
                     borderColor: BRAND_COLORS[brand] || 'var(--bronze)',
                     color:       BRAND_COLORS[brand] || 'var(--bronze)',
@@ -305,8 +325,8 @@ export default function CategoryPage() {
                   } : {}}
                 >
                   {brand}
-                  <span className="cbf-count">
-                    {category.products.filter(p => p.brand === brand).length}
+                  <span className="cbf-count" style={{ pointerEvents: 'none' }}>
+                    {category.products.filter(p => normalizeBrand(p.brand) === brand).length}
                   </span>
                 </button>
               ))}
@@ -349,7 +369,7 @@ export default function CategoryPage() {
         </div>
 
         <div className="cat-prod-grid stg">
-          {filtered.map((prod, i) => (
+          {paginatedProducts.map((prod, i) => (
             <div key={i} className="cat-prod-card">
               <div className="cat-prod-img">
                 <div className="cat-prod-img-inner">
@@ -376,12 +396,14 @@ export default function CategoryPage() {
                     className="cat-prod-brand-tag"
                     style={{ background: BRAND_COLORS[prod.brand] ? `${BRAND_COLORS[prod.brand]}cc` : 'rgba(200,160,96,0.85)' }}
                   >
-                    {prod.brand}
+                    {normalizeBrand(prod.brandTag || prod.brand)}
                   </div>
                 )}
               </div>
               <div className="cat-prod-info">
-                <div className="cat-prod-name">{prod.name}</div>
+                <div className="cat-prod-brand">{normalizeBrand(prod.brand)}</div>
+                <div className="cat-prod-name">{prod.name.replace(/\s*Model:.*$/i, '')}</div>
+                {prod.description && <div className="cat-prod-desc">{prod.description}</div>}
                 {prod.model && (
                   <div className="cat-prod-model">Model: {prod.model}</div>
                 )}
@@ -409,6 +431,34 @@ export default function CategoryPage() {
             </div>
           ))}
         </div>
+
+        {totalPages > 1 && (
+          <div className="pagination">
+            <button 
+              className="page-btn" 
+              disabled={currentPage === 1}
+              onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 300, behavior: 'smooth' }); }}
+            >
+              Prev
+            </button>
+            {Array.from({ length: totalPages }).map((_, idx) => (
+              <button 
+                key={idx + 1} 
+                className={`page-btn ${currentPage === idx + 1 ? 'active' : ''}`}
+                onClick={() => { setCurrentPage(idx + 1); window.scrollTo({ top: 300, behavior: 'smooth' }); }}
+              >
+                {idx + 1}
+              </button>
+            ))}
+            <button 
+              className="page-btn" 
+              disabled={currentPage === totalPages}
+              onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 300, behavior: 'smooth' }); }}
+            >
+              Next
+            </button>
+          </div>
+        )}
 
         {/* ── CONTACT CTA ── */}
         <div className="cat-contact-cta sr">

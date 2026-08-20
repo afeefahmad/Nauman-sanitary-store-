@@ -17,7 +17,7 @@ const PROD_IMAGES = {
   'water-geysers':    '/prod-geyser.png',
   'kitchen-ware':     '/prod-kitchensink.png',
   'flush-tanks':      '/cat-commode-luxury.png',
-  'accessories':      '/cat-taps-luxury.png',
+  'accessories':      '/prod-bathset.png',
   'mirrors':          '/prod-mirror.png',
   'bath-tubs':        '/prod-bathtub.png',
 };

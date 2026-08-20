@@ -119,7 +119,7 @@ Start the local server with hot module replacement (HMR) active:
 ```bash
 npm run dev
 ```
-The application will launch locally at `http://localhost:5173/`.
+The application will launch locally at `http://localhost:5174/`.
 
 ### Production Build
 Compile and bundle optimized static assets for hosting:

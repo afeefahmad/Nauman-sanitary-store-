@@ -1,4 +1,5 @@
 import { useCatalog } from '../../context/CatalogContext';
+import PROD_IMAGES from '../../constants/productImages';
 
 /* ─────────────────────────────────────────────
    ALL CATEGORIES SECTION
@@ -22,17 +23,15 @@ export default function AllCategoriesSection({ onGoCategory }) {
         </h2>
       </div>
       <div className="all-cats-grid stg">
-        {categories.map(cat => (
+        {categories.slice(0, 10).map(cat => (
           <div key={cat.slug} className="ac-item" onClick={() => onGoCategory(cat.slug)}>
             <div className="ac-icon">
-              {typeof cat.icon === 'string' &&
-                (cat.icon.startsWith('data:image') || cat.icon.startsWith('/') || cat.icon.startsWith('http'))
-                ? <img
-                    src={cat.icon}
-                    alt={cat.name}
-                    className="w-[1em] h-[1em] object-contain invert"
-                  />
-                : cat.icon}
+              <img 
+                src={PROD_IMAGES[cat.slug] || '/placeholder.png'} 
+                alt={cat.name} 
+                loading="lazy"
+                decoding="async"
+              />
             </div>
             <div className="ac-name">{cat.name}</div>
             <div className="ac-subs">{cat.hint || cat.subs}</div>

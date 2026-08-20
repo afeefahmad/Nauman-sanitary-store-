@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import { normalizeBrand } from '../utils/brandUtils';
 
 /* ── Stretchy Toggle ── */
 function ThemeToggle() {
@@ -36,6 +37,9 @@ export default function Navbar() {
   const location = useLocation();
   const isHome = location.pathname === '/';
 
+  const [activeMobileTab, setActiveMobileTab] = useState(null);
+  const [activeMobileBrand, setActiveMobileBrand] = useState(null);
+
   useEffect(() => {
     const onScroll = () => setSolid(window.scrollY > 60);
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -43,16 +47,16 @@ export default function Navbar() {
   }, []);
 
   // Close mobile nav on route change
-  useEffect(() => { setOpen(false); }, [location.pathname]);
+  useEffect(() => { 
+    setOpen(false); 
+    setActiveMobileTab(null);
+    setActiveMobileBrand(null);
+  }, [location.pathname]);
 
   const scrollTo = (id) => {
     setOpen(false);
     if (!isHome) {
-      navigate('/');
-      setTimeout(() => {
-        const el = document.getElementById(id);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 350);
+      navigate('/', { state: { scrollTo: id } });
     } else {
       const el = document.getElementById(id);
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -110,15 +114,47 @@ export default function Navbar() {
               )}
               {l.id === 'brand-showcase' && brands && brands.length > 0 && (
                 <div className="nav-dropdown">
-                  {brands.map(brand => (
-                    <a 
-                      key={brand.id || brand.name} 
-                      onClick={() => { setOpen(false); navigate(`/brand/${encodeURIComponent(brand.name)}`); window.scrollTo(0,0); }}
-                      className="nav-dropdown-item"
-                    >
-                      {brand.name}
-                    </a>
-                  ))}
+                  {brands.map(brand => {
+                    const normBrand = normalizeBrand(brand.name);
+                    const brandCats = categories ? categories.filter(c => 
+                      c.products && c.products.some(p => normalizeBrand(p.brand) === normBrand)
+                    ) : [];
+
+                    return (
+                      <div 
+                        key={brand.id || brand.name} 
+                        className="nav-dropdown-item has-submenu"
+                        style={{ padding: 0 }}
+                      >
+                        <a 
+                          onClick={() => { setOpen(false); navigate(`/brand/${encodeURIComponent(brand.name)}`); window.scrollTo(0,0); }}
+                          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '0.6rem 1rem' }}
+                        >
+                          {brand.name}
+                          {brandCats.length > 0 && <span className="submenu-arrow">›</span>}
+                        </a>
+
+                        {brandCats.length > 0 && (
+                          <div className="nav-submenu">
+                            {brandCats.map(bc => (
+                              <a
+                                key={bc.slug}
+                                onClick={(e) => { 
+                                  e.stopPropagation(); 
+                                  setOpen(false); 
+                                  navigate(`/brand/${encodeURIComponent(brand.name)}`, { state: { category: bc.slug } }); 
+                                  window.scrollTo(0,0); 
+                                }}
+                                className="nav-dropdown-item"
+                              >
+                                {bc.name}
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </li>
@@ -132,39 +168,151 @@ export default function Navbar() {
             title="View WhatsApp Inquiry Cart"
           >
             <ShoppingBag style={{ width: '1rem', height: '1rem' }} />
-            <span>Inquiry</span>
+            <span className="inquiry-btn-text">Inquiry</span>
             {totalCount > 0 && (
               <span className="inquiry-badge">
                 {totalCount}
               </span>
             )}
           </button>
-          <ThemeToggle />
-        </div>
+          <span className="theme-toggle-wrap"><ThemeToggle /></span>
 
-        {/* Hamburger */}
-        <button
-          className="hamburger"
-          id="ham"
-          aria-label="Menu"
-          onClick={() => setOpen(p => !p)}
-        >
-          <span style={{ transform: open ? 'rotate(45deg) translate(4px,4px)' : '' }} />
-          <span style={{ opacity: open ? '0' : '1' }} />
-          <span style={{ transform: open ? 'rotate(-45deg) translate(4px,-4px)' : '' }} />
-        </button>
+          {/* Hamburger */}
+          <button
+            className={`hamburger${open ? ' is-open' : ''}`}
+            id="ham"
+            aria-label="Menu"
+            onClick={() => setOpen(p => !p)}
+          >
+            <span style={{ transform: open ? 'rotate(45deg) translate(4.5px,4.5px)' : '' }} />
+            <span style={{ opacity: open ? '0' : '1', transform: open ? 'scaleX(0)' : '' }} />
+            <span style={{ transform: open ? 'rotate(-45deg) translate(4.5px,-4.5px)' : '' }} />
+          </button>
+        </div>
       </nav>
 
       {/* Mobile Nav */}
       <div id="mobile-nav" className={open ? 'open' : ''}>
-        {navLinks.map(l => (
-          <a key={l.id} className="mob-link" onClick={() => scrollTo(l.id)}
-            tabIndex={0} onKeyDown={e => e.key === 'Enter' && scrollTo(l.id)}>
-            {l.label}
+        <div style={{ display: 'flex', flexDirection: 'column', padding: '2rem 1.5rem', gap: '1.25rem', maxWidth: '480px', margin: '0 auto' }}>
+          {/* Home */}
+          <a 
+            className="mob-link" 
+            onClick={() => { setOpen(false); navigate('/'); window.scrollTo(0,0); }}
+          >
+            <span>Home</span>
           </a>
-        ))}
-        <div className="mt-6">
-          <ThemeToggle />
+
+          {/* Categories Accordion */}
+          <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '0.5rem' }}>
+            <button 
+              className="mob-link"
+              onClick={() => setActiveMobileTab(activeMobileTab === 'categories' ? null : 'categories')}
+            >
+              <span>Categories</span>
+              <span style={{ transform: activeMobileTab === 'categories' ? 'rotate(90deg)' : '', transition: 'transform 0.2s', display: 'inline-block' }}>›</span>
+            </button>
+            
+            {activeMobileTab === 'categories' && (
+              <div style={{ paddingLeft: '1rem', marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                {categories.map(cat => (
+                  <a
+                    key={cat.slug}
+                    onClick={() => { setOpen(false); navigate(`/category/${cat.slug}`); window.scrollTo(0,0); }}
+                    className="mob-sub-link"
+                  >
+                    {cat.name}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Brands Accordion (Nested Double Dropdown equivalent) */}
+          <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '0.5rem' }}>
+            <button 
+              className="mob-link"
+              onClick={() => setActiveMobileTab(activeMobileTab === 'brands' ? null : 'brands')}
+            >
+              <span>Brands</span>
+              <span style={{ transform: activeMobileTab === 'brands' ? 'rotate(90deg)' : '', transition: 'transform 0.2s', display: 'inline-block' }}>›</span>
+            </button>
+
+            {activeMobileTab === 'brands' && (
+              <div style={{ paddingLeft: '1rem', marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                {brands.map(brand => {
+                  const normBrand = normalizeBrand(brand.name);
+                  const brandCats = categories ? categories.filter(c => 
+                    c.products && c.products.some(p => normalizeBrand(p.brand) === normBrand)
+                  ) : [];
+                  const isBrandOpen = activeMobileBrand === brand.name;
+
+                  return (
+                    <div key={brand.id || brand.name} style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                      <button
+                        className="mob-sub-link"
+                        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', border: 'none', background: 'none', padding: '0.2rem 0', fontWeight: '500' }}
+                        onClick={() => setActiveMobileBrand(isBrandOpen ? null : brand.name)}
+                      >
+                        <span>{brand.name}</span>
+                        {brandCats.length > 0 && (
+                          <span style={{ transform: isBrandOpen ? 'rotate(90deg)' : '', transition: 'transform 0.2s', display: 'inline-block' }}>›</span>
+                        )}
+                      </button>
+                      
+                      {isBrandOpen && brandCats.length > 0 && (
+                        <div style={{ paddingLeft: '1rem', display: 'flex', flexDirection: 'column', gap: '0.3rem', marginTop: '0.2rem', borderLeft: '1px solid rgba(200, 160, 96, 0.2)' }}>
+                          <a
+                            onClick={() => { 
+                              setOpen(false); 
+                              navigate(`/brand/${encodeURIComponent(brand.name)}`); 
+                              window.scrollTo(0,0); 
+                            }}
+                            className="mob-sub-link"
+                            style={{ fontSize: '1.1rem', opacity: '0.6', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '600' }}
+                          >
+                            View All {brand.name}
+                          </a>
+                          {brandCats.map(bc => (
+                            <a
+                              key={bc.slug}
+                              onClick={() => { 
+                                setOpen(false); 
+                                navigate(`/brand/${encodeURIComponent(brand.name)}`, { state: { category: bc.slug } }); 
+                                window.scrollTo(0,0); 
+                              }}
+                              className="mob-sub-link"
+                            >
+                              {bc.name}
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Products */}
+          <a 
+            className="mob-link" 
+            onClick={() => scrollTo('products')}
+          >
+            <span>Products</span>
+          </a>
+
+          {/* Contact */}
+          <a 
+            className="mob-link" 
+            onClick={() => scrollTo('contact')}
+          >
+            <span>Contact</span>
+          </a>
+
+          <div style={{ marginTop: '1.5rem' }}>
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </>

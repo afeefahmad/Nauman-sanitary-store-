@@ -11,6 +11,7 @@ export default function ManageCategories() {
   const [activeCategorySlug, setActiveCategorySlug] = useState('all');
   const [newProductName, setNewProductName] = useState('');
   const [newProductBrand, setNewProductBrand] = useState('all');
+  const [newProductDesc, setNewProductDesc] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [file, setFile] = useState(null);
   const [editingProductId, setEditingProductId] = useState(null);
@@ -111,6 +112,7 @@ export default function ManageCategories() {
     setEditingProductId(null);
     setNewProductName('');
     setNewProductBrand('all');
+    setNewProductDesc('');
     setFile(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
@@ -220,7 +222,7 @@ export default function ManageCategories() {
       const oldCat = categories.find(c => (c.products || []).some(p => p.id === editingProductId));
       const oldCatSlug = oldCat ? oldCat.slug : activeCategorySlug;
       
-      const updateData = { name: newProductName, brand: newProductBrand };
+      const updateData = { name: newProductName, brand: newProductBrand, description: newProductDesc };
       updateData.image = imageUrl || (oldProduct ? oldProduct.image : '');
 
       await updateProduct(oldCatSlug, activeCategorySlug, editingProductId, updateData);
@@ -232,12 +234,14 @@ export default function ManageCategories() {
         id: Date.now().toString(),
         name: newProductName,
         brand: newProductBrand,
+        description: newProductDesc,
         model: newProductName,
         tag: newProductBrand,
         image: imageUrl || ''
       });
       addToast(`Product "${newProdName}" added successfully! 🎉`, 'success');
       setNewProductName('');
+      setNewProductDesc('');
       setFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
@@ -336,7 +340,7 @@ export default function ManageCategories() {
             
             {/* Add / Edit Product Form */}
             <div className="p-4 border-b bg-muted/10">
-              <form onSubmit={handleAddProduct} className="flex flex-col xl:flex-row items-end gap-3">
+              <form onSubmit={handleAddProduct} className="flex flex-col xl:flex-row items-stretch xl:items-end gap-3">
                 <div className="flex flex-col gap-1 w-full xl:w-1/5">
                   <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Category</label>
                   <select 
@@ -376,6 +380,17 @@ export default function ManageCategories() {
                     className="w-full h-9 px-3 rounded-md border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                     value={newProductName}
                     onChange={(e) => setNewProductName(e.target.value)}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1 flex-1 w-full">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Description (Optional)</label>
+                  <input 
+                    type="text" 
+                    placeholder="Short details..." 
+                    className="w-full h-9 px-3 rounded-md border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    value={newProductDesc}
+                    onChange={(e) => setNewProductDesc(e.target.value)}
                   />
                 </div>
 
@@ -467,7 +482,7 @@ export default function ManageCategories() {
                   )}
                 </div>
               ) : (
-                <table className="w-full text-sm text-left">
+                <table className="w-full text-sm text-left min-w-[500px]">
                   <thead className="text-xs text-muted-foreground uppercase bg-muted sticky top-0 z-10">
                     <tr>
                       <th className="px-6 py-3 font-medium">Product Name</th>
@@ -631,7 +646,7 @@ export default function ManageCategories() {
       {/* Quick View Modal */}
       {quickViewProduct && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-slate-900 border border-slate-800 text-slate-100 rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-5 animate-in zoom-in-95 relative overflow-hidden">
+          <div className="bg-slate-900 border border-slate-800 text-slate-100 rounded-3xl max-w-xl w-full p-4 sm:p-6 shadow-2xl space-y-5 animate-in zoom-in-95 relative overflow-hidden">
             {/* Header / Close */}
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
@@ -733,7 +748,7 @@ export default function ManageCategories() {
       {/* Edit Product Modal */}
       {editModalProduct && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-background border rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 animate-in zoom-in-95 relative">
+          <div className="bg-background border rounded-2xl max-w-lg w-full p-4 sm:p-6 shadow-2xl space-y-4 animate-in zoom-in-95 relative">
             <div className="flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-2 text-primary font-bold text-lg">
                 <Edit className="w-5 h-5" />
@@ -790,6 +805,17 @@ export default function ManageCategories() {
               </div>
 
               <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Description (Optional)</label>
+                <textarea
+                  value={editModalProduct.description || ''}
+                  onChange={(e) => setEditModalProduct({ ...editModalProduct, description: e.target.value })}
+                  placeholder="Product description..."
+                  rows="2"
+                  className="w-full p-3 rounded-lg border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Product Image</label>
                 <div className="flex items-center gap-3">
                   {editModalProduct.image ? (
@@ -830,7 +856,7 @@ export default function ManageCategories() {
       )}
       {deleteModalProduct && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-background border border-red-500/30 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 animate-in zoom-in-95 relative">
+          <div className="bg-background border border-red-500/30 rounded-2xl max-w-md w-full p-4 sm:p-6 shadow-2xl space-y-4 animate-in zoom-in-95 relative">
             <button
               onClick={() => setDeleteModalProduct(null)}
               className="absolute top-4 right-4 p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition-colors"

@@ -154,14 +154,14 @@ function TickerManager({ data, refreshData }) {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={handleAdd} className="flex gap-3 items-end">
-        <div className="flex flex-col gap-1 flex-1">
+      <form onSubmit={handleAdd} className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-end">
+        <div className="flex flex-col gap-1 flex-1 w-full">
           <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             New Announcement
           </label>
           <input required value={newItem} onChange={e => setNewItem(e.target.value)} placeholder="E.g. Free delivery on orders above PKR 5000" className="w-full h-10 px-3 border rounded-md bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
         </div>
-        <button type="submit" className="h-10 bg-primary text-primary-foreground px-4 rounded-md font-medium hover:bg-primary/90 flex items-center gap-2 whitespace-nowrap shadow-sm">
+        <button type="submit" className="h-10 w-full sm:w-auto bg-primary text-primary-foreground px-4 rounded-md font-medium hover:bg-primary/90 flex items-center justify-center gap-2 whitespace-nowrap shadow-sm">
           <Plus className="w-4 h-4" /> Add
         </button>
       </form>
@@ -185,7 +185,7 @@ function TickerManager({ data, refreshData }) {
       {/* Edit Announcement Modal */}
       {editModal && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-background border rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 relative">
+          <div className="bg-background border rounded-2xl max-w-lg w-full p-4 sm:p-6 shadow-2xl space-y-4 relative">
             <div className="flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-2 text-primary font-bold text-lg">
                 <Edit className="w-5 h-5" />
@@ -275,16 +275,16 @@ function StatsManager({ data, refreshData }) {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={handleAdd} className="flex gap-3 items-end">
-        <div className="flex flex-col gap-1 w-40">
+      <form onSubmit={handleAdd} className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-end">
+        <div className="flex flex-col gap-1 w-full sm:w-40">
           <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Value</label>
           <input required value={val} onChange={e => setVal(e.target.value)} placeholder="E.g. 10k+" className="w-full h-10 px-3 border rounded-md bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
         </div>
-        <div className="flex flex-col gap-1 flex-1">
+        <div className="flex flex-col gap-1 flex-1 w-full">
           <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Label</label>
           <input required value={lbl} onChange={e => setLbl(e.target.value)} placeholder="E.g. Happy Customers" className="w-full h-10 px-3 border rounded-md bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
         </div>
-        <button type="submit" className="h-10 bg-primary text-primary-foreground px-4 rounded-md font-medium hover:bg-primary/90 flex items-center gap-2 whitespace-nowrap shadow-sm">
+        <button type="submit" className="h-10 w-full sm:w-auto bg-primary text-primary-foreground px-4 rounded-md font-medium hover:bg-primary/90 flex items-center justify-center gap-2 whitespace-nowrap shadow-sm">
           <Plus className="w-4 h-4" /> Add
         </button>
       </form>
@@ -305,7 +305,7 @@ function StatsManager({ data, refreshData }) {
       {/* Edit Stat Modal */}
       {editModal && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-background border rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 relative">
+          <div className="bg-background border rounded-2xl max-w-md w-full p-4 sm:p-6 shadow-2xl space-y-4 relative">
             <div className="flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-2 text-primary font-bold text-lg">
                 <Edit className="w-5 h-5" />
@@ -467,7 +467,7 @@ function BrandsManager({ data, refreshData }) {
       {/* Edit Brand Modal */}
       {editModal && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-background border rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 relative">
+          <div className="bg-background border rounded-2xl max-w-md w-full p-4 sm:p-6 shadow-2xl space-y-4 relative">
             <div className="flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-2 text-primary font-bold text-lg">
                 <Edit className="w-5 h-5" />
@@ -651,7 +651,7 @@ function HeroManager({ data, refreshData }) {
       {/* Edit Category Card Modal */}
       {editModal && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-background border rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 relative">
+          <div className="bg-background border rounded-2xl max-w-lg w-full p-4 sm:p-6 shadow-2xl space-y-4 relative">
             <div className="flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-2 text-primary font-bold text-lg">
                 <Edit className="w-5 h-5" />

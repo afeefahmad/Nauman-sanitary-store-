@@ -196,14 +196,14 @@ app.get('/api/categories', (req, res) => {
 });
 
 app.post('/api/products', (req, res) => {
-  const { id, categorySlug, name, brand, price, stock, code, color, image } = req.body;
+  const { id, categorySlug, name, brand, price, stock, code, color, image, description } = req.body;
   
   db.get('SELECT id FROM categories WHERE slug = ?', [categorySlug], (err, cat) => {
     if (err || !cat) return res.status(404).json({ error: 'Category not found' });
     
-    db.run(`INSERT INTO products (id, categoryId, name, brand, price, stock, code, color, image) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
-      [id, cat.id, name, brand, price, stock, code, color, image], 
+    db.run(`INSERT INTO products (id, categoryId, name, brand, price, stock, code, color, image, description) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
+      [id, cat.id, name, brand, price, stock, code, color, image, description], 
       function(err2) {
         if (err2) return res.status(500).json({ error: err2.message });
         res.json({ success: true });
@@ -212,12 +212,12 @@ app.post('/api/products', (req, res) => {
 });
 
 app.put('/api/products/:id', (req, res) => {
-  const { categorySlug, name, brand, image } = req.body;
+  const { categorySlug, name, brand, image, description } = req.body;
   db.get('SELECT id FROM categories WHERE slug = ?', [categorySlug], (err, cat) => {
     if (err || !cat) return res.status(404).json({ error: 'Category not found' });
     
-    db.run('UPDATE products SET categoryId = ?, name = ?, brand = ?, image = ? WHERE id = ?', 
-      [cat.id, name, brand, image, req.params.id], 
+    db.run('UPDATE products SET categoryId = ?, name = ?, brand = ?, image = ?, description = ? WHERE id = ?', 
+      [cat.id, name, brand, image, description, req.params.id], 
       function(err2) {
         if (err2) return res.status(500).json({ error: err2.message });
         res.json({ success: true });

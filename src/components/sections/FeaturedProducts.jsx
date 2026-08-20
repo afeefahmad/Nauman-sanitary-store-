@@ -1,65 +1,56 @@
-import { FEATURED_PRODUCTS, getProductImage } from '../../data/categories';
-import PROD_IMAGES from '../../constants/productImages';
+import { useMemo } from 'react';
 
 /* ─────────────────────────────────────────────
    FEATURED PRODUCTS SECTION
-   Shows the highlighted product cards with
-   images, brand labels and an enquiry button.
-
-   Edit FEATURED_PRODUCTS in data/categories.js
-   to change which products are featured.
-
-   Props:
-     onScrollTo(id)     — smooth-scroll helper
-     onGoCategory(slug) — navigate to category page
-     onProdAdd(prod)    — scroll to contact + pre-fill form
+   Shows 4 major categories with premium images.
 ───────────────────────────────────────────── */
-export default function FeaturedProducts({ onScrollTo, onGoCategory, onProdAdd }) {
+
+const MAJOR_CATEGORIES = [
+  { id: 'toilets', name: 'Commode', brand: 'Luxury Collection', description: 'Premium modern commodes & toilets.', image: '/popular-commode.png', categorySlug: 'toilets' },
+  { id: 'basins', name: 'Wash Basins', brand: 'Luxury Collection', description: 'Sleek & elegant wash basins.', image: '/popular-basin.png', categorySlug: 'basins' },
+  { id: 'vanities', name: 'Vanities', brand: 'Luxury Collection', description: 'Luxurious bathroom vanities.', image: '/popular-vanity.png', categorySlug: 'vanities' },
+  { id: 'mirrors', name: 'Mirrors', brand: 'Luxury Collection', description: 'Illuminated & decorative mirrors.', image: '/popular-mirror.png', categorySlug: 'mirrors' },
+];
+
+export default function FeaturedProducts({ onScrollTo, onGoCategory }) {
   return (
     <section className="sec" id="products">
       <div className="sr flex justify-between items-end flex-wrap gap-4">
         <div>
-          <span className="sec-label">Featured Products</span>
+          <span className="sec-label">Major Categories</span>
           <h2 className="sec-title">Popular <em>Picks</em></h2>
         </div>
         <button
           className="btn-ghost py-[11px] px-[24px] text-[9.5px]"
           onClick={() => onScrollTo('all-cats')}
         >
-          View All →
+          View All Categories →
         </button>
       </div>
 
       <div className="prod-grid">
-        {FEATURED_PRODUCTS.map((prod, i) => (
-          <div key={i} className="prod-card" onClick={() => onGoCategory(prod.category)}>
-            <div className="prod-img">
+        {MAJOR_CATEGORIES.map((cat, i) => (
+          <div key={cat.id || i} className="prod-card" onClick={() => onGoCategory(cat.categorySlug)}>
+            <div className="prod-img fill-img">
               <div className="prod-img-inner">
-                {prod.image || getProductImage(prod.category, prod.name, prod.brand) || PROD_IMAGES[prod.category]
-                  ? <img
-                      src={prod.image || getProductImage(prod.category, prod.name, prod.brand) || PROD_IMAGES[prod.category]}
-                      alt={prod.name}
-                      loading="lazy"
-                      decoding="async"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = PROD_IMAGES[prod.category] || '/prod-commode.png';
-                      }}
-                    />
-                  : <div className="prod-icon-bg">{prod.icon}</div>
-                }
+                <img
+                  src={cat.image}
+                  alt={cat.name}
+                  loading="lazy"
+                  decoding="async"
+                />
               </div>
               <div className="prod-gradient-overlay" />
-              <div className="prod-tag">{prod.brandTag}</div>
+              <div className="prod-tag" style={{ background: 'var(--bronze)', color: '#000' }}>Featured</div>
             </div>
             <div className="prod-info">
-              <div className="prod-brand-lbl">{prod.brand}</div>
-              <div className="prod-name">{prod.name}</div>
-              <div className="prod-footer">
-                <div className="prod-price">
-                  <small>from</small>{prod.price}
+              <div className="prod-brand-lbl">{cat.brand}</div>
+              <div className="prod-name">{cat.name}</div>
+              <div className="cat-prod-desc">{cat.description}</div>
+              <div className="prod-footer" style={{ marginTop: '1rem' }}>
+                <div className="prod-price" style={{ color: 'var(--bronze-lt)', fontSize: '14px', letterSpacing: '1px' }}>
+                  Explore Collection →
                 </div>
-
               </div>
             </div>
           </div>

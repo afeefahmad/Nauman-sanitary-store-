@@ -71,8 +71,14 @@ db.serialize(() => {
     code TEXT,
     color TEXT,
     image TEXT,
+    description TEXT,
     FOREIGN KEY(categoryId) REFERENCES categories(id) ON DELETE CASCADE
   )`);
+
+  // Migration: Add description column to existing DB if it doesn't exist
+  db.run(`ALTER TABLE products ADD COLUMN description TEXT`, (err) => {
+    // Ignore error if column already exists
+  });
 });
 
 module.exports = db;

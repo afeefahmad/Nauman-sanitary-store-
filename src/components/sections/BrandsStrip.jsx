@@ -1,4 +1,5 @@
 import { useCatalog } from '../../context/CatalogContext';
+import { useNavigate } from 'react-router-dom';
 
 /* ─────────────────────────────────────────────
    BRANDS STRIP SECTION
@@ -7,12 +8,19 @@ import { useCatalog } from '../../context/CatalogContext';
 ───────────────────────────────────────────── */
 export default function BrandsStrip() {
   const { BRANDS } = useCatalog();
+  const navigate = useNavigate();
+
   return (
     <section className="sec-sm" id="brands">
       <p className="brands-eyebrow">Trusted Brands We Stock</p>
       <div className="brands-row stg">
         {BRANDS.map((b, i) => (
-          <div key={i} className="brand-pill hero-pill">
+          <div 
+            key={i} 
+            className="brand-pill hero-pill" 
+            onClick={() => navigate(`/brand/${encodeURIComponent(b.name)}`)}
+            style={{ cursor: 'pointer' }}
+          >
             <span>{b.name}</span>
           </div>
         ))}

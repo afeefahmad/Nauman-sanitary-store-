@@ -39,6 +39,11 @@ export default function LegacySection({ onScrollTo }) {
           systems, elegant vanities, modern faucets, and carefully selected accessories for
           residential and commercial projects.
         </p>
+        <div className="my-8">
+          <button className="btn-primary" onClick={() => onScrollTo('contact')}>
+            Visit Our Store
+          </button>
+        </div>
         <div className="legacy-feats">
           {LEGACY_FEATURES.map((feat, i) => (
             <div key={i} className="lf">
@@ -46,11 +51,6 @@ export default function LegacySection({ onScrollTo }) {
               <div className="lf-txt">{feat}</div>
             </div>
           ))}
-        </div>
-        <div className="mt-11">
-          <button className="btn-primary" onClick={() => onScrollTo('contact')}>
-            Visit Our Store
-          </button>
         </div>
       </div>
     </section>
