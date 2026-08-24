@@ -314,10 +314,6 @@ export default function Navbar() {
           >
             <span>Contact</span>
           </a>
-
-          <div style={{ marginTop: '1.5rem' }}>
-            <ThemeToggle />
-          </div>
         </div>
       </div>
     </>
