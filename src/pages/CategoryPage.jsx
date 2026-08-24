@@ -535,9 +535,8 @@ export default function CategoryPage() {
         </div>
 
         {/* ── BROWSE MORE ── */}
-        <div className="mt-[5.5rem]">
+        <div className="cat-browse-more-sec">
           <div className="sr mb-8">
-            <span className="sec-label">Browse More</span>
             <h2 className="sec-title">Other <em>Categories</em></h2>
           </div>
           <div className="all-cats-grid stg">

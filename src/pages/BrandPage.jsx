@@ -347,9 +347,8 @@ export default function BrandPage() {
 
         {/* ── BROWSE MORE BRANDS ── */}
         {brands && brands.length > 1 && (
-          <div className="mt-[5.5rem]">
+          <div className="cat-browse-more-sec">
             <div className="sr mb-8">
-              <span className="sec-label">Browse More</span>
               <h2 className="sec-title">Other <em>Brands</em></h2>
             </div>
             <div className="all-cats-grid stg">
