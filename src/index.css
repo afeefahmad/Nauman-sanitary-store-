@@ -500,11 +500,11 @@ html {
 
 /* ─── LIGHT MODE NAV OVERRIDES ─── */
 [data-theme="light"] .logo-text {
-  color: var(--white);
+  color: #000000;
   font-weight: 500;
 }
 [data-theme="light"] .nav-links a {
-  color: var(--white);
+  color: #000000;
   font-weight: 500;
 }
 [data-theme="light"] .nav-links a:hover {
@@ -514,6 +514,9 @@ html {
   background: linear-gradient(to right, var(--bronze-dk), var(--bronze));
 }
 
+[data-theme="light"] #mobile-nav a {
+  color: #000000;
+}
 [data-theme="light"] #mobile-nav a:hover {
   color: var(--bronze-dk);
 }
@@ -612,7 +615,7 @@ html {
   text-align: left;
 }
 [data-theme="light"] .mob-link {
-  color: var(--obsidian);
+  color: #000000;
 }
 .mob-link:hover { color:var(--bronze); }
 
