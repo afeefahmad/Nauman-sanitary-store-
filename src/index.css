@@ -2049,8 +2049,8 @@ html {
 .subcat-pill.active {
   background: linear-gradient(135deg, var(--bronze), var(--bronze-dk));
   border-color: var(--bronze);
-  color: var(--ink);
-  font-weight: 500;
+  color: #000000;
+  font-weight: 600;
   box-shadow: 0 4px 16px rgba(200, 160, 96, 0.25);
 }
 
@@ -2496,6 +2496,28 @@ aside nav a {
   }
   .cbf-tabs {
     display: none !important;
+  }
+  /* Subcategory pills mobile horizontal swipe bar */
+  .cat-subcat-row {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    justify-content: flex-start !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    padding-bottom: 0.6rem !important;
+    margin-bottom: 2rem !important;
+    gap: 0.5rem !important;
+  }
+  .cat-subcat-row::-webkit-scrollbar {
+    display: none !important;
+  }
+  .subcat-pill {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    padding: 6px 14px !important;
+    font-size: 10.5px !important;
+    letter-spacing: 0.5px !important;
   }
 
   /* Hamburger — clean circle touch target */
