@@ -171,13 +171,26 @@ export default function BrandPage() {
 
       {/* ══ HERO BANNER ══ */}
       <div className="cat-page-hero">
-        <div className="flex justify-between items-center w-full mb-[2.2rem] flex-wrap gap-4">
+        <div className="flex justify-between items-center w-full mb-[clamp(1.5rem,3.5vw,2.5rem)] flex-wrap gap-4">
           <div className="cat-page-breadcrumb" style={{ marginBottom: 0 }}>
             <a onClick={() => navigate('/')} role="button" tabIndex={0}>Home</a>
             <span>›</span>
-            <span>Brands</span>
+            <a 
+              onClick={() => navigate('/', { state: { scrollTo: 'brand-showcase' } })} 
+              role="button" 
+              tabIndex={0}
+            >
+              Brands
+            </a>
             <span>›</span>
-            <span className="text-[var(--ivory)]">{normalizedBrandName}</span>
+            <a 
+              onClick={() => { setActiveCategory('all'); setCurrentPage(1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              role="button" 
+              tabIndex={0}
+              style={{ color: 'var(--ivory)' }}
+            >
+              {normalizedBrandName}
+            </a>
           </div>
         </div>
 

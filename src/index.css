@@ -1773,6 +1773,9 @@ html {
 .cat-page-breadcrumb a { color:var(--bronze-lt); text-decoration:none; cursor:pointer; transition:all .3s; font-weight:600; }
 .cat-page-breadcrumb a:hover { color:var(--white); }
 .cat-page-breadcrumb span { color:var(--parchment); opacity: 0.9; }
+[data-theme="light"] .cat-page-breadcrumb a { color: var(--bronze-dk); }
+[data-theme="light"] .cat-page-breadcrumb a:hover { color: #000000; }
+[data-theme="light"] .cat-page-breadcrumb span { color: #555555; }
 .cat-page-icon { 
   font-size:4.8rem; 
   margin-bottom:1.8rem; 
@@ -1819,6 +1822,7 @@ html {
   font-family:'Cormorant Garamond',serif;
   font-size:clamp(2.8rem,6vw,5.5rem);
   font-weight:300; color:var(--white); line-height:1;
+  margin-top: clamp(0.5rem, 1.5vw, 1.2rem);
   margin-bottom:.9rem; position:relative; z-index:1;
 }
 .cat-page-title em { font-style:italic; color:var(--bronze-lt); }
@@ -1827,16 +1831,18 @@ html {
   color:var(--mist); position:relative; z-index:1;
 }
 .cat-page-meta {
-  display:flex; align-items:center; gap:1.2rem;
+  display:flex; align-items:center; gap:clamp(0.4rem, 2vw, 1.2rem);
   margin-top:2.5rem; position:relative; z-index:1;
+  flex-wrap: nowrap;
 }
 .cat-count-badge {
-  display:inline-flex; align-items:center;
+  display:inline-flex; align-items:center; justify-content:center;
+  white-space: nowrap;
   background:rgba(200,160,96,0.1);
   border:1px solid rgba(200,160,96,0.4);
   color:var(--bronze-lt);
-  padding:10px 24px;
-  font-size:11px; letter-spacing:4px; text-transform:uppercase; font-weight:600;
+  padding: clamp(6px, 1.2vw, 10px) clamp(10px, 2.5vw, 24px);
+  font-size: clamp(8.5px, 2.2vw, 11px); letter-spacing: clamp(1px, 0.8vw, 4px); text-transform:uppercase; font-weight:600;
   border-radius:999px;
   position: relative;
   overflow: hidden;
@@ -2507,15 +2513,20 @@ aside nav a {
 
 /* 1. Ultra-Wide & 4K Displays (1921px+) */
 @media (min-width: 1921px) {
-  .sec { padding: 9rem 10% !important; }
-  .sec-sm { padding: 6rem 10% !important; }
+  #nav, .sec, .sec-sm, .cat-page-hero, .cat-page-body, #footer {
+    max-width: 1600px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  .sec { padding: 9rem 5% !important; }
+  .sec-sm { padding: 6rem 5% !important; }
   .cats-head { margin-bottom: 3.5rem !important; }
   .cats-grid, .prod-grid, .all-cats-grid, .why-grid { gap: 2.2rem !important; }
   #legacy, #contact { gap: 6rem !important; }
   .contact-form-wrap { padding: 4.5rem !important; }
-  #footer { padding: 6rem 10% 3.5rem !important; }
-  .cat-page-body { padding: 6rem 10% !important; }
-  .cat-page-hero { padding: 3.5rem 10% 2.8rem !important; }
+  #footer { padding: 6rem 5% 3.5rem !important; }
+  .cat-page-body { padding: 6rem 5% !important; }
+  .cat-page-hero { padding: 3.5rem 5% 2.8rem !important; }
   .btn-primary, .btn-ghost, .contact-submit { padding: 16px 48px !important; font-size: 11px !important; letter-spacing: 4px !important; }
   .hero-btns { gap: 1.5rem !important; }
 }
@@ -2617,4 +2628,17 @@ aside nav a {
   .btn-primary, .btn-ghost { padding: 9px 14px !important; font-size: 8px !important; letter-spacing: 1px !important; }
   .contact-submit { padding: 9px 14px !important; font-size: 8px !important; width: 100% !important; }
   .hero-btns { gap: 0.4rem !important; }
+  .cat-page-breadcrumb {
+    flex-wrap: wrap !important;
+    letter-spacing: 1.5px !important;
+    font-size: 10.5px !important;
+    gap: 0.4rem !important;
+  }
+  .cat-page-title {
+    font-size: clamp(1.5rem, 8.5vw, 2.5rem) !important;
+  }
+  .cbf-btn {
+    padding: 7px 12px !important;
+    font-size: 9.5px !important;
+  }
 }

@@ -270,13 +270,26 @@ export default function CategoryPage() {
 
       {/* ══ HERO BANNER ══ */}
       <div className="cat-page-hero">
-        <div className="flex justify-between items-center w-full mb-[2.2rem] flex-wrap gap-4">
+        <div className="flex justify-between items-center w-full mb-[clamp(1.5rem,3.5vw,2.5rem)] flex-wrap gap-4">
           <div className="cat-page-breadcrumb" style={{ marginBottom: 0 }}>
             <a onClick={() => navigate('/')} role="button" tabIndex={0}>Home</a>
             <span>›</span>
-            <span>Categories</span>
+            <a 
+              onClick={() => navigate('/', { state: { scrollTo: 'all-cats' } })} 
+              role="button" 
+              tabIndex={0}
+            >
+              Categories
+            </a>
             <span>›</span>
-            <span className="text-[var(--ivory)]">{category.name}</span>
+            <a 
+              onClick={() => { setActiveBrand('all'); setActiveSubCat('all'); setCurrentPage(1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              role="button" 
+              tabIndex={0}
+              style={{ color: 'var(--ivory)' }}
+            >
+              {category.name}
+            </a>
           </div>
 
           {/* Product count badge */}

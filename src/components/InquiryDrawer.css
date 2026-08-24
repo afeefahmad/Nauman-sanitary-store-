@@ -33,7 +33,7 @@
   bottom: 0;
   z-index: 10;
   width: 100%;
-  max-width: 448px; /* 28rem */
+  max-width: min(448px, 100vw);
   height: 100dvh;
   display: flex;
   flex-direction: column;
