@@ -2348,19 +2348,46 @@ aside nav a {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   margin-top: 3rem;
   margin-bottom: 2rem;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 4px 0;
+}
+.pagination::-webkit-scrollbar {
+  display: none;
 }
 .page-btn {
   background: transparent;
   border: 1px solid var(--border);
   color: var(--mist);
-  padding: 8px 14px;
-  font-size: 12px;
+  padding: 6px 12px;
+  font-size: 11.5px;
   border-radius: 999px;
   cursor: pointer;
   transition: all 0.3s ease;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+}
+.page-btn-nav {
+  padding: 6px 14px !important;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+.page-ellipsis {
+  color: var(--mist);
+  font-size: 13px;
+  padding: 0 4px;
+  user-select: none;
+  flex-shrink: 0;
 }
 .page-btn:hover:not(:disabled) {
   border-color: var(--bronze);
@@ -2698,5 +2725,16 @@ aside nav a {
   .cbf-btn {
     padding: 7px 12px !important;
     font-size: 9.5px !important;
+  }
+  .pagination {
+    gap: 4px !important;
+    margin-top: 2rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+  .page-btn {
+    padding: 4px 8px !important;
+    font-size: 10.5px !important;
+    min-width: 28px !important;
+    height: 28px !important;
   }
 }

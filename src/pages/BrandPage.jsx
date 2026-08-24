@@ -40,6 +40,21 @@ const TAG_COLOR = (tag) =>
     k.toLowerCase().startsWith(tag?.toLowerCase())
   )?.[1] ?? 'var(--bronze-dk)';
 
+function getPageNumbers(currentPage, totalPages) {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+  const pages = [];
+  if (currentPage <= 4) {
+    pages.push(1, 2, 3, 4, 5, '...', totalPages);
+  } else if (currentPage >= totalPages - 3) {
+    pages.push(1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+  } else {
+    pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+  }
+  return pages;
+}
+
 export default function BrandPage() {
   const { brandName } = useParams();
   const navigate = useNavigate();
@@ -283,27 +298,33 @@ export default function BrandPage() {
         {totalPages > 1 && (
           <div className="pagination">
             <button 
-              className="page-btn" 
+              className="page-btn page-btn-nav" 
               disabled={currentPage === 1}
               onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 300, behavior: 'smooth' }); }}
+              aria-label="Previous Page"
             >
-              Prev
+              ‹ Prev
             </button>
-            {Array.from({ length: totalPages }).map((_, idx) => (
-              <button 
-                key={idx + 1} 
-                className={`page-btn ${currentPage === idx + 1 ? 'active' : ''}`}
-                onClick={() => { setCurrentPage(idx + 1); window.scrollTo({ top: 300, behavior: 'smooth' }); }}
-              >
-                {idx + 1}
-              </button>
+            {getPageNumbers(currentPage, totalPages).map((p, idx) => (
+              p === '...' ? (
+                <span key={`dots-${idx}`} className="page-ellipsis">…</span>
+              ) : (
+                <button 
+                  key={p} 
+                  className={`page-btn ${currentPage === p ? 'active' : ''}`}
+                  onClick={() => { setCurrentPage(p); window.scrollTo({ top: 300, behavior: 'smooth' }); }}
+                >
+                  {p}
+                </button>
+              )
             ))}
             <button 
-              className="page-btn" 
+              className="page-btn page-btn-nav" 
               disabled={currentPage === totalPages}
               onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 300, behavior: 'smooth' }); }}
+              aria-label="Next Page"
             >
-              Next
+              Next ›
             </button>
           </div>
         )}
