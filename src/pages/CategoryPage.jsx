@@ -310,6 +310,29 @@ export default function CategoryPage() {
         {hasBrands && (
           <div className="cat-brand-filter mt-6">
             <div className="cbf-label text-center mb-4">Filter by Brand</div>
+
+            {/* Mobile Dropdown Select (< 768px) */}
+            <div className="cbf-mobile-select-wrap">
+              <select
+                className="cbf-mobile-select"
+                value={activeBrand}
+                onChange={(e) => {
+                  setActiveBrand(e.target.value);
+                  setActiveSubCat('all');
+                  setCurrentPage(1);
+                }}
+                aria-label="Filter products by brand"
+              >
+                <option value="all">All Products ({category.products.length})</option>
+                {brandList.map(brand => (
+                  <option key={brand} value={brand}>
+                    {brand} ({category.products.filter(p => normalizeBrand(p.brand) === brand).length})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Desktop Filter Pills (>= 768px) */}
             <div className="cbf-tabs justify-center">
               <button
                 className={`cbf-btn${activeBrand === 'all' ? ' active' : ''}`}
