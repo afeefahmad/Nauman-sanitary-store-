@@ -984,19 +984,19 @@ html {
 /* ══════════════════════════════════════════════
    SHARED SECTIONS
 ══════════════════════════════════════════════ */
-.sec     { padding:8rem 6%; }
-.sec-sm  { padding:5rem 6%; }
+.sec     { padding: clamp(3rem, 7vw, 8rem) clamp(4%, 6vw, 8%); }
+.sec-sm  { padding: clamp(2rem, 5vw, 5rem) clamp(4%, 6vw, 8%); }
 .sec-label {
-  display:block; font-size:11px; letter-spacing:5.5px; text-transform:uppercase;
+  display:block; font-size: clamp(9.5px, 1.4vw, 11.5px); letter-spacing: clamp(2.5px, 0.4vw, 5.5px); text-transform:uppercase;
   color:var(--bronze); margin-bottom:1.1rem;
 }
 .sec-title {
   font-family:'Cormorant Garamond',serif;
-  font-size:clamp(2rem, 3.8vw, 3.6rem);
-  font-weight:300; color:var(--white); line-height:1.05; margin-bottom:.8rem;
+  font-size:clamp(1.75rem, 4.5vw, 3.6rem);
+  font-weight:300; color:var(--white); line-height:1.12; margin-bottom:.8rem;
 }
 .sec-title em { font-style:italic; color:var(--bronze-lt); }
-.sec-desc { font-size:13.5px; color:var(--mist); line-height:2; max-width:540px; }
+.sec-desc { font-size: clamp(12px, 1.5vw, 13.5px); color:var(--mist); line-height: clamp(1.6, 2vw, 1.95); max-width:540px; }
 .rule { width:48px; height:1px; background:linear-gradient(to right, var(--bronze), transparent); margin:1.5rem 0; }
 
 /* ══════════════════════════════════════════════
@@ -1008,7 +1008,7 @@ html {
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 .brands-eyebrow {
-  text-align:center; font-size:14px; letter-spacing:6px;
+  text-align:center; font-size: clamp(10.5px, 1.5vw, 14px); letter-spacing: clamp(2px, 0.4vw, 6px);
   text-transform:uppercase; color:var(--bronze); margin-bottom:2.5rem;
   font-weight: 500;
   text-shadow: 0 0 15px rgba(200, 160, 96, 0.4);
