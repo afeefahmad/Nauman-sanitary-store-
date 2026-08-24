@@ -1,16 +1,24 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import {
+  ALL_CATEGORIES,
+  HERO_CATEGORIES as INITIAL_HERO,
+  CONTACT as INITIAL_CONTACT,
+  TICKER_ITEMS as INITIAL_TICKER,
+  STATS as INITIAL_STATS,
+  BRANDS as INITIAL_BRANDS
+} from '../data/categories';
 
 const CatalogContext = createContext();
 
 const API_BASE = 'http://localhost:5000/api';
 
 export function CatalogProvider({ children }) {
-  const [categories, setCategories] = useState([]);
-  const [heroCategories, setHeroCategories] = useState([]);
-  const [contact, setContact] = useState({});
-  const [tickerItems, setTickerItems] = useState([]);
-  const [stats, setStats] = useState([]);
-  const [brands, setBrands] = useState([]);
+  const [categories, setCategories] = useState(ALL_CATEGORIES);
+  const [heroCategories, setHeroCategories] = useState(INITIAL_HERO);
+  const [contact, setContact] = useState(INITIAL_CONTACT);
+  const [tickerItems, setTickerItems] = useState(INITIAL_TICKER);
+  const [stats, setStats] = useState(INITIAL_STATS);
+  const [brands, setBrands] = useState(INITIAL_BRANDS);
   
   const [isLoading, setIsLoading] = useState(true);
 
@@ -27,21 +35,14 @@ export function CatalogProvider({ children }) {
           fetch(`${API_BASE}/brands`)
         ]);
         
-        const c = await catsRes.json();
-        const h = await heroRes.json();
-        const cnt = await contactRes.json();
-        const t = await tickerRes.json();
-        const s = await statsRes.json();
-        const b = await brandsRes.json();
-
-        setCategories(c);
-        setHeroCategories(h);
-        setContact(cnt);
-        setTickerItems(t);
-        setStats(s);
-        setBrands(b);
+        if (catsRes.ok) setCategories(await catsRes.json());
+        if (heroRes.ok) setHeroCategories(await heroRes.json());
+        if (contactRes.ok) setContact(await contactRes.json());
+        if (tickerRes.ok) setTickerItems(await tickerRes.json());
+        if (statsRes.ok) setStats(await statsRes.json());
+        if (brandsRes.ok) setBrands(await brandsRes.json());
       } catch (err) {
-        console.error("Error loading data from backend:", err);
+        console.warn("Backend API offline, using fallback catalog data.");
       } finally {
         setIsLoading(false);
       }
