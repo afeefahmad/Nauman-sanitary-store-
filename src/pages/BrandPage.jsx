@@ -258,9 +258,6 @@ export default function BrandPage() {
                   />
                 </div>
                 <div className="cat-prod-overlay" />
-                {prod.tag && (
-                  <div className="cat-prod-tag" style={{ background: TAG_COLOR(prod.tag) }}>{prod.tag}</div>
-                )}
                 <div className="cat-prod-brand-tag" style={{ background: BRAND_COLORS[normalizedBrandName] || '#1e222b', color: '#fff' }}>
                   {normalizeBrand(prod.brand)}
                 </div>
@@ -362,11 +359,22 @@ export default function BrandPage() {
                     onClick={() => navigate(`/brand/${encodeURIComponent(b.name)}`)}
                   >
                     <div className="ac-icon">
-                      {b.logo ? (
-                        <img src={b.logo} alt={b.name} loading="lazy" decoding="async" />
-                      ) : (
-                        <img src="/prod-commode.png" alt={b.name} loading="lazy" decoding="async" />
-                      )}
+                      {(b.logo || b.image) ? (
+                        <img 
+                          src={b.logo || b.image} 
+                          alt={b.name} 
+                          loading="lazy" 
+                          decoding="async" 
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.style.display = 'none';
+                            if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                          }}
+                        />
+                      ) : null}
+                      <div className="brand-avatar-circle" style={{ display: (b.logo || b.image) ? 'none' : 'flex' }}>
+                        <span>{b.name?.substring(0, 2).toUpperCase() || 'BR'}</span>
+                      </div>
                     </div>
                     <div className="ac-name">{b.name}</div>
                     <div className="ac-subs">Premium Sanitaryware</div>

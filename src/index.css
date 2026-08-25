@@ -1358,9 +1358,33 @@ html {
 .ac-icon img {
   height: 90px;
   width: 90px;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 50%;
-  border: 1px solid rgba(200, 160, 96, 0.3);
+  border: 1px solid rgba(200, 160, 96, 0.35);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 6px;
+}
+.brand-avatar-circle {
+  height: 90px;
+  width: 90px;
+  border-radius: 50%;
+  border: 1px solid rgba(200, 160, 96, 0.4);
+  background: linear-gradient(135deg, rgba(200,160,96,0.18), rgba(15,16,20,0.85));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bronze-lt);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  transition: all 0.4s ease;
+}
+[data-theme="light"] .brand-avatar-circle {
+  background: linear-gradient(135deg, rgba(200,160,96,0.25), rgba(240,240,245,0.95));
+  color: var(--bronze-dk);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
 }
 .ac-item:hover .ac-icon {
   transform: scale(1.1) rotate(-3deg);
@@ -2097,11 +2121,7 @@ html {
 .cat-prod-card:hover .cat-prod-img-inner { transform:scale(1.05); }
 .cat-prod-icon { font-size:5rem; opacity:.07; }
 .cat-prod-tag {
-  position:absolute; top:1rem; left:1rem;
-  font-size:9.5px; letter-spacing:2.5px; text-transform:uppercase;
-  background:var(--bronze); color:var(--ink); padding:4px 12px; font-weight:600;
-  border-radius: 999px; z-index: 3;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  display: none !important;
 }
 .cat-prod-brand-tag {
   position:absolute; top:1rem; right:1rem;

@@ -434,14 +434,6 @@ export default function CategoryPage() {
                   />
                 </div>
                 <div className="cat-prod-overlay" />
-                {prod.tag && (
-                  <div
-                    className="cat-prod-tag"
-                    style={{ background: TAG_COLOR(prod.tag) }}
-                  >
-                    {prod.tag}
-                  </div>
-                )}
                 {prod.brand && (
                   <div
                     className="cat-prod-brand-tag"
