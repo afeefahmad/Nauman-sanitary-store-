@@ -362,7 +362,11 @@ export default function BrandPage() {
                     onClick={() => navigate(`/brand/${encodeURIComponent(b.name)}`)}
                   >
                     <div className="ac-icon">
-                      <span className="text-3xl">🏛️</span>
+                      {b.logo ? (
+                        <img src={b.logo} alt={b.name} loading="lazy" decoding="async" />
+                      ) : (
+                        <img src="/prod-commode.png" alt={b.name} loading="lazy" decoding="async" />
+                      )}
                     </div>
                     <div className="ac-name">{b.name}</div>
                     <div className="ac-subs">Premium Sanitaryware</div>

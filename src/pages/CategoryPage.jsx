@@ -550,9 +550,12 @@ export default function CategoryPage() {
                   onClick={() => navigate(`/category/${cat.slug}`)}
                 >
                   <div className="ac-icon">
-                    {typeof cat.icon === 'string' && (cat.icon.startsWith('data:image') || cat.icon.startsWith('/') || cat.icon.startsWith('http'))
-                      ? <img src={cat.icon} alt={cat.name} className="w-[1em] h-[1em] object-contain invert" />
-                      : cat.icon}
+                    <img 
+                      src={PROD_IMAGES[cat.slug] || '/prod-commode.png'} 
+                      alt={cat.name} 
+                      loading="lazy"
+                      decoding="async"
+                    />
                   </div>
                   <div className="ac-name">{cat.name}</div>
                   <div className="ac-subs">{cat.subs}</div>
