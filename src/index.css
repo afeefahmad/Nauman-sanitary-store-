@@ -344,7 +344,7 @@ body {
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
   pointer-events: none;
-  z-index: 8999;
+  z-index: 1;
   opacity: var(--noise-opacity, 0.45);
   transition: opacity 0.35s ease;
   transform: translateZ(0);
@@ -359,7 +359,7 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 10000;
   padding-top: env(safe-area-inset-top, 0px);
   padding-left: max(5%, env(safe-area-inset-left, 0px));
   padding-right: max(5%, env(safe-area-inset-right, 0px));
@@ -809,7 +809,7 @@ body {
   background: rgba(6, 7, 8, 0.98);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  z-index: 999;
+  z-index: 9999;
   display: block;
   overflow-y: auto;
   transform: translateX(100%);
@@ -3252,7 +3252,7 @@ body {
    CATEGORY PAGE
 ══════════════════════════════════════════════ */
 .cat-page {
-  padding-top: 76px;
+  padding-top: calc(76px + env(safe-area-inset-top, 0px));
   min-height: 100vh;
 }
 
@@ -4045,7 +4045,7 @@ body {
   justify-content: center;
   min-height: 100vh;
   text-align: center;
-  padding: 2rem;
+  padding: calc(76px + env(safe-area-inset-top, 0px)) 2rem 2rem;
 }
 
 .not-found h1 {
