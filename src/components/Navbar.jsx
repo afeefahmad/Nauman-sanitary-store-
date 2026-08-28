@@ -41,7 +41,7 @@ export default function Navbar() {
   const [activeMobileBrand, setActiveMobileBrand] = useState(null);
 
   useEffect(() => {
-    const onScroll = () => setSolid(window.scrollY > 60);
+    const onScroll = () => setSolid(window.scrollY > 20);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);

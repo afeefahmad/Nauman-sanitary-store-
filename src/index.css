@@ -123,7 +123,7 @@
   --water-2: rgba(200, 160, 96, 0.18);
 
   /* Nav solid bg */
-  --nav-solid-bg: rgba(6, 7, 8, 0.97);
+  --nav-solid-bg: #060708;
 
   /* Noise opacity */
   --noise-opacity: 0.45;
@@ -168,7 +168,7 @@
   --water-2: rgba(180, 140, 76, 0.12);
 
   /* Nav solid bg */
-  --nav-solid-bg: rgba(244, 244, 244, 0.97);
+  --nav-solid-bg: #f4f4f4;
 
   /* Noise opacity — softer on light bg */
   --noise-opacity: 0.18;
@@ -242,7 +242,10 @@
   box-sizing: border-box;
 }
 
-html {
+html,
+body {
+  background-color: var(--ink);
+  color: var(--ivory);
   scroll-behavior: smooth;
   font-size: 16px;
   transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -339,21 +342,35 @@ html {
   left: 0;
   right: 0;
   z-index: 1000;
-  height: 76px;
-  padding: 0 5%;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-left: max(5%, env(safe-area-inset-left, 0px));
+  padding-right: max(5%, env(safe-area-inset-right, 0px));
+  height: calc(76px + env(safe-area-inset-top, 0px));
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: background .4s, border-color .4s, height .3s;
-  border-bottom: 1px solid transparent;
-  contain: layout style;
+  background: var(--nav-solid-bg, #060708);
+  transition: background .3s, border-color .3s, height .3s;
+  border-bottom: 1px solid var(--border-sub);
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+#nav::before {
+  content: '';
+  position: absolute;
+  top: -120px;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: var(--nav-solid-bg, #060708);
+  pointer-events: none;
 }
 
 #nav.solid {
-  height: 68px;
-  background: var(--nav-solid-bg, rgba(6, 7, 8, 0.97));
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  height: calc(68px + env(safe-area-inset-top, 0px));
+  background: var(--nav-solid-bg, #060708);
   border-bottom-color: var(--border);
   box-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
 }
@@ -766,10 +783,11 @@ html {
 /* ─── MOBILE NAV ─── */
 #mobile-nav {
   position: fixed;
-  top: 76px;
+  top: calc(76px + env(safe-area-inset-top, 0px));
   left: 0;
   right: 0;
   bottom: 0;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   background: rgba(6, 7, 8, 0.98);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
@@ -1520,6 +1538,8 @@ html {
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   transition: background-color 0.3s ease, border-color 0.3s ease;
+  position: relative;
+  z-index: 1;
 }
 
 .brands-eyebrow {
@@ -4783,7 +4803,8 @@ aside nav a {
   }
 
   #nav {
-    padding: 0 4% !important;
+    padding-left: max(4%, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(4%, env(safe-area-inset-right, 0px)) !important;
   }
 }
 
@@ -4798,7 +4819,8 @@ aside nav a {
   }
 
   #nav {
-    padding: 0 3% !important;
+    padding-left: max(3%, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(3%, env(safe-area-inset-right, 0px)) !important;
   }
 }
 

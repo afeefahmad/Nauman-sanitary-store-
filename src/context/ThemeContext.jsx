@@ -13,6 +13,15 @@ export function ThemeProvider({ children }) {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
+    const themeColor = theme === 'dark' ? '#060708' : '#e4e5e7';
+    let metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (!metaTheme) {
+      metaTheme = document.createElement('meta');
+      metaTheme.name = 'theme-color';
+      document.head.appendChild(metaTheme);
+    }
+    metaTheme.content = themeColor;
+
     try {
       localStorage.setItem('nss-theme', theme);
     } catch {/* ignore */}
