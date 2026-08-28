@@ -319,6 +319,24 @@ body {
   height: 5px;
 }
 
+@media (max-width: 1024px), (pointer: coarse) {
+  #c-dot,
+  #c-ring {
+    display: none !important;
+  }
+
+  .marketing-site,
+  body,
+  html,
+  a,
+  button,
+  select,
+  input,
+  [role="button"] {
+    cursor: auto !important;
+  }
+}
+
 /* ─── NOISE TEXTURE ─── */
 .marketing-site::after {
   content: '';
