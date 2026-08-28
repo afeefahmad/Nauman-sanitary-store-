@@ -34,7 +34,7 @@ export const STATS = [
 
 // ── All Brands ──────────────────────────────────────────────
 export const BRANDS = [
-  { id: 'porta',    name: 'Porta',    hero: true },
+  { id: 'porta',    name: 'Porta',    logo: '/porta-logo.webp', hero: true },
   { id: 'master',   name: 'Master',   hero: true },
   { id: 'pool',     name: 'Pool',     hero: true },
   { id: 'iclboch',  name: 'ICL Boch', hero: true },
