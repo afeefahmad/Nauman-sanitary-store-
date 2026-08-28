@@ -47,8 +47,8 @@ export default function Navbar() {
   }, []);
 
   // Close mobile nav on route change
-  useEffect(() => { 
-    setOpen(false); 
+  useEffect(() => {
+    setOpen(false);
     setActiveMobileTab(null);
     setActiveMobileBrand(null);
   }, [location.pathname]);
@@ -92,8 +92,8 @@ export default function Navbar() {
         <ul className="nav-links">
           {navLinks.map(l => (
             <li key={l.id} className={l.id === 'categories' || l.id === 'brand-showcase' ? 'nav-item-dropdown' : ''}>
-              <a 
-                onClick={() => scrollTo(l.id)} 
+              <a
+                onClick={() => scrollTo(l.id)}
                 tabIndex={0}
                 onKeyDown={e => e.key === 'Enter' && scrollTo(l.id)}
               >
@@ -102,9 +102,9 @@ export default function Navbar() {
               {l.id === 'categories' && categories && categories.length > 0 && (
                 <div className="nav-dropdown">
                   {categories.map(cat => (
-                    <a 
-                      key={cat.slug} 
-                      onClick={() => { setOpen(false); navigate(`/category/${cat.slug}`); window.scrollTo(0,0); }}
+                    <a
+                      key={cat.slug}
+                      onClick={() => { setOpen(false); navigate(`/category/${cat.slug}`); window.scrollTo(0, 0); }}
                       className="nav-dropdown-item"
                     >
                       {cat.name}
@@ -116,18 +116,18 @@ export default function Navbar() {
                 <div className="nav-dropdown">
                   {brands.map(brand => {
                     const normBrand = normalizeBrand(brand.name);
-                    const brandCats = categories ? categories.filter(c => 
+                    const brandCats = categories ? categories.filter(c =>
                       c.products && c.products.some(p => normalizeBrand(p.brand) === normBrand)
                     ) : [];
 
                     return (
-                      <div 
-                        key={brand.id || brand.name} 
+                      <div
+                        key={brand.id || brand.name}
                         className="nav-dropdown-item has-submenu"
                         style={{ padding: 0 }}
                       >
-                        <a 
-                          onClick={() => { setOpen(false); navigate(`/brand/${encodeURIComponent(brand.name)}`); window.scrollTo(0,0); }}
+                        <a
+                          onClick={() => { setOpen(false); navigate(`/brand/${encodeURIComponent(brand.name)}`); window.scrollTo(0, 0); }}
                           style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '0.6rem 1rem' }}
                         >
                           {brand.name}
@@ -139,11 +139,11 @@ export default function Navbar() {
                             {brandCats.map(bc => (
                               <a
                                 key={bc.slug}
-                                onClick={(e) => { 
-                                  e.stopPropagation(); 
-                                  setOpen(false); 
-                                  navigate(`/brand/${encodeURIComponent(brand.name)}`, { state: { category: bc.slug } }); 
-                                  window.scrollTo(0,0); 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setOpen(false);
+                                  navigate(`/brand/${encodeURIComponent(brand.name)}`, { state: { category: bc.slug } });
+                                  window.scrollTo(0, 0);
                                 }}
                                 className="nav-dropdown-item"
                               >
@@ -191,38 +191,33 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Floating Theme Mode Toggle for Mobile Devices */}
-      <div className="mobile-floating-theme-toggle">
-        <ThemeToggle />
-      </div>
-
       {/* Mobile Nav */}
       <div id="mobile-nav" className={open ? 'open' : ''}>
         <div style={{ display: 'flex', flexDirection: 'column', padding: '2rem 1.5rem', gap: '1.25rem', maxWidth: '480px', margin: '0 auto' }}>
           {/* Home */}
-          <a 
-            className="mob-link" 
-            onClick={() => { setOpen(false); navigate('/'); window.scrollTo(0,0); }}
+          <a
+            className="mob-link"
+            onClick={() => { setOpen(false); navigate('/'); window.scrollTo(0, 0); }}
           >
             <span>Home</span>
           </a>
 
           {/* Categories Accordion */}
           <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '0.5rem' }}>
-            <button 
+            <button
               className="mob-link"
               onClick={() => setActiveMobileTab(activeMobileTab === 'categories' ? null : 'categories')}
             >
               <span>Categories</span>
               <span style={{ transform: activeMobileTab === 'categories' ? 'rotate(90deg)' : '', transition: 'transform 0.2s', display: 'inline-block' }}>›</span>
             </button>
-            
+
             {activeMobileTab === 'categories' && (
               <div style={{ paddingLeft: '1rem', marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                 {categories.map(cat => (
                   <a
                     key={cat.slug}
-                    onClick={() => { setOpen(false); navigate(`/category/${cat.slug}`); window.scrollTo(0,0); }}
+                    onClick={() => { setOpen(false); navigate(`/category/${cat.slug}`); window.scrollTo(0, 0); }}
                     className="mob-sub-link"
                   >
                     {cat.name}
@@ -234,7 +229,7 @@ export default function Navbar() {
 
           {/* Brands Accordion (Nested Double Dropdown equivalent) */}
           <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '0.5rem' }}>
-            <button 
+            <button
               className="mob-link"
               onClick={() => setActiveMobileTab(activeMobileTab === 'brands' ? null : 'brands')}
             >
@@ -246,7 +241,7 @@ export default function Navbar() {
               <div style={{ paddingLeft: '1rem', marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                 {brands.map(brand => {
                   const normBrand = normalizeBrand(brand.name);
-                  const brandCats = categories ? categories.filter(c => 
+                  const brandCats = categories ? categories.filter(c =>
                     c.products && c.products.some(p => normalizeBrand(p.brand) === normBrand)
                   ) : [];
                   const isBrandOpen = activeMobileBrand === brand.name;
@@ -263,14 +258,14 @@ export default function Navbar() {
                           <span style={{ transform: isBrandOpen ? 'rotate(90deg)' : '', transition: 'transform 0.2s', display: 'inline-block' }}>›</span>
                         )}
                       </button>
-                      
+
                       {isBrandOpen && brandCats.length > 0 && (
                         <div style={{ paddingLeft: '1rem', display: 'flex', flexDirection: 'column', gap: '0.3rem', marginTop: '0.2rem', borderLeft: '1px solid rgba(200, 160, 96, 0.2)' }}>
                           <a
-                            onClick={() => { 
-                              setOpen(false); 
-                              navigate(`/brand/${encodeURIComponent(brand.name)}`); 
-                              window.scrollTo(0,0); 
+                            onClick={() => {
+                              setOpen(false);
+                              navigate(`/brand/${encodeURIComponent(brand.name)}`);
+                              window.scrollTo(0, 0);
                             }}
                             className="mob-sub-link"
                             style={{ fontSize: '1.1rem', opacity: '0.6', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '600' }}
@@ -280,10 +275,10 @@ export default function Navbar() {
                           {brandCats.map(bc => (
                             <a
                               key={bc.slug}
-                              onClick={() => { 
-                                setOpen(false); 
-                                navigate(`/brand/${encodeURIComponent(brand.name)}`, { state: { category: bc.slug } }); 
-                                window.scrollTo(0,0); 
+                              onClick={() => {
+                                setOpen(false);
+                                navigate(`/brand/${encodeURIComponent(brand.name)}`, { state: { category: bc.slug } });
+                                window.scrollTo(0, 0);
                               }}
                               className="mob-sub-link"
                             >
@@ -300,20 +295,35 @@ export default function Navbar() {
           </div>
 
           {/* Products */}
-          <a 
-            className="mob-link" 
+          <a
+            className="mob-link"
             onClick={() => scrollTo('products')}
           >
             <span>Products</span>
           </a>
 
           {/* Contact */}
-          <a 
-            className="mob-link" 
+          <a
+            className="mob-link"
             onClick={() => scrollTo('contact')}
           >
             <span>Contact</span>
           </a>
+
+          {/* Change Theme Mode */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            // paddingTop: '1.2rem',
+            // marginTop: '0.5rem',
+            borderTop: '1px solid rgba(255,255,255,0.08)'
+          }}>
+            <span className="mob-link" style={{ border: 'none', padding: 0, margin: 0, pointerEvents: 'none' }}>
+              Change Theme
+            </span>
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </>
