@@ -54,6 +54,7 @@ export const HERO_CATEGORIES = [
     name: 'Commodes & Toilets',
     hint: 'One Piece · Two Piece · Wall Hung',
     icon: '🚽',
+    img: '/cat-commode-luxury.png',
   },
   {
     slug: 'basins',
@@ -61,6 +62,7 @@ export const HERO_CATEGORIES = [
     name: 'Basins',
     hint: 'Pedestal · Wall Hung · Counter Top',
     icon: '🪣',
+    img: '/cat-basin-luxury.png',
   },
   {
     slug: 'taps',
@@ -68,6 +70,7 @@ export const HERO_CATEGORIES = [
     name: 'Taps & Fittings',
     hint: 'Bath Sets · Mixers · Muslim Showers · Sensor Taps',
     icon: '🚰',
+    img: '/cat-taps-luxury.png',
   },
   {
     slug: 'vanities',
@@ -75,6 +78,7 @@ export const HERO_CATEGORIES = [
     name: 'Vanities',
     hint: 'Aluminum · PVC · LED Mirrors',
     icon: '🪞',
+    img: '/cat-vanity-luxury.png',
   },
 ];
 

@@ -28,14 +28,18 @@ export default function CategoriesSection({ onScrollTo, onGoCategory }) {
         {HERO_CATEGORIES.map((cat, index) => (
           <div key={cat.slug || index} className="cat-card" onClick={() => onGoCategory(cat.slug)}>
             <div className="cat-fill">
-              {(cat.img || PROD_IMAGES[cat.slug]) && (
-                <img
-                  src={cat.img || PROD_IMAGES[cat.slug]}
-                  alt={cat.title || cat.name}
-                  loading="lazy"
-                  decoding="async"
-                />
-              )}
+              {(() => {
+                const isExternal = cat.img && (cat.img.includes('unsplash') || cat.img.includes('http'));
+                const imgSrc = (!isExternal && cat.img) ? cat.img : (PROD_IMAGES[cat.slug] || cat.img);
+                return imgSrc ? (
+                  <img
+                    src={imgSrc}
+                    alt={cat.title || cat.name}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : null;
+              })()}
             </div>
 
             <div className="cat-shade" />
