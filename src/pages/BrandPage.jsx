@@ -4,6 +4,7 @@ import useScrollReveal from '../hooks/useScrollReveal';
 import { getProductImage } from '../data/categories';
 import { useCatalog } from '../context/CatalogContext';
 import { useInquiry } from '../context/InquiryContext';
+import ProductCard from '../components/ProductCard';
 
 import { normalizeBrand } from '../utils/brandUtils';
 
@@ -248,47 +249,16 @@ export default function BrandPage() {
 
         <div className="cat-prod-grid stg">
           {paginatedProducts.map((prod, i) => (
-            <div key={i} className="cat-prod-card">
-              <div className="cat-prod-img">
-                <div className="cat-prod-img-inner">
-                  <img
-                    src={prod.image || getProductImage(prod._catSlug, prod.name, prod.brand) || PROD_IMAGES[prod._catSlug] || '/prod-commode.png'}
-                    alt={prod.name}
-                    onError={(e) => { e.target.onerror = null; e.target.src = PROD_IMAGES[prod._catSlug] || '/prod-commode.png'; }}
-                  />
-                </div>
-                <div className="cat-prod-overlay" />
-                <div className="cat-prod-brand-tag" style={{ background: BRAND_COLORS[normalizedBrandName] || '#1e222b', color: '#fff' }}>
-                  {normalizeBrand(prod.brand)}
-                </div>
-              </div>
-              <div className="cat-prod-info">
-                <div className="cat-prod-brand">{normalizeBrand(prod.brand)}</div>
-                <div className="cat-prod-name">{prod.name.replace(/\s*Model:.*$/i, '')}</div>
-                {prod.description && <div className="cat-prod-desc">{prod.description}</div>}
-                {prod.model && <div className="cat-prod-model">Model: {prod.model}</div>}
-                <div className="cat-prod-footer">
-                  <button
-                    className="cat-prod-btn"
-                    title="Add to Inquiry Cart"
-                    onClick={() => handleEnquire(prod, prod._catSlug)}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                    Add to Inquiry Cart
-                  </button>
-                  <a
-                    href={CONTACT?.whatsappUrl || '#'}
-                    target="_blank" 
-                    rel="noreferrer"
-                    className="cat-prod-whatsapp-btn"
-                    title="Call or WhatsApp for Price"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                    Call / WhatsApp
-                  </a>
-                </div>
-              </div>
-            </div>
+            <ProductCard
+              key={prod.id || i}
+              prod={prod}
+              slug={prod._catSlug}
+              handleEnquire={(p, s) => handleEnquire(p, s)}
+              CONTACT={CONTACT}
+              BRAND_COLORS={BRAND_COLORS}
+              PROD_IMAGES={PROD_IMAGES}
+              normalizeBrand={normalizeBrand}
+            />
           ))}
         </div>
 

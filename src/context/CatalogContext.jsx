@@ -8,9 +8,9 @@ import {
   BRANDS as INITIAL_BRANDS
 } from '../data/categories';
 
-const CatalogContext = createContext();
+import { API_BASE } from '../utils/apiConfig';
 
-const API_BASE = 'http://localhost:5000/api';
+const CatalogContext = createContext();
 
 export function CatalogProvider({ children }) {
   const [categories, setCategories] = useState(ALL_CATEGORIES);
@@ -40,7 +40,12 @@ export function CatalogProvider({ children }) {
         if (contactRes.ok) setContact(await contactRes.json());
         if (tickerRes.ok) setTickerItems(await tickerRes.json());
         if (statsRes.ok) setStats(await statsRes.json());
-        if (brandsRes.ok) setBrands(await brandsRes.json());
+        if (brandsRes.ok) {
+          const fetchedBrands = await brandsRes.json();
+          if (Array.isArray(fetchedBrands) && fetchedBrands.length > 0) {
+            setBrands(fetchedBrands);
+          }
+        }
       } catch (err) {
         console.warn("Backend API offline, using fallback catalog data.");
       } finally {

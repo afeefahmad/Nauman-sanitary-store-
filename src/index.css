@@ -3753,8 +3753,128 @@ body {
   image-rendering: high-quality;
 }
 
+/* Horizontal Swipe / Scroll Slider Container */
+.cat-prod-img-scroll-wrap {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  width: 100%;
+  height: 100%;
+}
+
+.cat-prod-img-scroll-wrap::-webkit-scrollbar {
+  display: none;
+}
+
+.cat-prod-img-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  scroll-snap-align: start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cat-prod-img-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+  image-rendering: high-quality;
+}
+
 .cat-prod-card:hover .cat-prod-img-inner {
   transform: scale(1.05);
+}
+
+/* Product Multi-Image Slider & Controls */
+.prod-slider-btn {
+  position: absolute;
+  top: 40%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(10, 10, 12, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(200, 160, 96, 0.4);
+  color: var(--bronze-lt, #f4d59f);
+  font-size: 16px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.25s ease, transform 0.25s ease, background 0.25s ease;
+}
+
+.prod-slider-btn:hover {
+  opacity: 1;
+  background: rgba(200, 160, 96, 0.9);
+  color: #060708;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.prod-slider-btn.prev {
+  left: 8px;
+}
+
+.prod-slider-btn.next {
+  right: 8px;
+}
+
+.prod-img-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  background: rgba(6, 7, 8, 0.82);
+  color: var(--bronze-lt, #f4d59f);
+  border: 1px solid rgba(200, 160, 96, 0.35);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.prod-dots-indicator {
+  position: absolute;
+  bottom: 82px;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  pointer-events: auto;
+}
+
+.prod-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(200, 160, 96, 0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.prod-dot.active {
+  background: var(--bronze, #c8a060);
+  width: 14px;
+  border-radius: 999px;
 }
 
 .cat-prod-icon {

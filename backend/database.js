@@ -39,7 +39,27 @@ db.serialize(() => {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     logo TEXT NOT NULL
-  )`);
+  )`, () => {
+    db.get("SELECT COUNT(*) AS count FROM brands", (err, row) => {
+      if (!err && row && row.count === 0) {
+        const defaultBrands = [
+          { name: 'Porta', logo: '/porta-logo.webp' },
+          { name: 'Master', logo: '/master-logo.webp' },
+          { name: 'Pool', logo: '/pool-logo.webp' },
+          { name: 'ICL Boch', logo: '/iclboch-logo.webp' },
+          { name: 'Dell', logo: '/dell-logo.webp' },
+          { name: 'Brite', logo: '/brite-logo.webp' },
+          { name: 'Sonex', logo: '/sonex-logo.webp' },
+          { name: 'Faisal', logo: '/faisal-logo.webp' },
+          { name: 'Kale', logo: '/kale-logo.webp' },
+          { name: 'Grohe', logo: '/grohe-logo.webp' }
+        ];
+        const stmt = db.prepare("INSERT INTO brands (name, logo) VALUES (?, ?)");
+        defaultBrands.forEach(b => stmt.run(b.name, b.logo));
+        stmt.finalize();
+      }
+    });
+  });
 
   // Hero
   db.run(`CREATE TABLE IF NOT EXISTS hero (
@@ -77,6 +97,11 @@ db.serialize(() => {
 
   // Migration: Add description column to existing DB if it doesn't exist
   db.run(`ALTER TABLE products ADD COLUMN description TEXT`, (err) => {
+    // Ignore error if column already exists
+  });
+
+  // Migration: Add images column to existing DB if it doesn't exist
+  db.run(`ALTER TABLE products ADD COLUMN images TEXT`, (err) => {
     // Ignore error if column already exists
   });
 });

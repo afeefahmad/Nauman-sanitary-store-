@@ -33,7 +33,8 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
-  const imageUrl = `http://localhost:5000/uploads/${req.file.filename}`;
+  const host = req.get('host') || 'localhost:5000';
+  const imageUrl = `${req.protocol}://${host}/uploads/${req.file.filename}`;
   res.json({ url: imageUrl });
 });
 
@@ -186,8 +187,14 @@ app.get('/api/categories', (req, res) => {
     // For each category, fetch products
     db.all('SELECT * FROM products', (err2, prods) => {
       if (err2) return res.status(500).json({ error: err2.message });
+      const processedProds = prods.map(p => {
+        if (p.images) {
+          try { p.images = JSON.parse(p.images); } catch(e) {}
+        }
+        return p;
+      });
       const result = cats.map(cat => {
-        cat.products = prods.filter(p => p.categoryId === cat.id);
+        cat.products = processedProds.filter(p => p.categoryId === cat.id);
         return cat;
       });
       res.json(result);
@@ -196,14 +203,15 @@ app.get('/api/categories', (req, res) => {
 });
 
 app.post('/api/products', (req, res) => {
-  const { id, categorySlug, name, brand, price, stock, code, color, image, description } = req.body;
+  const { id, categorySlug, name, brand, price, stock, code, color, image, images, description } = req.body;
+  const imagesStr = Array.isArray(images) ? JSON.stringify(images) : (image ? JSON.stringify([image]) : null);
   
   db.get('SELECT id FROM categories WHERE slug = ?', [categorySlug], (err, cat) => {
     if (err || !cat) return res.status(404).json({ error: 'Category not found' });
     
-    db.run(`INSERT INTO products (id, categoryId, name, brand, price, stock, code, color, image, description) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
-      [id, cat.id, name, brand, price, stock, code, color, image, description], 
+    db.run(`INSERT INTO products (id, categoryId, name, brand, price, stock, code, color, image, images, description) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
+      [id, cat.id, name, brand, price, stock, code, color, image, imagesStr, description], 
       function(err2) {
         if (err2) return res.status(500).json({ error: err2.message });
         res.json({ success: true });
@@ -212,12 +220,14 @@ app.post('/api/products', (req, res) => {
 });
 
 app.put('/api/products/:id', (req, res) => {
-  const { categorySlug, name, brand, image, description } = req.body;
+  const { categorySlug, name, brand, image, images, description } = req.body;
+  const imagesStr = Array.isArray(images) ? JSON.stringify(images) : (image ? JSON.stringify([image]) : null);
+
   db.get('SELECT id FROM categories WHERE slug = ?', [categorySlug], (err, cat) => {
     if (err || !cat) return res.status(404).json({ error: 'Category not found' });
     
-    db.run('UPDATE products SET categoryId = ?, name = ?, brand = ?, image = ?, description = ? WHERE id = ?', 
-      [cat.id, name, brand, image, description, req.params.id], 
+    db.run('UPDATE products SET categoryId = ?, name = ?, brand = ?, image = ?, images = ?, description = ? WHERE id = ?', 
+      [cat.id, name, brand, image, imagesStr, description, req.params.id], 
       function(err2) {
         if (err2) return res.status(500).json({ error: err2.message });
         res.json({ success: true });

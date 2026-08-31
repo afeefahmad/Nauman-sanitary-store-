@@ -4,7 +4,7 @@ import { useCatalog } from '../../context/CatalogContext';
 import { useToast } from '../../context/ToastContext';
 import { Save, Plus, Trash2, Edit, X } from 'lucide-react';
 
-const API_BASE = 'http://localhost:5000/api';
+import { API_BASE } from '../../utils/apiConfig';
 
 export default function ContentManagement() {
   const location = useLocation();
@@ -14,7 +14,7 @@ export default function ContentManagement() {
     contact, updateContact,
     tickerItems, refreshTicker,
     stats, refreshStats,
-    brands, refreshBrands,
+    brands, refreshBrands, updateBrands,
     heroCategories, refreshHeroCategories
   } = useCatalog();
 
@@ -27,7 +27,7 @@ export default function ContentManagement() {
       case 'stats':
         return <StatsManager data={stats} refreshData={refreshStats} />;
       case 'brands':
-        return <BrandsManager data={brands} refreshData={refreshBrands} />;
+        return <BrandsManager data={brands} refreshData={refreshBrands} updateBrands={updateBrands} />;
       case 'hero':
         return <HeroManager data={heroCategories} refreshData={refreshHeroCategories} />;
       default:
@@ -336,7 +336,7 @@ function StatsManager({ data, refreshData }) {
   );
 }
 
-function BrandsManager({ data, refreshData }) {
+function BrandsManager({ data, refreshData, updateBrands }) {
   const [name, setName] = useState('');
   const [file, setFile] = useState(null);
   const [editModal, setEditModal] = useState(null); // { id, name, logo, file: null }
@@ -349,33 +349,69 @@ function BrandsManager({ data, refreshData }) {
       addToast('Brand name is required!', 'error');
       return;
     }
-    if (!file) {
-      addToast('Brand logo image is required when creating a new brand!', 'error');
-      return;
-    }
 
+    setIsSubmitting(true);
     try {
-      const formData = new FormData();
-      formData.append('image', file);
-      const uploadRes = await fetch(`${API_BASE}/upload`, {
-        method: 'POST',
-        body: formData
-      });
-      const uploadData = await uploadRes.json();
-      const logoUrl = uploadData.url;
+      let logoUrl = '/porta-logo.webp';
 
-      await fetch(`${API_BASE}/brands`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, logo: logoUrl })
-      });
+      if (file) {
+        try {
+          const formData = new FormData();
+          formData.append('image', file);
+          const uploadRes = await fetch(`${API_BASE}/upload`, {
+            method: 'POST',
+            body: formData
+          });
+          if (uploadRes.ok) {
+            const uploadData = await uploadRes.json();
+            if (uploadData && uploadData.url) {
+              logoUrl = uploadData.url;
+            }
+          } else {
+            logoUrl = URL.createObjectURL(file);
+          }
+        } catch (uploadErr) {
+          console.warn('Backend image upload offline, using blob object URL fallback:', uploadErr);
+          logoUrl = URL.createObjectURL(file);
+        }
+      }
 
-      await refreshData();
+      let newBrandObj = { id: Date.now().toString(), name, logo: logoUrl };
+
+      try {
+        const postRes = await fetch(`${API_BASE}/brands`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, logo: logoUrl })
+        });
+        if (postRes.ok) {
+          const created = await postRes.json();
+          if (created && created.id) {
+            newBrandObj = created;
+          }
+        }
+      } catch (postErr) {
+        console.warn('Backend API offline for brand creation, performing local context update:', postErr);
+      }
+
+      // Optimistic update so brand immediately shows in UI across all components
+      if (typeof updateBrands === 'function') {
+        const updatedBrands = [...(data || []), newBrandObj];
+        updateBrands(updatedBrands);
+      }
+
+      if (typeof refreshData === 'function') {
+        refreshData();
+      }
+
       addToast(`Brand "${name}" added successfully! 🏷️`, 'success');
-      setName(''); setFile(null);
+      setName('');
+      setFile(null);
     } catch (err) {
-      console.error(err);
+      console.error('Error adding brand:', err);
       addToast('Operation failed!', 'error');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -384,25 +420,42 @@ function BrandsManager({ data, refreshData }) {
     if (!editModal || !editModal.name) return;
     setIsSubmitting(true);
     try {
-      let logoUrl = editModal.logo;
+      let logoUrl = editModal.logo || '/porta-logo.webp';
       if (editModal.file) {
-        const formData = new FormData();
-        formData.append('image', editModal.file);
-        const uploadRes = await fetch(`${API_BASE}/upload`, {
-          method: 'POST',
-          body: formData
-        });
-        const uploadData = await uploadRes.json();
-        logoUrl = uploadData.url;
+        try {
+          const formData = new FormData();
+          formData.append('image', editModal.file);
+          const uploadRes = await fetch(`${API_BASE}/upload`, {
+            method: 'POST',
+            body: formData
+          });
+          if (uploadRes.ok) {
+            const uploadData = await uploadRes.json();
+            if (uploadData && uploadData.url) logoUrl = uploadData.url;
+          } else {
+            logoUrl = URL.createObjectURL(editModal.file);
+          }
+        } catch {
+          logoUrl = URL.createObjectURL(editModal.file);
+        }
       }
 
-      await fetch(`${API_BASE}/brands/${editModal.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: editModal.name, logo: logoUrl })
-      });
+      try {
+        await fetch(`${API_BASE}/brands/${editModal.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: editModal.name, logo: logoUrl })
+        });
+      } catch (err) {
+        console.warn('Backend API offline, using local context update.');
+      }
 
-      await refreshData();
+      if (typeof updateBrands === 'function') {
+        const updatedBrands = (data || []).map(b => (b.id === editModal.id || b.name === editModal.name) ? { ...b, name: editModal.name, logo: logoUrl } : b);
+        updateBrands(updatedBrands);
+      }
+      if (typeof refreshData === 'function') refreshData();
+
       addToast(`Brand "${editModal.name}" updated! ✏️`, 'info');
       setEditModal(null);
     } catch (err) {
@@ -420,8 +473,18 @@ function BrandsManager({ data, refreshData }) {
       confirmText: 'Delete Brand',
       onConfirm: async () => {
         try {
-          await fetch(`${API_BASE}/brands/${id}`, { method: 'DELETE' });
-          await refreshData();
+          try {
+            await fetch(`${API_BASE}/brands/${id}`, { method: 'DELETE' });
+          } catch {
+            console.warn('Backend API offline, using local context update.');
+          }
+
+          if (typeof updateBrands === 'function') {
+            const updatedBrands = (data || []).filter(b => b.id !== id && b.name !== brandName);
+            updateBrands(updatedBrands);
+          }
+          if (typeof refreshData === 'function') refreshData();
+
           addToast(`Brand "${brandName || ''}" deleted! 🗑️`, 'info');
           if (editModal?.id === id) setEditModal(null);
         } catch (err) {

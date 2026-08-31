@@ -3,7 +3,7 @@ import { useCatalog } from '../../context/CatalogContext';
 import { useToast } from '../../context/ToastContext';
 import { getProductImage } from '../../data/categories';
 import { Plus, Trash2, Edit, Search, X, PackageX, RefreshCw, Download, Eye, ChevronLeft, ChevronRight, CheckSquare, Square } from 'lucide-react';
-
+import { API_BASE } from '../../utils/apiConfig';
 export default function ManageCategories() {
   const { categories, addProduct, deleteProduct, deleteProductsBulk, brands, updateProduct } = useCatalog();
   const { addToast, confirmAction } = useToast();
@@ -13,14 +13,19 @@ export default function ManageCategories() {
   const [newProductBrand, setNewProductBrand] = useState('all');
   const [newProductDesc, setNewProductDesc] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [file, setFile] = useState(null);
   const [editingProductId, setEditingProductId] = useState(null);
+
+  // Multiple product images states
+  const [productFiles, setProductFiles] = useState([]); // Array of { id, file, preview }
+  const [existingImages, setExistingImages] = useState([]); // Array of string URLs
+  const [editModalExistingImages, setEditModalExistingImages] = useState([]);
+  const [editModalNewFiles, setEditModalNewFiles] = useState([]);
+  const [quickViewImageIndex, setQuickViewImageIndex] = useState(0);
 
   // Bulk selection & Quick View & Pagination states
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [editModalProduct, setEditModalProduct] = useState(null);
-  const [editModalFile, setEditModalFile] = useState(null);
   const [isSubmittingModal, setIsSubmittingModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -57,15 +62,80 @@ export default function ManageCategories() {
         };
       })();
 
+  // Multiple Image Handlers
+  const handleProductFilesChange = (e) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const selected = Array.from(e.target.files);
+    const newItems = selected.map(f => ({
+      id: Math.random().toString(36).substring(2, 9),
+      file: f,
+      preview: URL.createObjectURL(f)
+    }));
+    setProductFiles(prev => [...prev, ...newItems]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeProductFile = (id) => {
+    setProductFiles(prev => prev.filter(item => item.id !== id));
+  };
+
+  const removeExistingImage = (url) => {
+    setExistingImages(prev => prev.filter(u => u !== url));
+  };
+
+  const handleEditModalFilesChange = (e) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const selected = Array.from(e.target.files);
+    const newItems = selected.map(f => ({
+      id: Math.random().toString(36).substring(2, 9),
+      file: f,
+      preview: URL.createObjectURL(f)
+    }));
+    setEditModalNewFiles(prev => [...prev, ...newItems]);
+  };
+
+  const removeEditModalNewFile = (id) => {
+    setEditModalNewFiles(prev => prev.filter(item => item.id !== id));
+  };
+
+  const removeEditModalExistingImage = (url) => {
+    setEditModalExistingImages(prev => prev.filter(u => u !== url));
+  };
+
+  const uploadMultipleFiles = async (fileList) => {
+    if (!fileList || fileList.length === 0) return [];
+    return await Promise.all(fileList.map(async (item) => {
+      try {
+        const formData = new FormData();
+        formData.append('image', item.file);
+        const res = await fetch(`${API_BASE}/upload`, {
+          method: 'POST',
+          body: formData
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.url) return data.url;
+        }
+        return item.preview;
+      } catch (err) {
+        return item.preview;
+      }
+    }));
+  };
+
   const handleEditClick = (product, catSlug) => {
     const slug = catSlug || product.categorySlug || 'toilets';
+    const imgs = Array.isArray(product.images) && product.images.length > 0
+      ? product.images
+      : (product.image ? [product.image] : []);
     setEditModalProduct({
       ...product,
       categorySlug: slug,
       originalCategorySlug: slug,
       brand: product.brand || 'Unbranded'
     });
-    setEditModalFile(null);
+    setEditModalExistingImages(imgs);
+    setEditModalNewFiles([]);
     setQuickViewProduct(null);
   };
 
@@ -74,17 +144,9 @@ export default function ManageCategories() {
     if (!editModalProduct) return;
     setIsSubmittingModal(true);
     try {
-      let imageUrl = editModalProduct.image;
-      if (editModalFile) {
-        const formData = new FormData();
-        formData.append('image', editModalFile);
-        const uploadRes = await fetch('http://localhost:5000/api/upload', {
-          method: 'POST',
-          body: formData
-        });
-        const uploadData = await uploadRes.json();
-        imageUrl = uploadData.url;
-      }
+      const newUploadedUrls = await uploadMultipleFiles(editModalNewFiles);
+      const finalImages = [...editModalExistingImages, ...newUploadedUrls];
+      const primaryImage = finalImages[0] || editModalProduct.image || '';
 
       await updateProduct(
         editModalProduct.originalCategorySlug,
@@ -93,13 +155,16 @@ export default function ManageCategories() {
         {
           name: editModalProduct.name,
           brand: editModalProduct.brand,
-          image: imageUrl
+          description: editModalProduct.description,
+          image: primaryImage,
+          images: finalImages
         }
       );
 
       addToast(`Product "${editModalProduct.name}" updated! ✏️`, 'success');
       setEditModalProduct(null);
-      setEditModalFile(null);
+      setEditModalExistingImages([]);
+      setEditModalNewFiles([]);
     } catch (err) {
       console.error(err);
       addToast('Failed to update product!', 'error');
@@ -113,7 +178,8 @@ export default function ManageCategories() {
     setNewProductName('');
     setNewProductBrand('all');
     setNewProductDesc('');
-    setFile(null);
+    setProductFiles([]);
+    setExistingImages([]);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -194,36 +260,27 @@ export default function ManageCategories() {
       addToast("Please select a specific Category and Brand!", 'error');
       return;
     }
-    if (!newProductName || (!file && !editingProductId)) {
-      addToast("Name, Brand, and Image are required!", 'error');
+    if (!newProductName || (productFiles.length === 0 && existingImages.length === 0 && !editingProductId)) {
+      addToast("Name, Brand, and at least 1 Product Image are required!", 'error');
       return;
     }
 
-    let imageUrl = undefined;
-    if (file) {
-      const formData = new FormData();
-      formData.append('image', file);
-      try {
-        const uploadRes = await fetch('http://localhost:5000/api/upload', {
-          method: 'POST',
-          body: formData
-        });
-        const uploadData = await uploadRes.json();
-        imageUrl = uploadData.url;
-      } catch (err) {
-        console.error(err);
-        addToast('Image upload failed!', 'error');
-        return;
-      }
-    }
+    const newUploadedUrls = await uploadMultipleFiles(productFiles);
+    const finalImages = [...existingImages, ...newUploadedUrls];
+    const primaryImage = finalImages[0] || '';
 
     if (editingProductId) {
       const oldProduct = categories.flatMap(c => c.products || []).find(p => p.id === editingProductId);
       const oldCat = categories.find(c => (c.products || []).some(p => p.id === editingProductId));
       const oldCatSlug = oldCat ? oldCat.slug : activeCategorySlug;
-      
-      const updateData = { name: newProductName, brand: newProductBrand, description: newProductDesc };
-      updateData.image = imageUrl || (oldProduct ? oldProduct.image : '');
+
+      const updateData = {
+        name: newProductName,
+        brand: newProductBrand,
+        description: newProductDesc,
+        image: primaryImage || (oldProduct ? oldProduct.image : ''),
+        images: finalImages.length > 0 ? finalImages : (oldProduct?.images || [primaryImage])
+      };
 
       await updateProduct(oldCatSlug, activeCategorySlug, editingProductId, updateData);
       addToast(`Product "${newProductName}" updated successfully! ✏️`, 'success');
@@ -237,12 +294,14 @@ export default function ManageCategories() {
         description: newProductDesc,
         model: newProductName,
         tag: newProductBrand,
-        image: imageUrl || ''
+        image: primaryImage,
+        images: finalImages
       });
-      addToast(`Product "${newProdName}" added successfully! 🎉`, 'success');
+      addToast(`Product "${newProdName}" added successfully with ${finalImages.length} image${finalImages.length !== 1 ? 's' : ''}! 🎉`, 'success');
       setNewProductName('');
       setNewProductDesc('');
-      setFile(null);
+      setProductFiles([]);
+      setExistingImages([]);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
@@ -395,15 +454,62 @@ export default function ManageCategories() {
                 </div>
 
                 <div className="flex flex-col gap-1 flex-1 w-full">
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Product Image</label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">
+                      Product Images ({existingImages.length + productFiles.length})
+                    </label>
+                  </div>
                   <input 
-                    required={!editingProductId}
+                    required={!editingProductId && existingImages.length === 0 && productFiles.length === 0}
                     type="file" 
+                    multiple
                     accept="image/*"
                     ref={fileInputRef}
-                    className="w-full h-9 px-3 py-1 rounded-md border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-[10px] file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
-                    onChange={(e) => setFile(e.target.files[0])}
+                    className="w-full h-9 px-3 py-1 rounded-md border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-[10px] file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
+                    onChange={handleProductFilesChange}
                   />
+
+                  {/* Thumbnail Previews */}
+                  {(existingImages.length > 0 || productFiles.length > 0) && (
+                    <div className="flex items-center gap-2 overflow-x-auto py-1.5 scrollbar-thin">
+                      {existingImages.map((imgUrl, idx) => (
+                        <div key={`exist-${idx}`} className="relative group shrink-0 w-10 h-10 rounded-lg border bg-white p-0.5 shadow-sm">
+                          <img src={imgUrl} alt="" className="w-full h-full object-cover rounded-md" />
+                          {idx === 0 && (
+                            <span className="absolute bottom-0 inset-x-0 bg-primary/90 text-[7px] text-white font-bold text-center py-0.2 rounded-b-md">Main</span>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => removeExistingImage(imgUrl)}
+                            className="absolute -top-1.5 -right-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full p-0.5 shadow-md transition-colors"
+                            title="Remove Photo"
+                          >
+                            <X className="w-2.5 h-2.5" />
+                          </button>
+                        </div>
+                      ))}
+
+                      {productFiles.map((item, idx) => {
+                        const isPrimary = existingImages.length === 0 && idx === 0;
+                        return (
+                          <div key={item.id} className="relative group shrink-0 w-10 h-10 rounded-lg border bg-white p-0.5 shadow-sm">
+                            <img src={item.preview} alt="" className="w-full h-full object-cover rounded-md" />
+                            {isPrimary && (
+                              <span className="absolute bottom-0 inset-x-0 bg-primary/90 text-[7px] text-white font-bold text-center py-0.2 rounded-b-md">Main</span>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => removeProductFile(item.id)}
+                              className="absolute -top-1.5 -right-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full p-0.5 shadow-md transition-colors"
+                              title="Remove Photo"
+                            >
+                              <X className="w-2.5 h-2.5" />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
 
                 {editingProductId ? (
@@ -669,20 +775,67 @@ export default function ManageCategories() {
 
             {/* Content Body */}
             <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
-              {/* Product Image */}
+              {/* Product Image Gallery Slider */}
               {(() => {
-                const imgSrc = quickViewProduct.image || getProductImage(quickViewProduct.categorySlug, quickViewProduct.name, quickViewProduct.brand) || '/prod-commode.png';
+                const allImgs = (Array.isArray(quickViewProduct.images) && quickViewProduct.images.length > 0)
+                  ? quickViewProduct.images
+                  : [(quickViewProduct.image || getProductImage(quickViewProduct.categorySlug, quickViewProduct.name, quickViewProduct.brand) || '/prod-commode.png')];
+
+                const currentImg = allImgs[quickViewImageIndex] || allImgs[0];
+
                 return (
-                  <div className="relative group shrink-0">
-                    <img
-                      src={imgSrc}
-                      alt={quickViewProduct.name}
-                      className="w-48 h-48 object-cover rounded-2xl border border-slate-700 bg-white p-2 shadow-xl"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = '/prod-commode.png';
-                      }}
-                    />
+                  <div className="flex flex-col gap-3 shrink-0 items-center">
+                    <div className="relative group shrink-0">
+                      <img
+                        src={currentImg}
+                        alt={quickViewProduct.name}
+                        className="w-48 h-48 object-cover rounded-2xl border border-slate-700 bg-white p-2 shadow-xl"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = '/prod-commode.png';
+                        }}
+                      />
+                      {allImgs.length > 1 && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => setQuickViewImageIndex((quickViewImageIndex - 1 + allImgs.length) % allImgs.length)}
+                            className="absolute left-1 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-slate-900/80 text-white hover:bg-slate-900 border border-slate-700 shadow-md transition-all"
+                            title="Previous Image"
+                          >
+                            <ChevronLeft className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setQuickViewImageIndex((quickViewImageIndex + 1) % allImgs.length)}
+                            className="absolute right-1 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-slate-900/80 text-white hover:bg-slate-900 border border-slate-700 shadow-md transition-all"
+                            title="Next Image"
+                          >
+                            <ChevronRight className="w-4 h-4" />
+                          </button>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Thumbnail gallery selector */}
+                    {allImgs.length > 1 && (
+                      <div className="flex items-center gap-1.5 max-w-[200px] overflow-x-auto py-1 scrollbar-thin">
+                        {allImgs.map((img, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setQuickViewImageIndex(idx)}
+                            className={`w-9 h-9 rounded-lg border overflow-hidden transition-all shrink-0 ${
+                              idx === quickViewImageIndex
+                                ? 'border-[#c8a060] ring-2 ring-[#c8a060]/50 scale-105'
+                                : 'border-slate-700 opacity-60 hover:opacity-100'
+                            }`}
+                          >
+                            <img src={img} alt="" className="w-full h-full object-cover" />
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 );
               })()}
@@ -815,22 +968,62 @@ export default function ManageCategories() {
                 />
               </div>
 
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Product Image</label>
-                <div className="flex items-center gap-3">
-                  {editModalProduct.image ? (
-                    <img src={editModalProduct.image} alt="" className="w-12 h-12 object-cover rounded-lg border bg-white shrink-0" />
-                  ) : (
-                    <div className="w-12 h-12 rounded-lg bg-muted border flex items-center justify-center text-xs text-muted-foreground shrink-0">No Img</div>
-                  )}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setEditModalFile(e.target.files[0])}
-                    className="w-full text-xs file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
-                  />
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Product Images ({editModalExistingImages.length + editModalNewFiles.length})
+                  </label>
                 </div>
-                <p className="text-[11px] text-muted-foreground italic mt-0.5">Leave image empty to keep current picture.</p>
+
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleEditModalFilesChange}
+                  className="w-full text-xs file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
+                />
+
+                {/* Previews in Edit Modal */}
+                {(editModalExistingImages.length > 0 || editModalNewFiles.length > 0) && (
+                  <div className="flex items-center gap-2 overflow-x-auto py-2 scrollbar-thin">
+                    {editModalExistingImages.map((imgUrl, idx) => (
+                      <div key={`exist-${idx}`} className="relative group shrink-0 w-12 h-12 rounded-lg border bg-white p-0.5 shadow-sm">
+                        <img src={imgUrl} alt="" className="w-full h-full object-cover rounded-md" />
+                        {idx === 0 && (
+                          <span className="absolute bottom-0 inset-x-0 bg-primary/90 text-[7px] text-white font-bold text-center py-0.2 rounded-b-md">Main</span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => removeEditModalExistingImage(imgUrl)}
+                          className="absolute -top-1.5 -right-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full p-0.5 shadow-md transition-colors"
+                          title="Remove Image"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+
+                    {editModalNewFiles.map((item, idx) => {
+                      const isPrimary = editModalExistingImages.length === 0 && idx === 0;
+                      return (
+                        <div key={item.id} className="relative group shrink-0 w-12 h-12 rounded-lg border bg-white p-0.5 shadow-sm">
+                          <img src={item.preview} alt="" className="w-full h-full object-cover rounded-md" />
+                          {isPrimary && (
+                            <span className="absolute bottom-0 inset-x-0 bg-primary/90 text-[7px] text-white font-bold text-center py-0.2 rounded-b-md">Main</span>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => removeEditModalNewFile(item.id)}
+                            className="absolute -top-1.5 -right-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full p-0.5 shadow-md transition-colors"
+                            title="Remove Image"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-3 border-t">
