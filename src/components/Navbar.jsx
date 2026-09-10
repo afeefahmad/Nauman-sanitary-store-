@@ -72,7 +72,7 @@ export default function Navbar() {
     { label: 'Home', id: 'hero' },
     { label: 'Categories', id: 'categories' },
     { label: 'Brands', id: 'brand-showcase' },
-    { label: 'Products', id: 'products' },
+    { label: 'Products', id: 'all-cats' },
     { label: 'Contact', id: 'contact' },
   ];
 
