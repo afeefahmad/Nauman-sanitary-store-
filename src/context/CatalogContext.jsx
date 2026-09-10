@@ -169,30 +169,20 @@ export function CatalogProvider({ children }) {
         body: JSON.stringify({ ...productData, categorySlug: newCategorySlug })
       });
       
-      let newCategories = [...categories];
-      if (oldCategorySlug === newCategorySlug) {
-        newCategories = newCategories.map(cat => {
-          if (cat.slug === newCategorySlug) {
-            return { ...cat, products: cat.products.map(p => p.id === productId ? { ...p, ...productData } : p) };
-          }
-          return cat;
-        });
-      } else {
-        let movedProduct = null;
-        newCategories = newCategories.map(cat => {
-          if (cat.slug === oldCategorySlug) {
-            movedProduct = cat.products.find(p => p.id === productId);
-            return { ...cat, products: cat.products.filter(p => p.id !== productId) };
-          }
-          return cat;
-        });
-        newCategories = newCategories.map(cat => {
-          if (cat.slug === newCategorySlug) {
-            return { ...cat, products: [{ ...movedProduct, ...productData }, ...cat.products] };
-          }
-          return cat;
-        });
-      }
+      const targetCategorySlug = (newCategorySlug && newCategorySlug !== 'all') 
+        ? newCategorySlug 
+        : ((oldCategorySlug && oldCategorySlug !== 'all') ? oldCategorySlug : 'toilets');
+
+      const newCategories = categories.map(cat => {
+        const filteredProducts = (cat.products || []).filter(p => p.id !== productId);
+        if (cat.slug === targetCategorySlug) {
+          const existingProd = (cat.products || []).find(p => p.id === productId);
+          const updatedProd = existingProd ? { ...existingProd, ...productData } : { id: productId, ...productData };
+          return { ...cat, products: [updatedProd, ...filteredProducts] };
+        }
+        return { ...cat, products: filteredProducts };
+      });
+
       setCategories(newCategories);
     } catch (e) { console.error(e); }
   };

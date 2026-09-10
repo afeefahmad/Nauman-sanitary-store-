@@ -272,7 +272,8 @@ export default function ManageCategories() {
     if (editingProductId) {
       const oldProduct = categories.flatMap(c => c.products || []).find(p => p.id === editingProductId);
       const oldCat = categories.find(c => (c.products || []).some(p => p.id === editingProductId));
-      const oldCatSlug = oldCat ? oldCat.slug : activeCategorySlug;
+      const oldCatSlug = oldCat ? oldCat.slug : (activeCategorySlug === 'all' ? 'toilets' : activeCategorySlug);
+      const targetCatSlug = activeCategorySlug === 'all' ? oldCatSlug : activeCategorySlug;
 
       const updateData = {
         name: newProductName,
@@ -282,7 +283,7 @@ export default function ManageCategories() {
         images: finalImages.length > 0 ? finalImages : (oldProduct?.images || [primaryImage])
       };
 
-      await updateProduct(oldCatSlug, activeCategorySlug, editingProductId, updateData);
+      await updateProduct(oldCatSlug, targetCatSlug, editingProductId, updateData);
       addToast(`Product "${newProductName}" updated successfully! ✏️`, 'success');
       handleCancelEdit();
     } else {

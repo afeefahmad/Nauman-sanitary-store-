@@ -441,8 +441,34 @@ body {
 }
 
 .nav-links {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  transform: translateX(-50%);
   display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  z-index: 10;
+}
+
+@media (max-width: 1024px) {
+  .nav-links {
+    display: none !important;
+  }
+}
+
+.nav-links li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  margin: 0;
+  padding: 0;
   list-style: none;
 }
 
@@ -453,7 +479,13 @@ body {
   text-transform: uppercase;
   color: var(--mist);
   position: relative;
-  padding-bottom: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
   transition: color 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
   cursor: pointer;
 }
@@ -461,7 +493,7 @@ body {
 .nav-links a::after {
   content: '';
   position: absolute;
-  bottom: 0;
+  bottom: calc(50% - 14px);
   left: 0;
   width: 100%;
   height: 1px;
@@ -483,26 +515,27 @@ body {
 /* ── DROPDOWN ── */
 .nav-item-dropdown {
   position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
 }
 
 .nav-dropdown {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 4px);
   left: 50%;
-  transform: translateX(-50%) translateY(15px);
+  transform: translateX(-50%) translateY(10px);
   background: var(--nav-solid-bg, rgba(6, 7, 8, 0.97));
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border: 1px solid var(--border);
-  border-top: none;
-  border-bottom-left-radius: 16px;
-  border-bottom-right-radius: 16px;
+  border-radius: 16px;
   padding: 0.5rem 0;
   min-width: 220px;
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
   z-index: 100;
@@ -517,10 +550,10 @@ body {
 .nav-dropdown::before {
   content: '';
   position: absolute;
-  top: -20px;
+  top: -25px;
   left: 0;
   width: 100%;
-  height: 20px;
+  height: 25px;
 }
 
 .nav-links .nav-dropdown-item {
@@ -1754,7 +1787,7 @@ body {
   height: 100%;
   object-fit: cover;
   object-position: center center;
-  filter: brightness(0.72) saturate(0.85) contrast(1.08);
+  filter: brightness(0.9) saturate(1.05) contrast(1.05);
   transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -1768,12 +1801,12 @@ body {
   object-position: center 60%;
 }
 
-/* Card 2 — Basins: center the ceramic basin nicely */
+/* Card 2 — Taps & Fittings / Basins: perfect center framing for wide cards */
 .cat-card:nth-child(2) .cat-fill img {
-  object-position: center 45%;
+  object-position: center center;
 }
 
-/* Card 3 — Taps & Fittings: landscape shot, center it */
+/* Card 3 — Taps & Fittings / Vanities: focal center */
 .cat-card:nth-child(3) .cat-fill img {
   object-position: center center;
 }
@@ -3836,16 +3869,20 @@ body {
   top: 10px;
   left: 10px;
   z-index: 10;
-  background: rgba(6, 7, 8, 0.82);
+  background: rgba(6, 7, 8, 0.85);
   color: var(--bronze-lt, #f4d59f);
   border: 1px solid rgba(200, 160, 96, 0.35);
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 4px 10px;
   border-radius: 999px;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
 .prod-dots-indicator {
@@ -3974,8 +4011,8 @@ body {
   transition: all 0.35s ease;
 }
 
-.prod-card:hover .cat-prod-desc,
-.cat-prod-card:hover .cat-prod-desc {
+.cat-prod-info:hover .cat-prod-desc,
+.cat-prod-info.expanded .cat-prod-desc {
   max-height: 60px;
   opacity: 1;
   margin-top: 6px;
@@ -3993,7 +4030,8 @@ body {
   transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-.cat-prod-card:hover .cat-prod-footer {
+.cat-prod-info:hover .cat-prod-footer,
+.cat-prod-info.expanded .cat-prod-footer {
   max-height: 100px;
   opacity: 1;
   margin-top: 1.2rem;

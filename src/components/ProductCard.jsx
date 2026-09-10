@@ -11,14 +11,29 @@ export default function ProductCard({
   normalizeBrand
 }) {
   const [imgIdx, setImgIdx] = useState(0);
+  const [isExpanded, setIsExpanded] = useState(false);
   const scrollWrapRef = useRef(null);
 
   const catSlug = slug || prod._catSlug || prod.categorySlug || 'toilets';
 
-  // Gather all images array
-  const allImages = (Array.isArray(prod.images) && prod.images.length > 0)
-    ? prod.images.filter(Boolean)
-    : [(prod.image || getProductImage(catSlug, prod.name, prod.brand) || PROD_IMAGES?.[catSlug] || '/prod-commode.png')];
+  // Gather all images array safely (handling Array, JSON string, or single image fallback)
+  let resolvedImages = [];
+  if (Array.isArray(prod.images) && prod.images.length > 0) {
+    resolvedImages = prod.images.filter(Boolean);
+  } else if (typeof prod.images === 'string' && prod.images.trim().startsWith('[')) {
+    try {
+      const parsed = JSON.parse(prod.images);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        resolvedImages = parsed.filter(Boolean);
+      }
+    } catch (e) {}
+  }
+
+  if (resolvedImages.length === 0) {
+    resolvedImages = [(prod.image || getProductImage(catSlug, prod.name, prod.brand) || PROD_IMAGES?.[catSlug] || '/prod-commode.png')];
+  }
+
+  const allImages = resolvedImages;
 
   const hasMultipleImages = allImages.length > 1;
   const brandName = normalizeBrand ? normalizeBrand(prod.brand) : (prod.brand || '');
@@ -102,7 +117,7 @@ export default function ProductCard({
         {hasMultipleImages && (
           <>
             <span className="prod-img-badge">
-              📷 {imgIdx + 1} / {allImages.length}
+              {imgIdx + 1} / {allImages.length}
             </span>
             <button
               type="button"
@@ -140,7 +155,13 @@ export default function ProductCard({
       </div>
 
       {/* Card Metadata Info */}
-      <div className="cat-prod-info">
+      <div
+        className={`cat-prod-info ${isExpanded ? 'expanded' : ''}`}
+        onClick={(e) => {
+          if (e.target.closest('button') || e.target.closest('a')) return;
+          setIsExpanded(prev => !prev);
+        }}
+      >
         <div className="cat-prod-brand">{brandName}</div>
         <div className="cat-prod-name">{prod.name.replace(/\s*Model:.*$/i, '')}</div>
         {prod.description && <div className="cat-prod-desc">{prod.description}</div>}

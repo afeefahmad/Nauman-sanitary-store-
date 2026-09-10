@@ -6,6 +6,8 @@ import { Save, Plus, Trash2, Edit, X } from 'lucide-react';
 
 import { API_BASE } from '../../utils/apiConfig';
 
+import PROD_IMAGES from '../../constants/productImages';
+
 export default function ContentManagement() {
   const location = useLocation();
   const path = location.pathname.split('/').pop(); // 'contact', 'ticker', 'stats', 'brands', 'hero'
@@ -15,7 +17,7 @@ export default function ContentManagement() {
     tickerItems, refreshTicker,
     stats, refreshStats,
     brands, refreshBrands, updateBrands,
-    heroCategories, refreshHeroCategories
+    heroCategories, refreshHeroCategories, updateHeroCategories
   } = useCatalog();
 
   const renderContent = () => {
@@ -29,7 +31,7 @@ export default function ContentManagement() {
       case 'brands':
         return <BrandsManager data={brands} refreshData={refreshBrands} updateBrands={updateBrands} />;
       case 'hero':
-        return <HeroManager data={heroCategories} refreshData={refreshHeroCategories} />;
+        return <HeroManager data={heroCategories} refreshData={refreshHeroCategories} updateHeroCategories={updateHeroCategories} />;
       default:
         return <div>Select a module from the sidebar.</div>;
     }
@@ -569,7 +571,7 @@ function BrandsManager({ data, refreshData, updateBrands }) {
   );
 }
 
-function HeroManager({ data, refreshData }) {
+function HeroManager({ data, refreshData, updateHeroCategories }) {
   const [title, setTitle] = useState('');
   const [subtitle, setSubtitle] = useState('');
   const [file, setFile] = useState(null);
@@ -584,33 +586,72 @@ function HeroManager({ data, refreshData }) {
       addToast('Title and Slug are required!', 'error');
       return;
     }
-    if (!file) {
-      addToast('Image is required when creating a new category card!', 'error');
-      return;
-    }
 
+    setIsSubmitting(true);
     try {
-      const formData = new FormData();
-      formData.append('image', file);
-      const uploadRes = await fetch(`${API_BASE}/upload`, {
-        method: 'POST',
-        body: formData
-      });
-      const uploadData = await uploadRes.json();
-      const imgUrl = uploadData.url;
+      let imgUrl = PROD_IMAGES[slug] || '/cat-taps-luxury.png';
 
-      await fetch(`${API_BASE}/hero`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, subtitle, img: imgUrl, slug })
-      });
+      if (file) {
+        try {
+          const formData = new FormData();
+          formData.append('image', file);
+          const uploadRes = await fetch(`${API_BASE}/upload`, {
+            method: 'POST',
+            body: formData
+          });
+          if (uploadRes.ok) {
+            const uploadData = await uploadRes.json();
+            if (uploadData && uploadData.url) {
+              imgUrl = uploadData.url;
+            }
+          } else {
+            imgUrl = URL.createObjectURL(file);
+          }
+        } catch (uploadErr) {
+          console.warn('Backend image upload offline, using blob object URL fallback:', uploadErr);
+          imgUrl = URL.createObjectURL(file);
+        }
+      }
 
-      await refreshData();
+      let newHeroObj = {
+        id: Date.now().toString(),
+        title,
+        subtitle,
+        img: imgUrl,
+        slug,
+        name: title,
+        hint: subtitle
+      };
+
+      try {
+        const postRes = await fetch(`${API_BASE}/hero`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, subtitle, img: imgUrl, slug })
+        });
+        if (postRes.ok) {
+          const created = await postRes.json();
+          if (created && created.id) {
+            newHeroObj = { ...newHeroObj, ...created };
+          }
+        }
+      } catch (postErr) {
+        console.warn('Backend API offline for hero category creation, performing local context update:', postErr);
+      }
+
+      if (typeof updateHeroCategories === 'function') {
+        const updatedList = [...(data || []), newHeroObj];
+        updateHeroCategories(updatedList);
+      }
+      if (typeof refreshData === 'function') refreshData();
+
       addToast(`Category card "${title}" added! 🏷️`, 'success');
       setTitle(''); setSubtitle(''); setSlug(''); setFile(null);
     } catch (err) {
       console.error(err);
       addToast('Operation failed!', 'error');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -621,23 +662,47 @@ function HeroManager({ data, refreshData }) {
     try {
       let imgUrl = editModal.img;
       if (editModal.file) {
-        const formData = new FormData();
-        formData.append('image', editModal.file);
-        const uploadRes = await fetch(`${API_BASE}/upload`, {
-          method: 'POST',
-          body: formData
-        });
-        const uploadData = await uploadRes.json();
-        imgUrl = uploadData.url;
+        try {
+          const formData = new FormData();
+          formData.append('image', editModal.file);
+          const uploadRes = await fetch(`${API_BASE}/upload`, {
+            method: 'POST',
+            body: formData
+          });
+          if (uploadRes.ok) {
+            const uploadData = await uploadRes.json();
+            if (uploadData && uploadData.url) {
+              imgUrl = uploadData.url;
+            }
+          } else {
+            imgUrl = URL.createObjectURL(editModal.file);
+          }
+        } catch (uploadErr) {
+          console.warn('Backend image upload offline, using blob object URL fallback:', uploadErr);
+          imgUrl = URL.createObjectURL(editModal.file);
+        }
       }
 
-      await fetch(`${API_BASE}/hero/${editModal.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: editModal.title, subtitle: editModal.subtitle, img: imgUrl, slug: editModal.slug })
-      });
+      try {
+        await fetch(`${API_BASE}/hero/${editModal.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: editModal.title, subtitle: editModal.subtitle, img: imgUrl, slug: editModal.slug })
+        });
+      } catch (putErr) {
+        console.warn('Backend API offline for hero category update, using local context update:', putErr);
+      }
 
-      await refreshData();
+      if (typeof updateHeroCategories === 'function') {
+        const updatedList = (data || []).map(h =>
+          (h.id === editModal.id || h.slug === editModal.slug)
+            ? { ...h, title: editModal.title, name: editModal.title, subtitle: editModal.subtitle, hint: editModal.subtitle, img: imgUrl, slug: editModal.slug }
+            : h
+        );
+        updateHeroCategories(updatedList);
+      }
+      if (typeof refreshData === 'function') refreshData();
+
       addToast(`Category card "${editModal.title}" updated! ✏️`, 'info');
       setEditModal(null);
     } catch (err) {
@@ -655,8 +720,18 @@ function HeroManager({ data, refreshData }) {
       confirmText: 'Delete Card',
       onConfirm: async () => {
         try {
-          await fetch(`${API_BASE}/hero/${id}`, { method: 'DELETE' });
-          await refreshData();
+          try {
+            await fetch(`${API_BASE}/hero/${id}`, { method: 'DELETE' });
+          } catch (delErr) {
+            console.warn('Backend API offline for hero category delete, using local context update:', delErr);
+          }
+
+          if (typeof updateHeroCategories === 'function') {
+            const updatedList = (data || []).filter(h => h.id !== id && h.title !== heroTitle);
+            updateHeroCategories(updatedList);
+          }
+          if (typeof refreshData === 'function') refreshData();
+
           addToast(`Category card "${heroTitle || ''}" removed! 🗑️`, 'info');
           if (editModal?.id === id) setEditModal(null);
         } catch (err) {

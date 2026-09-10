@@ -88,14 +88,13 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Desktop Links */}
         <ul className="nav-links">
           {navLinks.map(l => (
             <li key={l.id} className={l.id === 'categories' || l.id === 'brand-showcase' ? 'nav-item-dropdown' : ''}>
               <a
-                onClick={() => scrollTo(l.id)}
+                onClick={() => l.id === 'hero' ? goHome() : scrollTo(l.id)}
                 tabIndex={0}
-                onKeyDown={e => e.key === 'Enter' && scrollTo(l.id)}
+                onKeyDown={e => e.key === 'Enter' && (l.id === 'hero' ? goHome() : scrollTo(l.id))}
               >
                 {l.label}
               </a>
