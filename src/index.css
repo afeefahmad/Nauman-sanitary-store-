@@ -243,24 +243,44 @@
 }
 
 html,
-body {
+body,
+.marketing-site,
+#nav,
+#nav::before,
+#nav.solid,
+.sec,
+.sec-sm,
+#legacy,
+#products,
+#all-cats,
+#contact,
+#footer,
+.prod-card,
+.cat-card,
+.cat-prod-card,
+.contact-form-wrap,
+.nav-dropdown,
+.nav-submenu {
   background-color: var(--ink);
   color: var(--ivory);
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html,
+body {
   scroll-behavior: smooth;
   font-size: 16px;
-  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .marketing-site {
-  background: var(--ink);
-  color: var(--ivory);
   font-family: 'Jost', sans-serif;
   font-weight: 300;
   overflow-x: hidden;
   cursor: none;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
-  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ─── SCROLLBAR ─── */
@@ -367,8 +387,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--nav-solid-bg, #060708);
-  transition: background .3s, border-color .3s, height .3s;
+  background-color: var(--nav-solid-bg, #060708);
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), height 0.3s ease;
   border-bottom: 1px solid var(--border-sub);
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
@@ -382,13 +402,13 @@ body {
   left: 0;
   right: 0;
   height: 120px;
-  background: var(--nav-solid-bg, #060708);
+  background-color: var(--nav-solid-bg, #060708);
   pointer-events: none;
 }
 
 #nav.solid {
   height: calc(68px + env(safe-area-inset-top, 0px));
-  background: var(--nav-solid-bg, #060708);
+  background-color: var(--nav-solid-bg, #060708);
   border-bottom-color: var(--border);
   box-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
 }
