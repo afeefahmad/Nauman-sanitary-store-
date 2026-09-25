@@ -116,8 +116,8 @@
 }
 
 .inquiry-drawer-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-weight: 800;
+  font-family: var(--font-display, 'DM Serif Display', serif);
+  font-weight: 400;
   font-size: 1.125rem;
   color: #ffffff;
   letter-spacing: 0.025em;
@@ -242,8 +242,8 @@
 }
 
 .inquiry-drawer-empty-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-weight: 700;
+  font-family: var(--font-display, 'DM Serif Display', serif);
+  font-weight: 400;
   font-size: 1rem;
   color: #ffffff;
   letter-spacing: 0.025em;
