@@ -23,3 +23,5 @@ const PROD_IMAGES = {
 };
 
 export default PROD_IMAGES;
+
+

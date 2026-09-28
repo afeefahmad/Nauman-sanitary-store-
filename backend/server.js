@@ -1,9 +1,11 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const db = require('./database');
+const cloudflareR2 = require('./cloudflareR2');
 
 const app = express();
 app.use(cors());
@@ -15,28 +17,115 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir);
 }
 
+// R2 Streaming Image Proxy Route with local disk fallback
+app.get('/uploads/:filename', async (req, res) => {
+  const filename = req.params.filename;
+  const fileKey = `uploads/${filename}`;
+
+  if (cloudflareR2.isR2Configured()) {
+    try {
+      const obj = await cloudflareR2.getObjectFromR2(fileKey);
+      if (obj && obj.Body) {
+        res.setHeader('Content-Type', obj.ContentType || 'image/jpeg');
+        res.setHeader('Cache-Control', 'public, max-age=31536000');
+        if (typeof obj.Body.pipe === 'function') {
+          return obj.Body.pipe(res);
+        } else {
+          const byteArray = await obj.Body.transformToByteArray();
+          return res.send(Buffer.from(byteArray));
+        }
+      }
+    } catch (err) {
+      console.error('Error streaming from R2:', err.message);
+    }
+  }
+
+  // Local fallback
+  const localFile = path.join(uploadsDir, filename);
+  if (fs.existsSync(localFile)) {
+    return res.sendFile(localFile);
+  }
+  res.status(404).send('File not found');
+});
+
+// Serve R2 public assets (/r2-media/{*path})
+app.get('/r2-media/{*path}', async (req, res) => {
+  const r2Key = Array.isArray(req.params.path) ? req.params.path.join('/') : (req.params.path || '');
+  if (cloudflareR2.isR2Configured() && r2Key) {
+    try {
+      const obj = await cloudflareR2.getObjectFromR2(r2Key);
+      if (obj && obj.Body) {
+        res.setHeader('Content-Type', obj.ContentType || 'image/jpeg');
+        res.setHeader('Cache-Control', 'public, max-age=31536000');
+        if (typeof obj.Body.pipe === 'function') {
+          return obj.Body.pipe(res);
+        } else {
+          const byteArray = await obj.Body.transformToByteArray();
+          return res.send(Buffer.from(byteArray));
+        }
+      }
+    } catch (e) {}
+  }
+  res.status(404).send('Media not found');
+});
+
+
+
 // Serve static files from uploads
 app.use('/uploads', express.static(uploadsDir));
 
-// Multer config
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadsDir),
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+
+// Multer in-memory upload storage
+const upload = multer({ storage: multer.memoryStorage() });
+
+// Cloudflare status endpoint
+app.get('/api/cloudflare/status', async (req, res) => {
+  try {
+    const status = await cloudflareR2.checkR2Status();
+    res.json(status);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
-const upload = multer({ storage });
 
-// Upload Endpoint
-app.post('/api/upload', upload.single('image'), (req, res) => {
+// Upload Endpoint (Cloudflare R2 with fallback to local disk)
+app.post('/api/upload', upload.single('image'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
-  const host = req.get('host') || 'localhost:5000';
-  const imageUrl = `${req.protocol}://${host}/uploads/${req.file.filename}`;
-  res.json({ url: imageUrl });
+
+  // Attempt Cloudflare R2 Upload if configured
+  if (cloudflareR2.isR2Configured()) {
+    try {
+      const r2Url = await cloudflareR2.uploadToR2(
+        req.file.buffer,
+        req.file.originalname,
+        req.file.mimetype
+      );
+      return res.json({ url: r2Url, storage: 'cloudflare_r2' });
+    } catch (err) {
+      console.error('Cloudflare R2 Upload failed, falling back to local storage:', err.message);
+    }
+  }
+
+  // Fallback: save to local disk
+  try {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(req.file.originalname) || '.png';
+    const filename = uniqueSuffix + ext;
+    const filePath = path.join(uploadsDir, filename);
+
+    fs.writeFileSync(filePath, req.file.buffer);
+
+    const host = req.get('host') || 'localhost:5000';
+    const imageUrl = `${req.protocol}://${host}/uploads/${filename}`;
+    return res.json({ url: imageUrl, storage: 'local' });
+  } catch (err) {
+    console.error('Local file write error:', err);
+    return res.status(500).json({ error: 'Failed to upload image' });
+  }
 });
+
 
 // ----------------------------------------------------
 // CMS Routes
