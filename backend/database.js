@@ -7,11 +7,18 @@ const db = new sqlite3.Database(dbPath, (err) => {
     console.error('Error connecting to SQLite database:', err.message);
   } else {
     console.log('Connected to SQLite database.');
+    db.run('PRAGMA journal_mode = WAL');
+    db.run('PRAGMA synchronous = NORMAL');
   }
 });
 
 // Initialize Schema
 db.serialize(() => {
+  // Database Indexes for ultra-fast querying
+  db.run(`CREATE INDEX IF NOT EXISTS idx_products_category ON products(categoryId)`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_products_brand ON products(brand)`);
+  db.run(`CREATE INDEX IF NOT EXISTS idx_categories_slug ON categories(slug)`);
+
   // Contact
   db.run(`CREATE TABLE IF NOT EXISTS contact (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

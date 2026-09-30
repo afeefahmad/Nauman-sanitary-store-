@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const compression = require('compression');
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
@@ -8,8 +9,10 @@ const db = require('./database');
 const cloudflareR2 = require('./cloudflareR2');
 
 const app = express();
+app.use(compression());
 app.use(cors());
 app.use(express.json());
+
 
 // Setup uploads directory
 const uploadsDir = path.join(__dirname, 'uploads');
