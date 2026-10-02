@@ -37,7 +37,7 @@ export default function Footer() {
           <div className="logo-wrap no-underline pointer-events-none">
             <img src="/website-new-logo.png" alt="Nauman Sanitary Store Logo" className="logo-img" />
             <div>
-              <div className="logo-text text-[17px]">Nauman Sanitary Store</div>
+              <div className="logo-text">Nauman Sanitary Store</div>
             </div>
           </div>
           <p className="ft-tagline">
