@@ -432,18 +432,18 @@ body {
 }
 
 .logo-img {
-  height: 34px;
+  height: 36px;
   width: auto;
-  max-width: 140px;
+  aspect-ratio: 1 / 1;
   object-fit: contain;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
-  transition: transform 0.35s ease, filter 0.35s ease;
+  filter: none;
+  transition: transform 0.35s ease;
   flex-shrink: 0;
 }
 
 .logo-wrap:hover .logo-img {
-  transform: scale(1.08);
-  filter: drop-shadow(0 0 12px var(--bronze-glow));
+  transform: scale(1.06);
+  filter: none;
 }
 
 .logo-text {
@@ -4352,7 +4352,8 @@ body {
   }
 
   .logo-img {
-    height: 40px;
+    height: 38px;
+    width: 38px;
   }
 
   .logo-text {
@@ -4496,7 +4497,8 @@ body {
 
 @media (max-width:520px) {
   .logo-img {
-    height: 35px;
+    height: 34px;
+    width: 34px;
   }
 
   .logo-text {
@@ -4566,10 +4568,11 @@ body {
   }
 
   .hero-sub {
-    font-size: clamp(8px, 2.1vw, 9.5px) !important;
-    letter-spacing: clamp(0.8px, 0.4vw, 1.4px) !important;
+    font-size: clamp(10px, 2.8vw, 12px) !important;
+    letter-spacing: 0.12em !important;
+    line-height: 1.55 !important;
     margin-bottom: 1.2rem !important;
-    line-height: 1.4 !important;
+    max-width: 330px !important;
   }
 
   .hero-badge {
@@ -4600,28 +4603,24 @@ body {
   }
 
   .brands-row {
-    display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: 0.4rem !important;
-  }
-
-  .brands-row .brand-pill:nth-child(9) {
-    grid-column: 2 / span 1 !important;
-  }
-
-  .brands-row .brand-pill:nth-child(10) {
-    grid-column: 3 / span 1 !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    padding: 0 0.25rem !important;
   }
 
   .brand-pill,
   .brand-pill.hero-pill {
-    padding: 7px 3px !important;
-    min-width: 0 !important;
-    width: 100% !important;
-    font-size: 8.5px !important;
-    letter-spacing: 0.5px !important;
+    padding: 7px 14px !important;
+    min-width: auto !important;
+    width: auto !important;
+    max-width: 100% !important;
+    font-size: 9.5px !important;
+    letter-spacing: 0.8px !important;
     text-align: center !important;
-    display: flex !important;
+    display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     white-space: nowrap !important;
