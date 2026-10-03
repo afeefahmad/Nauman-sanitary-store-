@@ -1,8 +1,6 @@
 export function normalizeBrand(brandName) {
   if (!brandName) return 'Unbranded';
   const name = brandName.trim().toLowerCase();
-  if (name.includes('super') && name.includes('asia')) return 'Super Asia';
-  if (name.includes('china')) return 'China Products';
   if (name.includes('pool')) return 'Pool Sanitary Ware';
   if (name.includes('dell')) return 'Dell Sanitary Ware';
   if (name.includes('master') && name.includes('pipe')) return 'Master Pipes And Fittings';
