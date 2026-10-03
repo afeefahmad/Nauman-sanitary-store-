@@ -34,16 +34,18 @@ export const STATS = [
 
 // ── All Brands ──────────────────────────────────────────────
 export const BRANDS = [
-  { id: 'porta',    name: 'Porta',    logo: '/porta-logo.webp', hero: true },
-  { id: 'master',   name: 'Master',   hero: true },
-  { id: 'pool',     name: 'Pool',     hero: true },
-  { id: 'iclboch',  name: 'ICL Boch', hero: true },
-  { id: 'dell',     name: 'Dell',     hero: false },
-  { id: 'brite',    name: 'Brite',    hero: false },
-  { id: 'sonex',    name: 'Sonex',    hero: false },
-  { id: 'faisal',   name: 'Faisal',   hero: false },
-  { id: 'kale',     name: 'Kale',     hero: false },
-  { id: 'grohe',    name: 'Grohe',    hero: false },
+  { id: 'porta',         name: 'Porta',         logo: '/porta-logo.webp', hero: true },
+  { id: 'master',        name: 'Master',        hero: true },
+  { id: 'pool',          name: 'Pool',          hero: true },
+  { id: 'super-asia',    name: 'Super Asia',    hero: true },
+  { id: 'china-products',name: 'China Products',hero: true },
+  { id: 'iclboch',       name: 'ICL Boch',      hero: true },
+  { id: 'dell',          name: 'Dell',          hero: false },
+  { id: 'brite',         name: 'Brite',         hero: false },
+  { id: 'sonex',         name: 'Sonex',         hero: false },
+  { id: 'faisal',        name: 'Faisal',        hero: false },
+  { id: 'kale',          name: 'Kale',          hero: false },
+  { id: 'grohe',         name: 'Grohe',         hero: false },
 ];
 
 // ── Hero Categories (5-card grid on homepage) ───────────────

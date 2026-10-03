@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { getProductImage } from '../data/categories';
+import { formatImgUrl } from '../utils/apiConfig';
 
 export default function ProductCard({
   prod,
@@ -31,9 +32,11 @@ export default function ProductCard({
 
   if (resolvedImages.length === 0) {
     resolvedImages = [(prod.image || getProductImage(catSlug, prod.name, prod.brand) || PROD_IMAGES?.[catSlug] || '/prod-commode.png')];
+  } else if (prod.image && !resolvedImages.includes(prod.image)) {
+    resolvedImages.unshift(prod.image);
   }
 
-  const allImages = resolvedImages;
+  const allImages = resolvedImages.map(formatImgUrl);
 
   const hasMultipleImages = allImages.length > 1;
   const brandName = normalizeBrand ? normalizeBrand(prod.brand) : (prod.brand || '');

@@ -120,8 +120,7 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
 
     fs.writeFileSync(filePath, req.file.buffer);
 
-    const host = req.get('host') || 'localhost:5000';
-    const imageUrl = `${req.protocol}://${host}/uploads/${filename}`;
+    const imageUrl = `/uploads/${filename}`;
     return res.json({ url: imageUrl, storage: 'local' });
   } catch (err) {
     console.error('Local file write error:', err);
@@ -279,9 +278,19 @@ app.get('/api/categories', (req, res) => {
     // For each category, fetch products
     db.all('SELECT * FROM products', (err2, prods) => {
       if (err2) return res.status(500).json({ error: err2.message });
+      const cleanUrl = (u) => {
+        if (typeof u === 'string' && u.includes('/uploads/')) {
+          return `/uploads/${u.split('/uploads/')[1]}`;
+        }
+        return u;
+      };
       const processedProds = prods.map(p => {
+        if (p.image) p.image = cleanUrl(p.image);
         if (p.images) {
-          try { p.images = JSON.parse(p.images); } catch(e) {}
+          try {
+            let parsed = typeof p.images === 'string' ? JSON.parse(p.images) : p.images;
+            if (Array.isArray(parsed)) p.images = parsed.map(cleanUrl);
+          } catch(e) {}
         }
         return p;
       });
@@ -296,34 +305,70 @@ app.get('/api/categories', (req, res) => {
 
 app.post('/api/products', (req, res) => {
   const { id, categorySlug, name, brand, price, stock, code, color, image, images, description } = req.body;
-  const imagesStr = Array.isArray(images) ? JSON.stringify(images) : (image ? JSON.stringify([image]) : null);
+  const cleanUrl = (u) => (typeof u === 'string' && u.includes('/uploads/')) ? `/uploads/${u.split('/uploads/')[1]}` : u;
+  const cleanImage = cleanUrl(image);
+  const cleanImagesArr = Array.isArray(images) ? images.map(cleanUrl) : (cleanImage ? [cleanImage] : null);
+  const imagesStr = cleanImagesArr ? JSON.stringify(cleanImagesArr) : null;
+  const slugToUse = categorySlug || 'toilets';
   
-  db.get('SELECT id FROM categories WHERE slug = ?', [categorySlug], (err, cat) => {
-    if (err || !cat) return res.status(404).json({ error: 'Category not found' });
-    
+  const insertProductWithCatId = (catId) => {
     db.run(`INSERT INTO products (id, categoryId, name, brand, price, stock, code, color, image, images, description) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
-      [id, cat.id, name, brand, price, stock, code, color, image, imagesStr, description], 
+      [id, catId, name, brand, price, stock, code, color, cleanImage, imagesStr, description], 
       function(err2) {
         if (err2) return res.status(500).json({ error: err2.message });
         res.json({ success: true });
       });
+  };
+
+  db.get('SELECT id FROM categories WHERE slug = ?', [slugToUse], (err, cat) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!cat) {
+      const formattedName = slugToUse.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      db.run('INSERT INTO categories (slug, name, hint, icon) VALUES (?, ?, ?, ?)',
+        [slugToUse, formattedName, 'Custom Collection', '📦'],
+        function(err3) {
+          if (err3) return res.status(500).json({ error: err3.message });
+          insertProductWithCatId(this.lastID);
+        }
+      );
+    } else {
+      insertProductWithCatId(cat.id);
+    }
   });
 });
 
 app.put('/api/products/:id', (req, res) => {
   const { categorySlug, name, brand, image, images, description } = req.body;
-  const imagesStr = Array.isArray(images) ? JSON.stringify(images) : (image ? JSON.stringify([image]) : null);
+  const cleanUrl = (u) => (typeof u === 'string' && u.includes('/uploads/')) ? `/uploads/${u.split('/uploads/')[1]}` : u;
+  const cleanImage = cleanUrl(image);
+  const cleanImagesArr = Array.isArray(images) ? images.map(cleanUrl) : (cleanImage ? [cleanImage] : null);
+  const imagesStr = cleanImagesArr ? JSON.stringify(cleanImagesArr) : null;
+  const slugToUse = categorySlug || 'toilets';
 
-  db.get('SELECT id FROM categories WHERE slug = ?', [categorySlug], (err, cat) => {
-    if (err || !cat) return res.status(404).json({ error: 'Category not found' });
-    
+  const updateProductWithCatId = (catId) => {
     db.run('UPDATE products SET categoryId = ?, name = ?, brand = ?, image = ?, images = ?, description = ? WHERE id = ?', 
-      [cat.id, name, brand, image, imagesStr, description, req.params.id], 
+      [catId, name, brand, cleanImage, imagesStr, description, req.params.id], 
       function(err2) {
         if (err2) return res.status(500).json({ error: err2.message });
         res.json({ success: true });
     });
+  };
+
+  db.get('SELECT id FROM categories WHERE slug = ?', [slugToUse], (err, cat) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!cat) {
+      const formattedName = slugToUse.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      db.run('INSERT INTO categories (slug, name, hint, icon) VALUES (?, ?, ?, ?)',
+        [slugToUse, formattedName, 'Custom Collection', '📦'],
+        function(err3) {
+          if (err3) return res.status(500).json({ error: err3.message });
+          updateProductWithCatId(this.lastID);
+        }
+      );
+    } else {
+      updateProductWithCatId(cat.id);
+    }
   });
 });
 

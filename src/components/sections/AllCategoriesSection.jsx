@@ -1,14 +1,10 @@
 import { useCatalog } from '../../context/CatalogContext';
 import PROD_IMAGES from '../../constants/productImages';
+import { formatImgUrl } from '../../utils/apiConfig';
 
 /* ─────────────────────────────────────────────
    ALL CATEGORIES SECTION
    Full grid of every product category.
-   Edit ALL_CATEGORIES in data/categories.js
-   to add, remove, or rename categories.
-
-   Props:
-     onGoCategory(slug) — navigate to category page
 ───────────────────────────────────────────── */
 export default function AllCategoriesSection({ onGoCategory }) {
   const { categories } = useCatalog();
@@ -23,21 +19,31 @@ export default function AllCategoriesSection({ onGoCategory }) {
         </h2>
       </div>
       <div className="all-cats-grid stg">
-        {categories.slice(0, 10).map(cat => (
-          <div key={cat.slug} className="ac-item" onClick={() => onGoCategory(cat.slug)}>
-            <div className="ac-icon">
-              <img 
-                src={PROD_IMAGES[cat.slug] || '/placeholder.png'} 
-                alt={cat.name} 
-                loading="lazy"
-                decoding="async"
-              />
+        {(categories || []).map(cat => {
+          const firstProdImg = (cat.products && cat.products[0]) ? (cat.products[0].image || (Array.isArray(cat.products[0].images) ? cat.products[0].images[0] : null)) : null;
+          const rawImg = cat.img || cat.image || firstProdImg || PROD_IMAGES[cat.slug] || '/prod-commode.png';
+          const imgSrc = formatImgUrl(rawImg);
+
+          return (
+            <div key={cat.slug || cat.id} className="ac-item" onClick={() => onGoCategory(cat.slug)}>
+              <div className="ac-icon">
+                <img 
+                  src={imgSrc} 
+                  alt={cat.name} 
+                  loading="lazy"
+                  decoding="async"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = PROD_IMAGES[cat.slug] || '/prod-commode.png';
+                  }}
+                />
+              </div>
+              <div className="ac-name">{cat.name}</div>
+              <div className="ac-subs">{cat.hint || cat.subs || `${cat.products?.length || 0} Products`}</div>
+              <div className="ac-cta">Explore →</div>
             </div>
-            <div className="ac-name">{cat.name}</div>
-            <div className="ac-subs">{cat.hint || cat.subs}</div>
-            <div className="ac-cta">Explore →</div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );

@@ -30,6 +30,8 @@ const BRAND_COLORS = {
   'Master Sanitary Ware':  '#7a3c8b',
   'Dell Sanitary Ware':    '#3c6b8b',
   'Brite Sanitary Ware':   '#8b6e3c',
+  'Super Asia':            '#c8963c',
+  'China Products':        '#d93838',
   'Minhas Pipes and Fittings': '#4a7a3c',
   'Turk Plast':            '#3c5a8b',
   'Dura Flow':             '#8b3c7a',
@@ -84,11 +86,17 @@ export default function BrandPage() {
   const brandCategories = useMemo(() => {
     if (!categories || categories.length === 0) return [];
     
+    const targetBrand = normalizedBrandName.toLowerCase();
     const groups = [];
     categories.forEach(cat => {
-      const catProducts = (cat.products || []).filter(
-        p => normalizeBrand(p.brand) === normalizedBrandName
-      );
+      const catProducts = (cat.products || []).filter(p => {
+        const nb = normalizeBrand(p.brand).toLowerCase();
+        const rb = (p.brand || '').toLowerCase();
+        const pName = (p.name || '').toLowerCase();
+        return nb === targetBrand || rb === targetBrand || nb.includes(targetBrand) || targetBrand.includes(nb)
+               || (targetBrand.includes('china') && (pName.includes('china') || rb.includes('china')))
+               || (targetBrand.includes('super') && (pName.includes('super') || rb.includes('super') || rb.includes('asia')));
+      });
       
       if (catProducts.length > 0) {
         groups.push({

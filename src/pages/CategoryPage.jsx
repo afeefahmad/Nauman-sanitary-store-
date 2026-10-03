@@ -29,6 +29,8 @@ const BRAND_COLORS = {
   'Master Sanitary Ware':  '#7a3c8b',
   'Dell Sanitary Ware':    '#3c6b8b',
   'Brite Sanitary Ware':   '#8b6e3c',
+  'Super Asia':            '#c8963c',
+  'China Products':        '#d93838',
   'Minhas Pipes and Fittings': '#4a7a3c',
   'Turk Plast':            '#3c5a8b',
   'Dura Flow':             '#8b3c7a',
@@ -166,7 +168,37 @@ export default function CategoryPage() {
   const navigate    = useNavigate();
   const { categories, CONTACT } = useCatalog();
   const { addToInquiry } = useInquiry();
-  const category    = categories.find(c => c.slug === slug);
+
+  const category = useMemo(() => {
+    if (!categories || categories.length === 0) return null;
+    let found = categories.find(c => c.slug === slug || c.slug === slug?.toLowerCase() || (c.name && c.name.toLowerCase().replace(/\s+/g, '-') === slug));
+    if (found) return found;
+
+    // Fallback: Virtual Category Resolver by Brand or Category Term matching
+    const cleanTerm = (slug || '').replace(/-/g, ' ').toLowerCase();
+    const matchingProducts = categories.flatMap(c => 
+      (c.products || []).map(p => ({ ...p, _catSlug: c.slug }))
+    ).filter(p => {
+      const normB = normalizeBrand(p.brand).toLowerCase();
+      const rawB = (p.brand || '').toLowerCase();
+      const pName = (p.name || '').toLowerCase();
+      const cSlug = (p.categorySlug || p._catSlug || '').toLowerCase();
+      const cName = (p.categoryName || '').toLowerCase();
+      return normB.includes(cleanTerm) || rawB.includes(cleanTerm) || pName.includes(cleanTerm) || cSlug.includes(cleanTerm) || cName.includes(cleanTerm) || cleanTerm.includes(normB);
+    });
+
+    if (matchingProducts.length > 0) {
+      const title = cleanTerm.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      return {
+        slug,
+        name: title,
+        subs: `Complete Collection of ${title}`,
+        products: matchingProducts,
+        subCategories: []
+      };
+    }
+    return null;
+  }, [categories, slug]);
 
   const [activeBrand, setActiveBrand] = useState('all');
   const [activeSubCat, setActiveSubCat] = useState('all');
@@ -202,7 +234,15 @@ export default function CategoryPage() {
     if (!category) return [];
     let prods = category.products;
     if (activeBrand !== 'all' && activeBrand !== '') {
-      prods = prods.filter(p => normalizeBrand(p.brand) === activeBrand);
+      const targetB = activeBrand.toLowerCase();
+      prods = prods.filter(p => {
+        const nb = normalizeBrand(p.brand).toLowerCase();
+        const rb = (p.brand || '').toLowerCase();
+        const pName = (p.name || '').toLowerCase();
+        return nb === targetB || rb === targetB || nb.includes(targetB) || targetB.includes(nb)
+               || (targetB.includes('china') && (pName.includes('china') || rb.includes('china')))
+               || (targetB.includes('super') && (pName.includes('super') || rb.includes('super') || rb.includes('asia')));
+      });
     }
     if (activeSubCat !== 'all' && activeSubCat !== '') {
       prods = prods.filter(p => {
