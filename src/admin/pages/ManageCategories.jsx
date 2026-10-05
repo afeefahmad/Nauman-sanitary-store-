@@ -11,6 +11,7 @@ export default function ManageCategories() {
   const [activeCategorySlug, setActiveCategorySlug] = useState('all');
   const [newProductName, setNewProductName] = useState('');
   const [newProductBrand, setNewProductBrand] = useState('all');
+  const [newProductColor, setNewProductColor] = useState('');
   const [newProductDesc, setNewProductDesc] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [editingProductId, setEditingProductId] = useState(null);
@@ -155,6 +156,7 @@ export default function ManageCategories() {
         {
           name: editModalProduct.name,
           brand: editModalProduct.brand,
+          color: editModalProduct.color || '',
           description: editModalProduct.description,
           image: primaryImage,
           images: finalImages
@@ -177,6 +179,7 @@ export default function ManageCategories() {
     setEditingProductId(null);
     setNewProductName('');
     setNewProductBrand('all');
+    setNewProductColor('');
     setNewProductDesc('');
     setProductFiles([]);
     setExistingImages([]);
@@ -279,6 +282,7 @@ export default function ManageCategories() {
       const updateData = {
         name: newProductName,
         brand: newProductBrand,
+        color: newProductColor,
         description: newProductDesc,
         image: primaryImage || (oldProduct ? oldProduct.image : ''),
         images: finalImages.length > 0 ? finalImages : (oldProduct?.images || [primaryImage])
@@ -293,6 +297,7 @@ export default function ManageCategories() {
         id: Date.now().toString(),
         name: newProductName,
         brand: newProductBrand,
+        color: newProductColor,
         description: newProductDesc,
         model: newProductName,
         tag: newProductBrand,
@@ -301,6 +306,7 @@ export default function ManageCategories() {
       });
       addToast(`Product "${newProdName}" added successfully with ${finalImages.length} image${finalImages.length !== 1 ? 's' : ''}! 🎉`, 'success');
       setNewProductName('');
+      setNewProductColor('');
       setNewProductDesc('');
       setProductFiles([]);
       setExistingImages([]);
@@ -441,6 +447,17 @@ export default function ManageCategories() {
                     className="w-full h-9 px-3 rounded-md border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                     value={newProductName}
                     onChange={(e) => setNewProductName(e.target.value)}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1 flex-1 w-full">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Color / Finish (Optional)</label>
+                  <input 
+                    type="text" 
+                    placeholder="E.g. White, Chrome, Gold..." 
+                    className="w-full h-9 px-3 rounded-md border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    value={newProductColor}
+                    onChange={(e) => setNewProductColor(e.target.value)}
                   />
                 </div>
 
@@ -955,6 +972,17 @@ export default function ManageCategories() {
                   value={editModalProduct.name}
                   onChange={(e) => setEditModalProduct({ ...editModalProduct, name: e.target.value })}
                   placeholder="Product Name"
+                  className="w-full h-10 px-3 rounded-lg border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Color / Finish (Optional)</label>
+                <input
+                  type="text"
+                  value={editModalProduct.color || ''}
+                  onChange={(e) => setEditModalProduct({ ...editModalProduct, color: e.target.value })}
+                  placeholder="E.g. White, Chrome, Gold..."
                   className="w-full h-10 px-3 rounded-lg border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
               </div>

@@ -167,6 +167,11 @@ export default function ProductCard({
       >
         <div className="cat-prod-brand">{brandName}</div>
         <div className="cat-prod-name">{prod.name.replace(/\s*Model:.*$/i, '')}</div>
+        {prod.color && (
+          <div className="cat-prod-color">
+            <span className="cat-prod-color-label">Color:</span> {prod.color}
+          </div>
+        )}
         {prod.description && <div className="cat-prod-desc">{prod.description}</div>}
         {prod.model && <div className="cat-prod-model">Model: {prod.model}</div>}
 
