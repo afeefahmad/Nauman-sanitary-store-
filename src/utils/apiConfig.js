@@ -11,21 +11,19 @@ export const API_BASE = getApiBase();
 export function formatImgUrl(url) {
   if (!url || typeof url !== 'string') return url;
 
-  // Handle base64 data URIs or external absolute URLs (non-local)
-  if (url.startsWith('data:') || (url.startsWith('http') && !url.includes(':5000/uploads/'))) {
+  if (url.startsWith('data:')) return url;
+
+  // Cloudflare R2 or external CDN URLs
+  if (url.startsWith('http') && !url.includes('localhost') && !url.includes('127.0.0.1')) {
     return url;
   }
 
-  // Extract relative upload path
-  let uploadPath = url;
+  // Clean local/relative upload path so mobile devices on network resolve relative to host origin
   if (url.includes('/uploads/')) {
-    uploadPath = `/uploads/${url.split('/uploads/')[1]}`;
-  } else if (url.startsWith('uploads/')) {
-    uploadPath = `/${url}`;
+    return `/uploads/${url.split('/uploads/')[1]}`;
   }
-
-  if (uploadPath.startsWith('/uploads/')) {
-    return uploadPath;
+  if (url.startsWith('uploads/')) {
+    return `/${url}`;
   }
 
   return url;

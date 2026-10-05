@@ -59,7 +59,7 @@ async function uploadToR2(buffer, originalname, mimetype) {
   await client.send(command);
 
   const publicBaseUrl = process.env.CLOUDFLARE_R2_PUBLIC_URL;
-  if (publicBaseUrl && publicBaseUrl.trim() !== '' && !publicBaseUrl.includes('r2.cloudflarestorage.com')) {
+  if (publicBaseUrl && publicBaseUrl.trim() !== '') {
     const cleanBase = publicBaseUrl.replace(/\/$/, '');
     return `${cleanBase}/${fileKey}`;
   }

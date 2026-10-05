@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BRAND_PANELS } from '../../data/categories';
+import { useCatalog } from '../../context/CatalogContext';
 
 /* ─────────────────────────────────────────────
    BRAND TABS
@@ -9,11 +10,36 @@ import { BRAND_PANELS } from '../../data/categories';
    featured product listings.
 ───────────────────────────────────────────── */
 function BrandTabs() {
-  const [active, setActive] = useState('nesco');
+  const { brands } = useCatalog();
+
+  // Filter brand panels to only include active brands
+  const activePanels = BRAND_PANELS.filter(panel => {
+    if (!brands || brands.length === 0) return true;
+    return brands.some(b => {
+      const bName = (b.name || '').toLowerCase();
+      const pLabel = (panel.label || '').toLowerCase();
+      const pId = (panel.id || '').toLowerCase();
+      return bName.includes(pId) || pLabel.includes(bName) || bName.includes(pLabel);
+    });
+  });
+
+  const defaultActive = activePanels.length > 0 ? activePanels[0].id : 'porta';
+  const [active, setActive] = useState(defaultActive);
+
+  useEffect(() => {
+    if (activePanels.length > 0 && !activePanels.some(p => p.id === active)) {
+      setActive(activePanels[0].id);
+    }
+  }, [brands, activePanels, active]);
+
+  if (activePanels.length === 0) {
+    return null;
+  }
+
   return (
     <>
       <div className="tab-bar">
-        {BRAND_PANELS.map(b => (
+        {activePanels.map(b => (
           <button
             key={b.id}
             className={`tab-btn${active === b.id ? ' on' : ''}`}
@@ -23,7 +49,7 @@ function BrandTabs() {
           </button>
         ))}
       </div>
-      {BRAND_PANELS.map(b => (
+      {activePanels.map(b => (
         <div key={b.id} className={`brand-panel${active === b.id ? ' on' : ''}`} id={`tab-${b.id}`}>
           <div className="brand-meta">
             <span className="sec-label">{b.label}</span>

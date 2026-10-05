@@ -192,10 +192,27 @@ app.put('/api/brands/:id', (req, res) => {
   });
 });
 app.delete('/api/brands/:id', (req, res) => {
-  db.run('DELETE FROM brands WHERE id = ?', [req.params.id], err => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ success: true });
-  });
+  const targetId = req.params.id;
+  const queryName = req.query.name || targetId;
+  const decodedTarget = decodeURIComponent(targetId);
+  const decodedName = decodeURIComponent(queryName);
+
+  db.run(
+    'DELETE FROM brands WHERE id = ? OR LOWER(name) = LOWER(?) OR LOWER(name) = LOWER(?) OR LOWER(REPLACE(name, " ", "-")) = LOWER(?)',
+    [targetId, decodedTarget, decodedName, decodedTarget],
+    function (err) {
+      if (err) console.error('Error deleting brand from DB:', err);
+
+      db.run(
+        'DELETE FROM products WHERE LOWER(brand) = LOWER(?) OR LOWER(brand) = LOWER(?)',
+        [decodedTarget, decodedName],
+        function (pErr) {
+          if (pErr) console.error('Error deleting brand products from DB:', pErr);
+          res.json({ success: true });
+        }
+      );
+    }
+  );
 });
 
 // Stats
@@ -379,19 +396,41 @@ app.put('/api/products/:id', (req, res) => {
 });
 
 app.delete('/api/products/:id', (req, res) => {
-  db.run('DELETE FROM products WHERE id = ?', [req.params.id], err => {
+  const targetId = req.params.id;
+  const decodedTarget = decodeURIComponent(targetId);
+  db.run('DELETE FROM products WHERE id = ? OR LOWER(name) = LOWER(?)', [targetId, decodedTarget], err => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ success: true });
   });
 });
 
 app.post('/api/products/delete-bulk', (req, res) => {
-  const { ids } = req.body;
-  if (!ids || !Array.isArray(ids) || ids.length === 0) {
-    return res.status(400).json({ error: 'No IDs provided' });
+  const { ids, names } = req.body;
+  const idList = Array.isArray(ids) ? ids : [];
+  const nameList = Array.isArray(names) ? names : [];
+
+  if (idList.length === 0 && nameList.length === 0) {
+    return res.status(400).json({ error: 'No IDs or names provided' });
   }
-  const placeholders = ids.map(() => '?').join(',');
-  db.run(`DELETE FROM products WHERE id IN (${placeholders})`, ids, err => {
+
+  const idPlaceholders = idList.map(() => '?').join(',');
+  const namePlaceholders = nameList.map(() => '?').join(',');
+
+  let query = 'DELETE FROM products WHERE ';
+  const params = [];
+
+  if (idList.length > 0 && nameList.length > 0) {
+    query += `id IN (${idPlaceholders}) OR LOWER(name) IN (${namePlaceholders})`;
+    params.push(...idList, ...nameList.map(n => n.toLowerCase()));
+  } else if (idList.length > 0) {
+    query += `id IN (${idPlaceholders})`;
+    params.push(...idList);
+  } else {
+    query += `LOWER(name) IN (${namePlaceholders})`;
+    params.push(...nameList.map(n => n.toLowerCase()));
+  }
+
+  db.run(query, params, err => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ success: true });
   });

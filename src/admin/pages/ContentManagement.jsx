@@ -4,7 +4,7 @@ import { useCatalog } from '../../context/CatalogContext';
 import { useToast } from '../../context/ToastContext';
 import { Save, Plus, Trash2, Edit, X } from 'lucide-react';
 
-import { API_BASE } from '../../utils/apiConfig';
+import { API_BASE, formatImgUrl } from '../../utils/apiConfig';
 
 import PROD_IMAGES from '../../constants/productImages';
 
@@ -16,7 +16,7 @@ export default function ContentManagement() {
     contact, updateContact,
     tickerItems, refreshTicker,
     stats, refreshStats,
-    brands, refreshBrands, updateBrands,
+    brands, refreshBrands, updateBrands, deleteBrand,
     heroCategories, refreshHeroCategories, updateHeroCategories
   } = useCatalog();
 
@@ -29,7 +29,7 @@ export default function ContentManagement() {
       case 'stats':
         return <StatsManager data={stats} refreshData={refreshStats} />;
       case 'brands':
-        return <BrandsManager data={brands} refreshData={refreshBrands} updateBrands={updateBrands} />;
+        return <BrandsManager data={brands} refreshData={refreshBrands} updateBrands={updateBrands} deleteBrand={deleteBrand} />;
       case 'hero':
         return <HeroManager data={heroCategories} refreshData={refreshHeroCategories} updateHeroCategories={updateHeroCategories} />;
       default:
@@ -338,7 +338,7 @@ function StatsManager({ data, refreshData }) {
   );
 }
 
-function BrandsManager({ data, refreshData, updateBrands }) {
+function BrandsManager({ data, refreshData, updateBrands, deleteBrand }) {
   const [name, setName] = useState('');
   const [file, setFile] = useState(null);
   const [editModal, setEditModal] = useState(null); // { id, name, logo, file: null }
@@ -475,15 +475,18 @@ function BrandsManager({ data, refreshData, updateBrands }) {
       confirmText: 'Delete Brand',
       onConfirm: async () => {
         try {
-          try {
-            await fetch(`${API_BASE}/brands/${id}`, { method: 'DELETE' });
-          } catch {
-            console.warn('Backend API offline, using local context update.');
-          }
-
-          if (typeof updateBrands === 'function') {
-            const updatedBrands = (data || []).filter(b => b.id !== id && b.name !== brandName);
-            updateBrands(updatedBrands);
+          if (typeof deleteBrand === 'function') {
+            await deleteBrand(id, brandName);
+          } else {
+            try {
+              await fetch(`${API_BASE}/brands/${id}`, { method: 'DELETE' });
+            } catch {
+              console.warn('Backend API offline, using local context update.');
+            }
+            if (typeof updateBrands === 'function') {
+              const updatedBrands = (data || []).filter(b => b.id !== id && b.name !== brandName);
+              updateBrands(updatedBrands);
+            }
           }
           if (typeof refreshData === 'function') refreshData();
 
@@ -521,7 +524,7 @@ function BrandsManager({ data, refreshData, updateBrands }) {
               <button onClick={() => remove(item.id, item.name)} type="button" className="text-destructive hover:bg-destructive/10 p-1.5 rounded-md" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
             </div>
             {item.logo ? (
-              <img src={item.logo} alt={item.name} className="h-12 w-auto object-contain mb-2" onError={(e) => { e.target.style.display = 'none'; if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex'; }} />
+              <img src={formatImgUrl(item.logo)} alt={item.name} className="h-12 w-auto object-contain mb-2" onError={(e) => { e.target.style.display = 'none'; if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex'; }} />
             ) : null}
             <div className="h-12 w-12 rounded-full bg-primary/10 text-primary font-bold text-lg items-center justify-center mb-2" style={{ display: item.logo ? 'none' : 'flex' }}>{item.name?.charAt(0)?.toUpperCase()}</div>
             <div className="text-sm font-medium">{item.name}</div>
@@ -551,7 +554,7 @@ function BrandsManager({ data, refreshData, updateBrands }) {
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Brand Logo</label>
                 <div className="flex items-center gap-3">
                   {editModal.logo ? (
-                    <img src={editModal.logo} alt="" className="h-10 w-10 object-contain rounded-lg border bg-white shrink-0 p-1" />
+                    <img src={formatImgUrl(editModal.logo)} alt="" className="h-10 w-10 object-contain rounded-lg border bg-white shrink-0 p-1" />
                   ) : (
                     <div className="w-10 h-10 rounded-lg bg-muted border flex items-center justify-center text-xs text-muted-foreground shrink-0">No Logo</div>
                   )}

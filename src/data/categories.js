@@ -35,17 +35,17 @@ export const STATS = [
 // ── All Brands ──────────────────────────────────────────────
 export const BRANDS = [
   { id: 'porta',        name: 'Porta',                  logo: '/porta-logo.webp', hero: true },
-  { id: 'china-import', name: 'China Import Collection',  hero: true },
-  { id: 'super-asia',   name: 'Super Asia',             hero: true },
-  { id: 'master',       name: 'Master',                 hero: true },
-  { id: 'pool',         name: 'Pool',                   hero: true },
-  { id: 'iclboch',      name: 'ICL Boch',               hero: true },
-  { id: 'dell',         name: 'Dell',                   hero: false },
-  { id: 'brite',        name: 'Brite',                  hero: false },
-  { id: 'sonex',        name: 'Sonex',                  hero: false },
-  { id: 'faisal',       name: 'Faisal',                 hero: false },
-  { id: 'kale',         name: 'Kale',                   hero: false },
-  { id: 'grohe',        name: 'Grohe',                  hero: false },
+  { id: 'super-asia',   name: 'Super Asia',             logo: '/uploads/1786426352753-370364283.webp', hero: true },
+  { id: 'master',       name: 'Master',                 logo: '/uploads/1786426483483-15447849.webp', hero: true },
+  { id: 'pool',         name: 'Pool',                   logo: '/uploads/1786426516229-799626038.webp', hero: true },
+  { id: 'iclboch',      name: 'ICL Boch',               logo: '/uploads/1786426606141-203254698.webp', hero: true },
+  { id: 'dell',         name: 'Dell',                   logo: '/uploads/1786426633232-486966195.webp', hero: false },
+  { id: 'brite',        name: 'Brite',                  logo: '/uploads/1786426830347-746058805.webp', hero: false },
+  { id: 'sonex',        name: 'Sonex',                  logo: '/uploads/1786426692551-741908426.webp', hero: false },
+  { id: 'faisal',       name: 'Faisal',                 logo: '/uploads/1786426714534-796601181.webp', hero: false },
+  { id: 'kale',         name: 'Kale',                   logo: '/uploads/1786426763801-997890894.webp', hero: false },
+  { id: 'grohe',        name: 'Grohe',                  logo: '/uploads/1786426788631-612239558.webp', hero: false },
+  { id: 'nesco',        name: 'Nesco Ceramics',         logo: '/uploads/1786427343832-339290673.webp', hero: false },
 ];
 
 // ── Hero Categories (5-card grid on homepage) ───────────────
@@ -173,10 +173,9 @@ export const ALL_CATEGORIES = [
     icon: '🚽',
     name: 'Commodes & Toilets',
     subs: 'One Piece · Two Piece · Wall Hung',
-    brands: ['Pool Sanitary Ware', 'Dell Sanitary Ware', 'Brite Sanitary Ware', 'Master Sanitary Ware', 'Nesco Ceramics', 'Porta', 'China Import Collection'],
+    brands: ['Pool Sanitary Ware', 'Dell Sanitary Ware', 'Brite Sanitary Ware', 'Master Sanitary Ware', 'Nesco Ceramics', 'Porta'],
     subCategories: ['One Piece Toilet', 'Two Piece Toilets', 'Wall Hung Toilets'],
     products: [
-      { id: '1790332461145', brand: 'China Import Collection', name: 'Floor mounted ceramic siphonic one piece commode', image: '/uploads/1790332461140-116094124.webp', description: 'Premium floor mounted ceramic siphonic one piece commode, imported from China, featuring a sleek design and reliable performance.', tag: 'China' },
       // ── Step-by-Step Order from sanitary.pk ──
       { brand: 'Pool Sanitary Ware', name: 'GALAXY Commode', model: 'GALAXY', tag: 'Pool' },
       { brand: 'Pool Sanitary Ware', name: 'MOBI Commode', model: 'MOBI', tag: 'Pool' },

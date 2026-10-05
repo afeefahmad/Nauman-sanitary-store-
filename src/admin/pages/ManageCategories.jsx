@@ -202,7 +202,8 @@ export default function ManageCategories() {
       confirmText: `Delete ${count} Products`,
       onConfirm: async () => {
         const idsArray = Array.from(selectedIds);
-        await deleteProductsBulk(idsArray);
+        const namesArray = (displayedProducts || []).filter(p => selectedIds.has(p.id)).map(p => p.name).filter(Boolean);
+        await deleteProductsBulk(idsArray, namesArray);
         setSelectedIds(new Set());
         addToast(`${count} products deleted successfully! 🗑️`, 'info');
       }
@@ -1108,7 +1109,7 @@ export default function ManageCategories() {
                 onClick={async () => {
                   setIsDeletingModal(true);
                   try {
-                    await deleteProduct(deleteModalProduct.categorySlug, deleteModalProduct.id);
+                    await deleteProduct(deleteModalProduct.categorySlug, deleteModalProduct.id, deleteModalProduct.name);
                     addToast(`Product "${deleteModalProduct.name}" deleted! 🗑️`, 'info');
                     setDeleteModalProduct(null);
                     setQuickViewProduct(null);
