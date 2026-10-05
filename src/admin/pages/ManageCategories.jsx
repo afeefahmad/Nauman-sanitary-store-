@@ -11,6 +11,7 @@ export default function ManageCategories() {
   const [activeCategorySlug, setActiveCategorySlug] = useState('all');
   const [newProductName, setNewProductName] = useState('');
   const [newProductBrand, setNewProductBrand] = useState('all');
+  const [newProductSubCategory, setNewProductSubCategory] = useState('');
   const [newProductColor, setNewProductColor] = useState('');
   const [newProductDesc, setNewProductDesc] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -133,7 +134,8 @@ export default function ManageCategories() {
       ...product,
       categorySlug: slug,
       originalCategorySlug: slug,
-      brand: product.brand || 'Unbranded'
+      brand: product.brand || 'Unbranded',
+      subCategory: product.subCategory || ''
     });
     setEditModalExistingImages(imgs);
     setEditModalNewFiles([]);
@@ -156,6 +158,7 @@ export default function ManageCategories() {
         {
           name: editModalProduct.name,
           brand: editModalProduct.brand,
+          subCategory: editModalProduct.subCategory || '',
           color: editModalProduct.color || '',
           description: editModalProduct.description,
           image: primaryImage,
@@ -179,6 +182,7 @@ export default function ManageCategories() {
     setEditingProductId(null);
     setNewProductName('');
     setNewProductBrand('all');
+    setNewProductSubCategory('');
     setNewProductColor('');
     setNewProductDesc('');
     setProductFiles([]);
@@ -282,6 +286,7 @@ export default function ManageCategories() {
       const updateData = {
         name: newProductName,
         brand: newProductBrand,
+        subCategory: newProductSubCategory,
         color: newProductColor,
         description: newProductDesc,
         image: primaryImage || (oldProduct ? oldProduct.image : ''),
@@ -297,6 +302,7 @@ export default function ManageCategories() {
         id: Date.now().toString(),
         name: newProductName,
         brand: newProductBrand,
+        subCategory: newProductSubCategory,
         color: newProductColor,
         description: newProductDesc,
         model: '',
@@ -306,6 +312,7 @@ export default function ManageCategories() {
       });
       addToast(`Product "${newProdName}" added successfully with ${finalImages.length} image${finalImages.length !== 1 ? 's' : ''}! 🎉`, 'success');
       setNewProductName('');
+      setNewProductSubCategory('');
       setNewProductColor('');
       setNewProductDesc('');
       setProductFiles([]);
@@ -448,6 +455,23 @@ export default function ManageCategories() {
                     value={newProductName}
                     onChange={(e) => setNewProductName(e.target.value)}
                   />
+                </div>
+
+                <div className="flex flex-col gap-1 flex-1 w-full">
+                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Subcategory (Optional)</label>
+                  <input 
+                    type="text" 
+                    list="subcategories-list-add"
+                    placeholder="E.g. Bath Set, Basin Mixer..." 
+                    className="w-full h-9 px-3 rounded-md border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    value={newProductSubCategory}
+                    onChange={(e) => setNewProductSubCategory(e.target.value)}
+                  />
+                  <datalist id="subcategories-list-add">
+                    {((categories.find(c => c.slug === activeCategorySlug)?.subCategories) || ['Bath Set', 'Basin Mixer', 'Sink Mixer', 'Single Lever', 'Quarter Round', 'Full Round', 'Hand Shower', 'One Piece Toilet', 'Wall Hung']).map((sub, i) => (
+                      <option key={i} value={sub} />
+                    ))}
+                  </datalist>
                 </div>
 
                 <div className="flex flex-col gap-1 flex-1 w-full">
@@ -988,6 +1012,23 @@ export default function ManageCategories() {
                   placeholder="Product Name"
                   className="w-full h-10 px-3 rounded-lg border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Subcategory (Optional)</label>
+                <input
+                  type="text"
+                  list="subcategories-list-edit"
+                  value={editModalProduct.subCategory || ''}
+                  onChange={(e) => setEditModalProduct({ ...editModalProduct, subCategory: e.target.value })}
+                  placeholder="E.g. Bath Set, Basin Mixer, Sink Mixer..."
+                  className="w-full h-10 px-3 rounded-lg border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+                <datalist id="subcategories-list-edit">
+                  {((categories.find(c => c.slug === editModalProduct.categorySlug)?.subCategories) || ['Bath Set', 'Basin Mixer', 'Sink Mixer', 'Single Lever', 'Quarter Round', 'Full Round', 'Hand Shower', 'One Piece Toilet', 'Wall Hung']).map((sub, i) => (
+                    <option key={i} value={sub} />
+                  ))}
+                </datalist>
               </div>
 
               <div className="flex flex-col gap-1">

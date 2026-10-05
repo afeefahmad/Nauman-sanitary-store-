@@ -339,7 +339,7 @@ app.get('/api/categories', (req, res) => {
 });
 
 app.post('/api/products', (req, res) => {
-  const { id, categorySlug, name, brand, price, stock, code, color, image, images, description } = req.body;
+  const { id, categorySlug, name, brand, price, stock, code, color, subCategory, image, images, description } = req.body;
   const cleanUrl = (u) => (typeof u === 'string' && u.includes('/uploads/')) ? `/uploads/${u.split('/uploads/')[1]}` : u;
   const cleanImage = cleanUrl(image);
   const cleanImagesArr = Array.isArray(images) ? images.map(cleanUrl) : (cleanImage ? [cleanImage] : null);
@@ -347,9 +347,9 @@ app.post('/api/products', (req, res) => {
   const slugToUse = categorySlug || 'toilets';
   
   const insertProductWithCatId = (catId) => {
-    db.run(`INSERT INTO products (id, categoryId, name, brand, price, stock, code, color, image, images, description) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
-      [id, catId, name, brand, price, stock, code, color, cleanImage, imagesStr, description], 
+    db.run(`INSERT INTO products (id, categoryId, name, brand, price, stock, code, color, subCategory, image, images, description) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
+      [id, catId, name, brand, price, stock, code, color, subCategory || '', cleanImage, imagesStr, description], 
       function(err2) {
         if (err2) return res.status(500).json({ error: err2.message });
         res.json({ success: true });
@@ -374,7 +374,7 @@ app.post('/api/products', (req, res) => {
 });
 
 app.put('/api/products/:id', (req, res) => {
-  const { categorySlug, name, brand, color, image, images, description } = req.body;
+  const { categorySlug, name, brand, color, subCategory, image, images, description } = req.body;
   const cleanUrl = (u) => (typeof u === 'string' && u.includes('/uploads/')) ? `/uploads/${u.split('/uploads/')[1]}` : u;
   const cleanImage = cleanUrl(image);
   const cleanImagesArr = Array.isArray(images) ? images.map(cleanUrl) : (cleanImage ? [cleanImage] : null);
@@ -382,8 +382,8 @@ app.put('/api/products/:id', (req, res) => {
   const slugToUse = categorySlug || 'toilets';
 
   const updateProductWithCatId = (catId) => {
-    db.run('UPDATE products SET categoryId = ?, name = ?, brand = ?, color = ?, image = ?, images = ?, description = ? WHERE id = ?', 
-      [catId, name, brand, color, cleanImage, imagesStr, description, req.params.id], 
+    db.run('UPDATE products SET categoryId = ?, name = ?, brand = ?, color = ?, subCategory = ?, image = ?, images = ?, description = ? WHERE id = ?', 
+      [catId, name, brand, color, subCategory || '', cleanImage, imagesStr, description, req.params.id], 
       function(err2) {
         if (err2) return res.status(500).json({ error: err2.message });
         res.json({ success: true });

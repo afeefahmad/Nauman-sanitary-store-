@@ -332,6 +332,11 @@ export default function ProductCard({
                 </div>
 
                 <div className="prod-modal-badges">
+                  {prod.subCategory && (
+                    <div className="prod-modal-spec-badge">
+                      <span className="spec-lbl">Subcategory:</span> <span className="spec-val">{prod.subCategory}</span>
+                    </div>
+                  )}
                   {prod.model && prod.model.trim() !== '' && prod.model !== prod.name && (
                     <div className="prod-modal-spec-badge">
                       <span className="spec-lbl">Model:</span> <span className="spec-val">{prod.model}</span>

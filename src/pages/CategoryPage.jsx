@@ -43,7 +43,10 @@ const TAG_COLOR = (tag) =>
   )?.[1] ?? 'var(--bronze-dk)';
 
 /* ── Intelligent Subcategory Classifier ── */
-function classifyProduct(slug, name = '', brand = '') {
+function classifyProduct(slug, name = '', brand = '', subCategory = '') {
+  if (subCategory && typeof subCategory === 'string' && subCategory.trim() !== '') {
+    return subCategory.trim();
+  }
   const n = name.toLowerCase();
   
   if (slug === 'toilets') {
@@ -226,8 +229,16 @@ export default function CategoryPage() {
     return Array.from(set);
   }, [category]);
 
+  const subCategoryList = useMemo(() => {
+    if (!category) return [];
+    const baseSubs = category.subCategories || [];
+    const customSubs = (category.products || []).map(p => p.subCategory).filter(Boolean);
+    const set = new Set([...baseSubs, ...customSubs]);
+    return Array.from(set);
+  }, [category]);
+
   const hasBrands  = brandList.length > 1;
-  const hasSubCats = (category?.subCategories || []).length > 0;
+  const hasSubCats = subCategoryList.length > 0;
 
   /* Filtered products */
   const filtered = useMemo(() => {
@@ -238,7 +249,7 @@ export default function CategoryPage() {
     }
     if (activeSubCat !== 'all' && activeSubCat !== '') {
       prods = prods.filter(p => {
-        const itemSubCat = classifyProduct(slug, p.name, p.brand);
+        const itemSubCat = classifyProduct(slug, p.name, p.brand, p.subCategory);
         return itemSubCat === activeSubCat;
       });
     }
@@ -430,7 +441,7 @@ export default function CategoryPage() {
               className={`subcat-pill${activeSubCat === 'all' ? ' active' : ''}`}
               onClick={() => setActiveSubCat('all')}
             >All</button>
-            {(category.subCategories || []).map(sc => (
+            {subCategoryList.map(sc => (
               <button
                 key={sc}
                 className={`subcat-pill${activeSubCat === sc ? ' active' : ''}`}
