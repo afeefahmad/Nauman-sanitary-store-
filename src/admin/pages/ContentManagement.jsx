@@ -354,7 +354,7 @@ function BrandsManager({ data, refreshData, updateBrands, deleteBrand }) {
 
     setIsSubmitting(true);
     try {
-      let logoUrl = '/porta-logo.webp';
+      let logoUrl = '';
 
       if (file) {
         try {
@@ -422,7 +422,7 @@ function BrandsManager({ data, refreshData, updateBrands, deleteBrand }) {
     if (!editModal || !editModal.name) return;
     setIsSubmitting(true);
     try {
-      let logoUrl = editModal.logo || '/porta-logo.webp';
+      let logoUrl = editModal.logo || '';
       if (editModal.file) {
         try {
           const formData = new FormData();
