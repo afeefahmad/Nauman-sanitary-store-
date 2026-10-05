@@ -957,9 +957,10 @@ export default function ManageCategories() {
 
       {/* Edit Product Modal */}
       {editModalProduct && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
-          <div className="bg-background border rounded-2xl max-w-lg w-full p-4 sm:p-6 shadow-2xl space-y-4 animate-in zoom-in-95 relative">
-            <div className="flex items-center justify-between border-b pb-3">
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 animate-in fade-in">
+          <div className="bg-background border rounded-2xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl animate-in zoom-in-95 relative overflow-hidden">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b bg-muted/20 shrink-0">
               <div className="flex items-center gap-2 text-primary font-bold text-lg">
                 <Edit className="w-5 h-5" />
                 <span>Edit Product</span>
@@ -972,160 +973,166 @@ export default function ManageCategories() {
               </button>
             </div>
 
-            <form onSubmit={handleModalEditSave} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Category</label>
-                  <select
-                    required
-                    value={editModalProduct.categorySlug}
-                    onChange={(e) => setEditModalProduct({ ...editModalProduct, categorySlug: e.target.value })}
-                    className="w-full h-10 px-3 rounded-lg border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
-                  >
-                    {categories.map(cat => (
-                      <option key={cat.id || cat.slug} value={cat.slug}>{cat.name}</option>
-                    ))}
-                  </select>
+            {/* Modal Form Body - Scrollable */}
+            <form onSubmit={handleModalEditSave} className="flex flex-col flex-1 overflow-hidden">
+              <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Category</label>
+                    <select
+                      required
+                      value={editModalProduct.categorySlug}
+                      onChange={(e) => setEditModalProduct({ ...editModalProduct, categorySlug: e.target.value })}
+                      className="w-full h-10 px-3 rounded-lg border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    >
+                      {categories.map(cat => (
+                        <option key={cat.id || cat.slug} value={cat.slug}>{cat.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Brand</label>
+                    <select
+                      required
+                      value={editModalProduct.brand}
+                      onChange={(e) => setEditModalProduct({ ...editModalProduct, brand: e.target.value })}
+                      className="w-full h-10 px-3 rounded-lg border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    >
+                      {(brands || []).map(b => <option key={b.id || b.name} value={b.name}>{b.name}</option>)}
+                      <option value="Unbranded">Unbranded</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Brand</label>
-                  <select
+                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Product Name</label>
+                  <input
                     required
-                    value={editModalProduct.brand}
-                    onChange={(e) => setEditModalProduct({ ...editModalProduct, brand: e.target.value })}
+                    type="text"
+                    value={editModalProduct.name}
+                    onChange={(e) => setEditModalProduct({ ...editModalProduct, name: e.target.value })}
+                    placeholder="Product Name"
                     className="w-full h-10 px-3 rounded-lg border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
-                  >
-                    {(brands || []).map(b => <option key={b.id || b.name} value={b.name}>{b.name}</option>)}
-                    <option value="Unbranded">Unbranded</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Product Name</label>
-                <input
-                  required
-                  type="text"
-                  value={editModalProduct.name}
-                  onChange={(e) => setEditModalProduct({ ...editModalProduct, name: e.target.value })}
-                  placeholder="Product Name"
-                  className="w-full h-10 px-3 rounded-lg border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Subcategory (Optional)</label>
-                <input
-                  type="text"
-                  list="subcategories-list-edit"
-                  value={editModalProduct.subCategory || ''}
-                  onChange={(e) => setEditModalProduct({ ...editModalProduct, subCategory: e.target.value })}
-                  placeholder="E.g. Bath Set, Basin Mixer, Sink Mixer..."
-                  className="w-full h-10 px-3 rounded-lg border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
-                />
-                <datalist id="subcategories-list-edit">
-                  {((categories.find(c => c.slug === editModalProduct.categorySlug)?.subCategories) || ['Bath Set', 'Basin Mixer', 'Sink Mixer', 'Single Lever', 'Quarter Round', 'Full Round', 'Hand Shower', 'One Piece Toilet', 'Wall Hung']).map((sub, i) => (
-                    <option key={i} value={sub} />
-                  ))}
-                </datalist>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Color / Finish (Optional)</label>
-                <input
-                  type="text"
-                  value={editModalProduct.color || ''}
-                  onChange={(e) => setEditModalProduct({ ...editModalProduct, color: e.target.value })}
-                  placeholder="E.g. White, Chrome, Gold..."
-                  className="w-full h-10 px-3 rounded-lg border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Description (Optional)</label>
-                <textarea
-                  value={editModalProduct.description || ''}
-                  onChange={(e) => setEditModalProduct({ ...editModalProduct, description: e.target.value })}
-                  placeholder="Product description..."
-                  rows="2"
-                  className="w-full p-3 rounded-lg border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    Product Media (Images & Videos: {editModalExistingImages.length + editModalNewFiles.length})
-                  </label>
+                  />
                 </div>
 
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*,video/*"
-                  onChange={handleEditModalFilesChange}
-                  className="w-full text-xs file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
-                />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Subcategory (Optional)</label>
+                    <input
+                      type="text"
+                      list="subcategories-list-edit"
+                      value={editModalProduct.subCategory || ''}
+                      onChange={(e) => setEditModalProduct({ ...editModalProduct, subCategory: e.target.value })}
+                      placeholder="E.g. Bath Set, Basin Mixer, Sink Mixer..."
+                      className="w-full h-10 px-3 rounded-lg border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    />
+                    <datalist id="subcategories-list-edit">
+                      {((categories.find(c => c.slug === editModalProduct.categorySlug)?.subCategories) || ['Bath Set', 'Basin Mixer', 'Sink Mixer', 'Single Lever', 'Quarter Round', 'Full Round', 'Hand Shower', 'One Piece Toilet', 'Wall Hung']).map((sub, i) => (
+                        <option key={i} value={sub} />
+                      ))}
+                    </datalist>
+                  </div>
 
-                {/* Previews in Edit Modal */}
-                {(editModalExistingImages.length > 0 || editModalNewFiles.length > 0) && (
-                  <div className="flex items-center gap-2 overflow-x-auto py-2 scrollbar-thin">
-                    {editModalExistingImages.map((imgUrl, idx) => (
-                      <div key={`exist-${idx}`} className="relative group shrink-0 w-12 h-12 rounded-lg border bg-white p-0.5 shadow-sm overflow-hidden">
-                        {isVideoUrl(imgUrl) ? (
-                          <div className="relative w-full h-full bg-black rounded-md flex items-center justify-center">
-                            <video src={imgUrl} className="w-full h-full object-cover rounded-md" muted loop autoPlay />
-                            <span className="absolute inset-0 flex items-center justify-center text-[10px] text-white font-bold bg-black/40">🎥</span>
-                          </div>
-                        ) : (
-                          <img src={imgUrl} alt="" className="w-full h-full object-cover rounded-md" />
-                        )}
-                        {idx === 0 && (
-                          <span className="absolute bottom-0 inset-x-0 bg-primary/90 text-[7px] text-white font-bold text-center py-0.2 rounded-b-md">Main</span>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => removeEditModalExistingImage(imgUrl)}
-                          className="absolute -top-1.5 -right-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full p-0.5 shadow-md transition-colors"
-                          title="Remove"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ))}
+                  <div className="flex flex-col gap-1">
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Color / Finish (Optional)</label>
+                    <input
+                      type="text"
+                      value={editModalProduct.color || ''}
+                      onChange={(e) => setEditModalProduct({ ...editModalProduct, color: e.target.value })}
+                      placeholder="E.g. White, Chrome, Gold..."
+                      className="w-full h-10 px-3 rounded-lg border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    />
+                  </div>
+                </div>
 
-                    {editModalNewFiles.map((item, idx) => {
-                      const isPrimary = editModalExistingImages.length === 0 && idx === 0;
-                      return (
-                        <div key={item.id} className="relative group shrink-0 w-12 h-12 rounded-lg border bg-white p-0.5 shadow-sm overflow-hidden">
-                          {isVideoUrl(item.file || item.preview) ? (
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Description (Optional)</label>
+                  <textarea
+                    value={editModalProduct.description || ''}
+                    onChange={(e) => setEditModalProduct({ ...editModalProduct, description: e.target.value })}
+                    placeholder="Product description..."
+                    rows="2"
+                    className="w-full p-3 rounded-lg border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50 resize-y"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                      Product Media (Images & Videos: {editModalExistingImages.length + editModalNewFiles.length})
+                    </label>
+                  </div>
+
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*,video/*"
+                    onChange={handleEditModalFilesChange}
+                    className="w-full text-xs file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
+                  />
+
+                  {/* Previews in Edit Modal */}
+                  {(editModalExistingImages.length > 0 || editModalNewFiles.length > 0) && (
+                    <div className="flex items-center gap-2 overflow-x-auto py-2 scrollbar-thin">
+                      {editModalExistingImages.map((imgUrl, idx) => (
+                        <div key={`exist-${idx}`} className="relative group shrink-0 w-12 h-12 rounded-lg border bg-white p-0.5 shadow-sm overflow-hidden">
+                          {isVideoUrl(imgUrl) ? (
                             <div className="relative w-full h-full bg-black rounded-md flex items-center justify-center">
-                              <video src={item.preview} className="w-full h-full object-cover rounded-md" muted loop autoPlay />
+                              <video src={imgUrl} className="w-full h-full object-cover rounded-md" muted loop autoPlay />
                               <span className="absolute inset-0 flex items-center justify-center text-[10px] text-white font-bold bg-black/40">🎥</span>
                             </div>
                           ) : (
-                            <img src={item.preview} alt="" className="w-full h-full object-cover rounded-md" />
+                            <img src={imgUrl} alt="" className="w-full h-full object-cover rounded-md" />
                           )}
-                          {isPrimary && (
+                          {idx === 0 && (
                             <span className="absolute bottom-0 inset-x-0 bg-primary/90 text-[7px] text-white font-bold text-center py-0.2 rounded-b-md">Main</span>
                           )}
                           <button
                             type="button"
-                            onClick={() => removeEditModalNewFile(item.id)}
+                            onClick={() => removeEditModalExistingImage(imgUrl)}
                             className="absolute -top-1.5 -right-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full p-0.5 shadow-md transition-colors"
                             title="Remove"
                           >
                             <X className="w-3 h-3" />
                           </button>
                         </div>
-                      );
-                    })}
-                  </div>
-                )}
+                      ))}
+
+                      {editModalNewFiles.map((item, idx) => {
+                        const isPrimary = editModalExistingImages.length === 0 && idx === 0;
+                        return (
+                          <div key={item.id} className="relative group shrink-0 w-12 h-12 rounded-lg border bg-white p-0.5 shadow-sm overflow-hidden">
+                            {isVideoUrl(item.file || item.preview) ? (
+                              <div className="relative w-full h-full bg-black rounded-md flex items-center justify-center">
+                                <video src={item.preview} className="w-full h-full object-cover rounded-md" muted loop autoPlay />
+                                <span className="absolute inset-0 flex items-center justify-center text-[10px] text-white font-bold bg-black/40">🎥</span>
+                              </div>
+                            ) : (
+                              <img src={item.preview} alt="" className="w-full h-full object-cover rounded-md" />
+                            )}
+                            {isPrimary && (
+                              <span className="absolute bottom-0 inset-x-0 bg-primary/90 text-[7px] text-white font-bold text-center py-0.2 rounded-b-md">Main</span>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => removeEditModalNewFile(item.id)}
+                              className="absolute -top-1.5 -right-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full p-0.5 shadow-md transition-colors"
+                              title="Remove"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t">
+              {/* Modal Footer - Pinned to bottom */}
+              <div className="flex items-center justify-end gap-3 px-5 py-3.5 border-t bg-muted/20 shrink-0">
                 <button
                   type="button"
                   onClick={() => setEditModalProduct(null)}
