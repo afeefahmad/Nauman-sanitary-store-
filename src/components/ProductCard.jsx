@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { getProductImage } from '../data/categories';
-import { formatImgUrl } from '../utils/apiConfig';
+import { formatImgUrl, isVideoUrl } from '../utils/apiConfig';
 
 export default function ProductCard({
   prod,
@@ -85,26 +85,48 @@ export default function ProductCard({
               >
                 {allImages.map((imgUrl, idx) => (
                   <div key={idx} className="cat-prod-img-slide">
-                    <img
-                      src={imgUrl}
-                      alt={`${prod.name} ${idx + 1}`}
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = PROD_IMAGES?.[catSlug] || '/prod-commode.png';
-                      }}
-                    />
+                    {isVideoUrl(imgUrl) ? (
+                      <video
+                        src={imgUrl}
+                        className="w-full h-full object-contain"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                      />
+                    ) : (
+                      <img
+                        src={imgUrl}
+                        alt={`${prod.name} ${idx + 1}`}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = PROD_IMAGES?.[catSlug] || '/prod-commode.png';
+                        }}
+                      />
+                    )}
                   </div>
                 ))}
               </div>
             ) : (
-              <img
-                src={allImages[0]}
-                alt={prod.name}
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = PROD_IMAGES?.[catSlug] || '/prod-commode.png';
-                }}
-              />
+              isVideoUrl(allImages[0]) ? (
+                <video
+                  src={allImages[0]}
+                  className="w-full h-full object-contain"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                />
+              ) : (
+                <img
+                  src={allImages[0]}
+                  alt={prod.name}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = PROD_IMAGES?.[catSlug] || '/prod-commode.png';
+                  }}
+                />
+              )
             )}
           </div>
 
@@ -225,15 +247,27 @@ export default function ProductCard({
               {/* Left Column: Full Image Viewer & Thumbnail Gallery */}
               <div className="prod-modal-media">
                 <div className="prod-modal-main-img-wrap">
-                  <img
-                    src={allImages[modalImgIdx] || allImages[0]}
-                    alt={prod.name}
-                    className="prod-modal-main-img"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = PROD_IMAGES?.[catSlug] || '/prod-commode.png';
-                    }}
-                  />
+                  {isVideoUrl(allImages[modalImgIdx] || allImages[0]) ? (
+                    <video
+                      src={allImages[modalImgIdx] || allImages[0]}
+                      className="prod-modal-main-img"
+                      controls
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                    />
+                  ) : (
+                    <img
+                      src={allImages[modalImgIdx] || allImages[0]}
+                      alt={prod.name}
+                      className="prod-modal-main-img"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = PROD_IMAGES?.[catSlug] || '/prod-commode.png';
+                      }}
+                    />
+                  )}
                   {hasMultipleImages && (
                     <>
                       <button
@@ -265,7 +299,14 @@ export default function ProductCard({
                         className={`prod-modal-thumb ${idx === modalImgIdx ? 'active' : ''}`}
                         onClick={() => setModalImgIdx(idx)}
                       >
-                        <img src={imgUrl} alt={`${prod.name} ${idx + 1}`} />
+                        {isVideoUrl(imgUrl) ? (
+                          <div className="relative w-full h-full flex items-center justify-center bg-black rounded">
+                            <video src={imgUrl} className="w-full h-full object-cover rounded" muted />
+                            <span className="absolute inset-0 flex items-center justify-center text-white font-bold text-xs bg-black/40">▶</span>
+                          </div>
+                        ) : (
+                          <img src={imgUrl} alt={`${prod.name} ${idx + 1}`} />
+                        )}
                       </div>
                     ))}
                   </div>

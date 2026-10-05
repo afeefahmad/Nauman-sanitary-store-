@@ -3,7 +3,7 @@ import { useCatalog } from '../../context/CatalogContext';
 import { useToast } from '../../context/ToastContext';
 import { getProductImage } from '../../data/categories';
 import { Plus, Trash2, Edit, Search, X, PackageX, RefreshCw, Download, Eye, ChevronLeft, ChevronRight, CheckSquare, Square } from 'lucide-react';
-import { API_BASE } from '../../utils/apiConfig';
+import { API_BASE, isVideoUrl } from '../../utils/apiConfig';
 export default function ManageCategories() {
   const { categories, addProduct, deleteProduct, deleteProductsBulk, brands, updateProduct } = useCatalog();
   const { addToast, confirmAction } = useToast();
@@ -472,64 +472,78 @@ export default function ManageCategories() {
                   />
                 </div>
 
-                <div className="flex flex-col gap-1 flex-1 w-full">
-                  <div className="flex items-center justify-between">
-                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">
-                      Product Images ({existingImages.length + productFiles.length})
-                    </label>
-                  </div>
-                  <input 
-                    required={!editingProductId && existingImages.length === 0 && productFiles.length === 0}
-                    type="file" 
-                    multiple
-                    accept="image/*"
-                    ref={fileInputRef}
-                    className="w-full h-9 px-3 py-1 rounded-md border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-[10px] file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
-                    onChange={handleProductFilesChange}
-                  />
+                  <div className="flex flex-col gap-1 flex-1 w-full">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">
+                        Product Media (Images & Videos: {existingImages.length + productFiles.length})
+                      </label>
+                    </div>
+                    <input 
+                      required={!editingProductId && existingImages.length === 0 && productFiles.length === 0}
+                      type="file" 
+                      multiple
+                      accept="image/*,video/*"
+                      ref={fileInputRef}
+                      className="w-full h-9 px-3 py-1 rounded-md border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-[10px] file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
+                      onChange={handleProductFilesChange}
+                    />
 
-                  {/* Thumbnail Previews */}
-                  {(existingImages.length > 0 || productFiles.length > 0) && (
-                    <div className="flex items-center gap-2 overflow-x-auto py-1.5 scrollbar-thin">
-                      {existingImages.map((imgUrl, idx) => (
-                        <div key={`exist-${idx}`} className="relative group shrink-0 w-10 h-10 rounded-lg border bg-white p-0.5 shadow-sm">
-                          <img src={imgUrl} alt="" className="w-full h-full object-cover rounded-md" />
-                          {idx === 0 && (
-                            <span className="absolute bottom-0 inset-x-0 bg-primary/90 text-[7px] text-white font-bold text-center py-0.2 rounded-b-md">Main</span>
-                          )}
-                          <button
-                            type="button"
-                            onClick={() => removeExistingImage(imgUrl)}
-                            className="absolute -top-1.5 -right-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full p-0.5 shadow-md transition-colors"
-                            title="Remove Photo"
-                          >
-                            <X className="w-2.5 h-2.5" />
-                          </button>
-                        </div>
-                      ))}
-
-                      {productFiles.map((item, idx) => {
-                        const isPrimary = existingImages.length === 0 && idx === 0;
-                        return (
-                          <div key={item.id} className="relative group shrink-0 w-10 h-10 rounded-lg border bg-white p-0.5 shadow-sm">
-                            <img src={item.preview} alt="" className="w-full h-full object-cover rounded-md" />
-                            {isPrimary && (
+                    {/* Thumbnail Previews */}
+                    {(existingImages.length > 0 || productFiles.length > 0) && (
+                      <div className="flex items-center gap-2 overflow-x-auto py-1.5 scrollbar-thin">
+                        {existingImages.map((imgUrl, idx) => (
+                          <div key={`exist-${idx}`} className="relative group shrink-0 w-10 h-10 rounded-lg border bg-white p-0.5 shadow-sm overflow-hidden">
+                            {isVideoUrl(imgUrl) ? (
+                              <div className="relative w-full h-full bg-black rounded-md flex items-center justify-center">
+                                <video src={imgUrl} className="w-full h-full object-cover rounded-md" muted loop autoPlay />
+                                <span className="absolute inset-0 flex items-center justify-center text-[9px] text-white font-bold bg-black/40">🎥</span>
+                              </div>
+                            ) : (
+                              <img src={imgUrl} alt="" className="w-full h-full object-cover rounded-md" />
+                            )}
+                            {idx === 0 && (
                               <span className="absolute bottom-0 inset-x-0 bg-primary/90 text-[7px] text-white font-bold text-center py-0.2 rounded-b-md">Main</span>
                             )}
                             <button
                               type="button"
-                              onClick={() => removeProductFile(item.id)}
+                              onClick={() => removeExistingImage(imgUrl)}
                               className="absolute -top-1.5 -right-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full p-0.5 shadow-md transition-colors"
-                              title="Remove Photo"
+                              title="Remove"
                             >
                               <X className="w-2.5 h-2.5" />
                             </button>
                           </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
+                        ))}
+
+                        {productFiles.map((item, idx) => {
+                          const isPrimary = existingImages.length === 0 && idx === 0;
+                          return (
+                            <div key={item.id} className="relative group shrink-0 w-10 h-10 rounded-lg border bg-white p-0.5 shadow-sm overflow-hidden">
+                              {isVideoUrl(item.file || item.preview) ? (
+                                <div className="relative w-full h-full bg-black rounded-md flex items-center justify-center">
+                                  <video src={item.preview} className="w-full h-full object-cover rounded-md" muted loop autoPlay />
+                                  <span className="absolute inset-0 flex items-center justify-center text-[9px] text-white font-bold bg-black/40">🎥</span>
+                                </div>
+                              ) : (
+                                <img src={item.preview} alt="" className="w-full h-full object-cover rounded-md" />
+                              )}
+                              {isPrimary && (
+                                <span className="absolute bottom-0 inset-x-0 bg-primary/90 text-[7px] text-white font-bold text-center py-0.2 rounded-b-md">Main</span>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => removeProductFile(item.id)}
+                                className="absolute -top-1.5 -right-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full p-0.5 shadow-md transition-colors"
+                                title="Remove"
+                              >
+                                <X className="w-2.5 h-2.5" />
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
 
                 {editingProductId ? (
                   <div className="flex gap-2 w-full xl:w-auto">
@@ -1001,14 +1015,14 @@ export default function ManageCategories() {
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    Product Images ({editModalExistingImages.length + editModalNewFiles.length})
+                    Product Media (Images & Videos: {editModalExistingImages.length + editModalNewFiles.length})
                   </label>
                 </div>
 
                 <input
                   type="file"
                   multiple
-                  accept="image/*"
+                  accept="image/*,video/*"
                   onChange={handleEditModalFilesChange}
                   className="w-full text-xs file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
                 />
@@ -1017,8 +1031,15 @@ export default function ManageCategories() {
                 {(editModalExistingImages.length > 0 || editModalNewFiles.length > 0) && (
                   <div className="flex items-center gap-2 overflow-x-auto py-2 scrollbar-thin">
                     {editModalExistingImages.map((imgUrl, idx) => (
-                      <div key={`exist-${idx}`} className="relative group shrink-0 w-12 h-12 rounded-lg border bg-white p-0.5 shadow-sm">
-                        <img src={imgUrl} alt="" className="w-full h-full object-cover rounded-md" />
+                      <div key={`exist-${idx}`} className="relative group shrink-0 w-12 h-12 rounded-lg border bg-white p-0.5 shadow-sm overflow-hidden">
+                        {isVideoUrl(imgUrl) ? (
+                          <div className="relative w-full h-full bg-black rounded-md flex items-center justify-center">
+                            <video src={imgUrl} className="w-full h-full object-cover rounded-md" muted loop autoPlay />
+                            <span className="absolute inset-0 flex items-center justify-center text-[10px] text-white font-bold bg-black/40">🎥</span>
+                          </div>
+                        ) : (
+                          <img src={imgUrl} alt="" className="w-full h-full object-cover rounded-md" />
+                        )}
                         {idx === 0 && (
                           <span className="absolute bottom-0 inset-x-0 bg-primary/90 text-[7px] text-white font-bold text-center py-0.2 rounded-b-md">Main</span>
                         )}
@@ -1026,7 +1047,7 @@ export default function ManageCategories() {
                           type="button"
                           onClick={() => removeEditModalExistingImage(imgUrl)}
                           className="absolute -top-1.5 -right-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full p-0.5 shadow-md transition-colors"
-                          title="Remove Image"
+                          title="Remove"
                         >
                           <X className="w-3 h-3" />
                         </button>
@@ -1036,8 +1057,15 @@ export default function ManageCategories() {
                     {editModalNewFiles.map((item, idx) => {
                       const isPrimary = editModalExistingImages.length === 0 && idx === 0;
                       return (
-                        <div key={item.id} className="relative group shrink-0 w-12 h-12 rounded-lg border bg-white p-0.5 shadow-sm">
-                          <img src={item.preview} alt="" className="w-full h-full object-cover rounded-md" />
+                        <div key={item.id} className="relative group shrink-0 w-12 h-12 rounded-lg border bg-white p-0.5 shadow-sm overflow-hidden">
+                          {isVideoUrl(item.file || item.preview) ? (
+                            <div className="relative w-full h-full bg-black rounded-md flex items-center justify-center">
+                              <video src={item.preview} className="w-full h-full object-cover rounded-md" muted loop autoPlay />
+                              <span className="absolute inset-0 flex items-center justify-center text-[10px] text-white font-bold bg-black/40">🎥</span>
+                            </div>
+                          ) : (
+                            <img src={item.preview} alt="" className="w-full h-full object-cover rounded-md" />
+                          )}
                           {isPrimary && (
                             <span className="absolute bottom-0 inset-x-0 bg-primary/90 text-[7px] text-white font-bold text-center py-0.2 rounded-b-md">Main</span>
                           )}
@@ -1045,7 +1073,7 @@ export default function ManageCategories() {
                             type="button"
                             onClick={() => removeEditModalNewFile(item.id)}
                             className="absolute -top-1.5 -right-1.5 bg-red-600 hover:bg-red-700 text-white rounded-full p-0.5 shadow-md transition-colors"
-                            title="Remove Image"
+                            title="Remove"
                           >
                             <X className="w-3 h-3" />
                           </button>

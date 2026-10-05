@@ -28,3 +28,24 @@ export function formatImgUrl(url) {
 
   return url;
 }
+
+export function isVideoUrl(urlOrFile) {
+  if (!urlOrFile) return false;
+  if (typeof urlOrFile === 'object' && urlOrFile.type) {
+    return urlOrFile.type.startsWith('video/');
+  }
+  if (typeof urlOrFile === 'string') {
+    const clean = urlOrFile.toLowerCase().split('?')[0].split('#')[0];
+    return (
+      clean.endsWith('.mp4') ||
+      clean.endsWith('.webm') ||
+      clean.endsWith('.mov') ||
+      clean.endsWith('.ogg') ||
+      clean.endsWith('.m4v') ||
+      clean.endsWith('.mkv') ||
+      clean.includes('/video/') ||
+      clean.startsWith('data:video/')
+    );
+  }
+  return false;
+}

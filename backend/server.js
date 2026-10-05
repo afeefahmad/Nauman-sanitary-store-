@@ -20,7 +20,19 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir);
 }
 
-// R2 Streaming Image Proxy Route with local disk fallback
+const getContentType = (filename, fallback = 'image/jpeg') => {
+  const ext = path.extname(filename || '').toLowerCase();
+  if (ext === '.mp4') return 'video/mp4';
+  if (ext === '.webm') return 'video/webm';
+  if (ext === '.mov') return 'video/quicktime';
+  if (ext === '.ogg' || ext === '.ogv') return 'video/ogg';
+  if (ext === '.png') return 'image/png';
+  if (ext === '.webp') return 'image/webp';
+  if (ext === '.gif') return 'image/gif';
+  return fallback;
+};
+
+// R2 Streaming Image & Video Proxy Route with local disk fallback
 app.get('/uploads/:filename', async (req, res) => {
   const filename = req.params.filename;
   const fileKey = `uploads/${filename}`;
@@ -29,7 +41,7 @@ app.get('/uploads/:filename', async (req, res) => {
     try {
       const obj = await cloudflareR2.getObjectFromR2(fileKey);
       if (obj && obj.Body) {
-        res.setHeader('Content-Type', obj.ContentType || 'image/jpeg');
+        res.setHeader('Content-Type', obj.ContentType || getContentType(filename));
         res.setHeader('Cache-Control', 'public, max-age=31536000');
         if (typeof obj.Body.pipe === 'function') {
           return obj.Body.pipe(res);
