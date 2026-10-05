@@ -20,30 +20,32 @@ export const CONTACT = {
 
 export const TICKER_ITEMS = [
   'Nesco Ceramics', 'Pool Sanitary Ware', 'Porta', 'Master Sanitary',
-  'Dell Sanitary', 'Brite Sanitary', 'PPRC Pipes', 'UPVC Fittings',
-  'Muslim Showers', 'Designer Basins', 'Bath Sets', 'Vanity Solutions',
-  'Kitchen Sinks', 'Water Geysers', 'LED Mirrors', 'Bath Tubs',
+  'China Import Collection', 'Super Asia', 'Dell Sanitary', 'Brite Sanitary',
+  'PPRC Pipes', 'UPVC Fittings', 'Muslim Showers', 'Designer Basins',
+  'Bath Sets', 'Vanity Solutions', 'Kitchen Sinks', 'Water Geysers', 'LED Mirrors', 'Bath Tubs',
 ];
 
 export const STATS = [
   { count: 500, label: 'Products Available' },
-  { count: 8,   label: 'Premium Brands' },
+  { count: 10,  label: 'Premium Brands' },
   { count: 18,  label: 'Categories' },
   { count: 2000, label: 'Happy Customers' },
 ];
 
 // ── All Brands ──────────────────────────────────────────────
 export const BRANDS = [
-  { id: 'porta',    name: 'Porta',    logo: '/porta-logo.webp', hero: true },
-  { id: 'master',   name: 'Master',   hero: true },
-  { id: 'pool',     name: 'Pool',     hero: true },
-  { id: 'iclboch',  name: 'ICL Boch', hero: true },
-  { id: 'dell',     name: 'Dell',     hero: false },
-  { id: 'brite',    name: 'Brite',    hero: false },
-  { id: 'sonex',    name: 'Sonex',    hero: false },
-  { id: 'faisal',   name: 'Faisal',   hero: false },
-  { id: 'kale',     name: 'Kale',     hero: false },
-  { id: 'grohe',    name: 'Grohe',    hero: false },
+  { id: 'porta',        name: 'Porta',                  logo: '/porta-logo.webp', hero: true },
+  { id: 'china-import', name: 'China Import Collection',  hero: true },
+  { id: 'super-asia',   name: 'Super Asia',             hero: true },
+  { id: 'master',       name: 'Master',                 hero: true },
+  { id: 'pool',         name: 'Pool',                   hero: true },
+  { id: 'iclboch',      name: 'ICL Boch',               hero: true },
+  { id: 'dell',         name: 'Dell',                   hero: false },
+  { id: 'brite',        name: 'Brite',                  hero: false },
+  { id: 'sonex',        name: 'Sonex',                  hero: false },
+  { id: 'faisal',       name: 'Faisal',                 hero: false },
+  { id: 'kale',         name: 'Kale',                   hero: false },
+  { id: 'grohe',        name: 'Grohe',                  hero: false },
 ];
 
 // ── Hero Categories (5-card grid on homepage) ───────────────
@@ -171,10 +173,10 @@ export const ALL_CATEGORIES = [
     icon: '🚽',
     name: 'Commodes & Toilets',
     subs: 'One Piece · Two Piece · Wall Hung',
-    image: '/prod-commode.png',
-    brands: ['Pool Sanitary Ware', 'Dell Sanitary Ware', 'Brite Sanitary Ware', 'Master Sanitary Ware', 'Nesco Ceramics', 'Porta'],
+    brands: ['Pool Sanitary Ware', 'Dell Sanitary Ware', 'Brite Sanitary Ware', 'Master Sanitary Ware', 'Nesco Ceramics', 'Porta', 'China Import Collection'],
     subCategories: ['One Piece Toilet', 'Two Piece Toilets', 'Wall Hung Toilets'],
     products: [
+      { id: '1790332461145', brand: 'China Import Collection', name: 'Floor mounted ceramic siphonic one piece commode', image: '/uploads/1790332461140-116094124.webp', description: 'Premium floor mounted ceramic siphonic one piece commode, imported from China, featuring a sleek design and reliable performance.', tag: 'China' },
       // ── Step-by-Step Order from sanitary.pk ──
       { brand: 'Pool Sanitary Ware', name: 'GALAXY Commode', model: 'GALAXY', tag: 'Pool' },
       { brand: 'Pool Sanitary Ware', name: 'MOBI Commode', model: 'MOBI', tag: 'Pool' },
@@ -314,7 +316,7 @@ export const ALL_CATEGORIES = [
     name: 'Taps & Faucets',
     subs: 'Complete Bath Sets · Basin Mixers · Sink Mixer · Sensor Taps · Concealed Sets',
     image: '/prod-taps.png',
-    brands: [],
+    brands: ['Super Asia'],
     subCategories: [
       'Complete Single Lever Bath Set',
       'Complete Quarter Round Bath Set',
@@ -328,6 +330,8 @@ export const ALL_CATEGORIES = [
       'Sensor Taps',
     ],
     products: [
+      { id: '1788167255785', brand: 'Super Asia', name: 'Bath Set Daisy Lever', image: '/uploads/1788167255740-741848003.webp', images: ['/uploads/1788167255740-741848003.webp','/uploads/1788167255748-347747364.webp','/uploads/1788167255751-315638030.webp','/uploads/1788167255753-289134772.webp','/uploads/1788167255755-719096021.webp'], description: 'Enhance your bathroom with the timeless elegance of the Daisy Lever from Super Asia Sanitary’s distinguished Gold Series.', tag: 'Super Asia' },
+      { id: '1790581143702', brand: 'Super Asia', name: 'Classic Lever', image: '/uploads/1788168626667-775918508.png', images: ['/uploads/1788168626667-775918508.png','/uploads/1788168757330-617019878.png','/uploads/1788172550775-597334357.png'], description: 'Enhance your bathroom with the Classic Lever from Super Asia Sanitary’s exclusive Gold Series.', tag: 'Super Asia' },
       { brand: '', name: 'Complete Single Lever Bath Set', tag: 'Popular' },
       { brand: '', name: 'Complete Quarter Round Bath Set', tag: '' },
       { brand: '', name: 'Complete Full Round Bath Set', tag: '' },

@@ -20,7 +20,7 @@ const PROD_IMAGES = {
   'kitchen-ware':   '/prod-kitchensink.png',
   'bath-tubs':      '/prod-bathtub.png',
   'pipes-fittings': '/prod-pprc.png',
-  'flush-tanks':    '/prod-commode.png',
+  'flush-tanks':    'https://th.bing.com/th/id/OIP.RaYu4aitQX7n5EH2bdoJDgHaHa?w=178&h=180&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3',
 };
 
 const BRAND_COLORS = {
@@ -34,6 +34,8 @@ const BRAND_COLORS = {
   'Turk Plast':            '#3c5a8b',
   'Dura Flow':             '#8b3c7a',
   'Master Pipes And Fittings': '#7a5a3c',
+  'China Import Collection': '#c0392b',
+  'Super Asia':            '#d35400',
 };
 
 const TAG_COLOR = (tag) =>

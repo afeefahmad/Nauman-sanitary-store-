@@ -64,8 +64,7 @@ async function uploadToR2(buffer, originalname, mimetype) {
     return `${cleanBase}/${fileKey}`;
   }
 
-  // Use local backend proxy URL for clean browser rendering
-  return `http://localhost:5000/uploads/${filename}`;
+  return `/uploads/${filename}`;
 }
 
 /**

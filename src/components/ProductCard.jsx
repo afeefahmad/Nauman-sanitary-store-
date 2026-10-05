@@ -107,8 +107,8 @@ export default function ProductCard({
           <div
             className="cat-prod-brand-tag"
             style={{
-              background: BRAND_COLORS?.[prod.brand]
-                ? `${BRAND_COLORS[prod.brand]}cc`
+              background: (BRAND_COLORS?.[brandName] || BRAND_COLORS?.[prod.brand])
+                ? `${BRAND_COLORS[brandName] || BRAND_COLORS[prod.brand]}cc`
                 : 'rgba(200,160,96,0.85)'
             }}
           >

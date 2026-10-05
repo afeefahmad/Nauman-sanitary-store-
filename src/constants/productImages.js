@@ -16,7 +16,7 @@ const PROD_IMAGES = {
   'muslim-showers':   '/prod-shower.png',
   'water-geysers':    '/prod-geyser.png',
   'kitchen-ware':     '/prod-kitchensink.png',
-  'flush-tanks':      '/cat-commode-luxury.png',
+  'flush-tanks':      'https://th.bing.com/th/id/OIP.RaYu4aitQX7n5EH2bdoJDgHaHa?w=178&h=180&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3',
   'accessories':      '/prod-bathset.png',
   'mirrors':          '/prod-mirror.png',
   'bath-tubs':        '/prod-bathtub.png',

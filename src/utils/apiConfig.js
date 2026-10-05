@@ -25,10 +25,7 @@ export function formatImgUrl(url) {
   }
 
   if (uploadPath.startsWith('/uploads/')) {
-    if (typeof window !== 'undefined' && window.location && window.location.hostname) {
-      return `http://${window.location.hostname}:5000${uploadPath}`;
-    }
-    return `http://localhost:5000${uploadPath}`;
+    return uploadPath;
   }
 
   return url;

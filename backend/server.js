@@ -120,6 +120,12 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
 
     fs.writeFileSync(filePath, req.file.buffer);
 
+    const publicUploadsDir = path.join(__dirname, '..', 'public', 'uploads');
+    try {
+      if (!fs.existsSync(publicUploadsDir)) fs.mkdirSync(publicUploadsDir, { recursive: true });
+      fs.writeFileSync(path.join(publicUploadsDir, filename), req.file.buffer);
+    } catch (e) {}
+
     const imageUrl = `/uploads/${filename}`;
     return res.json({ url: imageUrl, storage: 'local' });
   } catch (err) {

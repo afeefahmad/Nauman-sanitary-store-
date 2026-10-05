@@ -20,8 +20,8 @@ export default function AllCategoriesSection({ onGoCategory }) {
       </div>
       <div className="all-cats-grid stg">
         {(categories || []).map(cat => {
-          const firstProdImg = (cat.products && cat.products[0]) ? (cat.products[0].image || (Array.isArray(cat.products[0].images) ? cat.products[0].images[0] : null)) : null;
-          const rawImg = cat.img || cat.image || firstProdImg || PROD_IMAGES[cat.slug] || '/prod-commode.png';
+          const catIconImg = (cat.img || cat.image || (typeof cat.icon === 'string' && (cat.icon.startsWith('http') || cat.icon.startsWith('/')) ? cat.icon : null));
+          const rawImg = catIconImg || PROD_IMAGES[cat.slug] || '/prod-commode.png';
           const imgSrc = formatImgUrl(rawImg);
 
           return (

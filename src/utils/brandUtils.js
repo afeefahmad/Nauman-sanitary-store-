@@ -13,5 +13,7 @@ export function normalizeBrand(brandName) {
   if (name.includes('minhas')) return 'Minhas Pipes and Fittings';
   if (name.includes('turk')) return 'Turk Plast';
   if (name.includes('dura')) return 'Dura Flow';
+  if (name.includes('china')) return 'China Import Collection';
+  if (name.includes('super asia')) return 'Super Asia';
   return brandName.trim();
 }
