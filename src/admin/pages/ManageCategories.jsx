@@ -299,7 +299,7 @@ export default function ManageCategories() {
         brand: newProductBrand,
         color: newProductColor,
         description: newProductDesc,
-        model: newProductName,
+        model: '',
         tag: newProductBrand,
         image: primaryImage,
         images: finalImages

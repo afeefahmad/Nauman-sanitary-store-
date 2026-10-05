@@ -177,7 +177,7 @@ export default function ProductCard({
             </div>
           )}
           {prod.description && <div className="cat-prod-desc">{prod.description}</div>}
-          {prod.model && <div className="cat-prod-model">Model: {prod.model}</div>}
+          {prod.model && prod.model.trim() !== '' && prod.model !== prod.name && <div className="cat-prod-model">Model: {prod.model}</div>}
 
           <div className="cat-prod-footer" onClick={(e) => e.stopPropagation()}>
             <button
@@ -291,7 +291,7 @@ export default function ProductCard({
                 </div>
 
                 <div className="prod-modal-badges">
-                  {prod.model && (
+                  {prod.model && prod.model.trim() !== '' && prod.model !== prod.name && (
                     <div className="prod-modal-spec-badge">
                       <span className="spec-lbl">Model:</span> <span className="spec-val">{prod.model}</span>
                     </div>
