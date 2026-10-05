@@ -448,5 +448,12 @@ app.post('/api/products/delete-bulk', (req, res) => {
   });
 });
 
-const PORT = 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const PORT = process.env.PORT || 5000;
+const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.log(`Port ${PORT} is already in use (backend server active).`);
+  } else {
+    console.error('Server error:', err);
+  }
+});

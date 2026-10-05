@@ -113,7 +113,56 @@ export function CatalogProvider({ children }) {
         
         if (catsRes.ok) {
           const cData = await catsRes.json();
-          if (Array.isArray(cData) && cData.length > 0) saveCategories(cData);
+          if (Array.isArray(cData) && cData.length > 0) {
+            // 1. Merge backend categories with static definitions in ALL_CATEGORIES
+            const mergedCategories = ALL_CATEGORIES.map(staticCat => {
+              const apiCat = cData.find(c => c.slug === staticCat.slug);
+              if (!apiCat) return staticCat;
+              return {
+                ...staticCat,
+                ...apiCat,
+                subCategories: staticCat.subCategories || [],
+                products: apiCat.products || []
+              };
+            });
+
+            // Also preserve any custom categories created in DB not in ALL_CATEGORIES
+            cData.forEach(apiCat => {
+              if (!mergedCategories.some(mc => mc.slug === apiCat.slug)) {
+                mergedCategories.push(apiCat);
+              }
+            });
+
+            // 2. Sync local storage items (added while server was offline) into DB and state
+            try {
+              const saved = localStorage.getItem('ns_catalog_categories');
+              if (saved) {
+                const localCats = JSON.parse(saved);
+                if (Array.isArray(localCats)) {
+                  localCats.forEach(lCat => {
+                    const targetCat = mergedCategories.find(c => c.slug === lCat.slug);
+                    if (targetCat) {
+                      const dbIds = new Set((targetCat.products || []).map(p => p.id));
+                      const dbNames = new Set((targetCat.products || []).map(p => (p.name || '').toLowerCase().trim()));
+
+                      (lCat.products || []).forEach(lProd => {
+                        if (!dbIds.has(lProd.id) && !dbNames.has((lProd.name || '').toLowerCase().trim())) {
+                          targetCat.products.unshift(lProd);
+                          fetch(`${API_BASE}/products`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ ...lProd, categorySlug: lCat.slug })
+                          }).catch(() => {});
+                        }
+                      });
+                    }
+                  });
+                }
+              }
+            } catch (e) {}
+
+            saveCategories(mergedCategories);
+          }
         }
         if (heroRes.ok) {
           const hData = await heroRes.json();
@@ -137,8 +186,12 @@ export function CatalogProvider({ children }) {
         }
         if (brandsRes.ok) {
           const fetchedBrands = await brandsRes.json();
-          if (Array.isArray(fetchedBrands)) {
-            saveBrands(fetchedBrands);
+          if (Array.isArray(fetchedBrands) && fetchedBrands.length > 0) {
+            const mergedBrands = fetchedBrands.map(fb => {
+              const staticB = INITIAL_BRANDS.find(b => b.name.toLowerCase() === fb.name.toLowerCase());
+              return staticB ? { ...staticB, ...fb } : fb;
+            });
+            saveBrands(mergedBrands);
           }
         }
       } catch (err) {
@@ -236,8 +289,7 @@ export function CatalogProvider({ children }) {
     if (cleanTargetName) {
       const newCategories = categories.map(cat => ({
         ...cat,
-        brands: (cat.brands || []).filter(b => (b || '').trim().toLowerCase() !== cleanTargetName),
-        products: (cat.products || []).filter(p => (p.brand || '').trim().toLowerCase() !== cleanTargetName)
+        brands: (cat.brands || []).filter(b => (b || '').trim().toLowerCase() !== cleanTargetName)
       }));
       saveCategories(newCategories);
     }

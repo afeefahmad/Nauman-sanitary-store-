@@ -10,6 +10,7 @@ export const API_BASE = getApiBase();
 
 export function formatImgUrl(url) {
   if (!url || typeof url !== 'string') return url;
+  if (url.startsWith('blob:')) return '';
 
   if (url.startsWith('data:')) return url;
 
