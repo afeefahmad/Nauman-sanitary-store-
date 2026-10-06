@@ -133,34 +133,6 @@ export function CatalogProvider({ children }) {
               }
             });
 
-            // 2. Sync local storage items (added while server was offline) into DB and state
-            try {
-              const saved = localStorage.getItem('ns_catalog_categories');
-              if (saved) {
-                const localCats = JSON.parse(saved);
-                if (Array.isArray(localCats)) {
-                  localCats.forEach(lCat => {
-                    const targetCat = mergedCategories.find(c => c.slug === lCat.slug);
-                    if (targetCat) {
-                      const dbIds = new Set((targetCat.products || []).map(p => p.id));
-                      const dbNames = new Set((targetCat.products || []).map(p => (p.name || '').toLowerCase().trim()));
-
-                      (lCat.products || []).forEach(lProd => {
-                        if (!dbIds.has(lProd.id) && !dbNames.has((lProd.name || '').toLowerCase().trim())) {
-                          targetCat.products.unshift(lProd);
-                          fetch(`${API_BASE}/products`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ ...lProd, categorySlug: lCat.slug })
-                          }).catch(() => {});
-                        }
-                      });
-                    }
-                  });
-                }
-              }
-            } catch (e) {}
-
             saveCategories(mergedCategories);
           }
         }
