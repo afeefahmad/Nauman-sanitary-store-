@@ -4,6 +4,7 @@ import { useToast } from '../../context/ToastContext';
 import { getProductImage } from '../../data/categories';
 import { Plus, Trash2, Edit, Search, X, PackageX, RefreshCw, Download, Eye, ChevronLeft, ChevronRight, CheckSquare, Square } from 'lucide-react';
 import { API_BASE, isVideoUrl } from '../../utils/apiConfig';
+import { normalizeBrand } from '../../utils/brandUtils';
 export default function ManageCategories() {
   const { categories, addProduct, deleteProduct, deleteProductsBulk, brands, updateProduct } = useCatalog();
   const { addToast, confirmAction } = useToast();
@@ -327,8 +328,8 @@ export default function ManageCategories() {
 
   // Filter products by brand and search term
   const displayedProducts = (activeCategory?.products || []).filter(p => {
-    const matchBrand = newProductBrand === 'all' || (p.brand || 'Unbranded') === newProductBrand;
-    const matchSearch = !searchTerm || p.name.toLowerCase().includes(searchTerm.toLowerCase()) || (p.brand && p.brand.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchBrand = newProductBrand === 'all' || normalizeBrand(p.brand || 'Unbranded') === normalizeBrand(newProductBrand) || (p.brand || 'Unbranded') === newProductBrand;
+    const matchSearch = !searchTerm || p.name.toLowerCase().includes(searchTerm.toLowerCase()) || (p.brand && p.brand.toLowerCase().includes(searchTerm.toLowerCase())) || (normalizeBrand(p.brand).toLowerCase().includes(searchTerm.toLowerCase()));
     return matchBrand && matchSearch;
   });
 
