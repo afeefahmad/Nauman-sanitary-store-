@@ -122,7 +122,7 @@ export function CatalogProvider({ children }) {
                 ...staticCat,
                 ...apiCat,
                 subCategories: staticCat.subCategories || [],
-                products: (apiCat.products && apiCat.products.length > 0) ? apiCat.products : (staticCat.products || [])
+                products: apiCat.products || []
               };
             });
 
