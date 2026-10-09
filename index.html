@@ -19,6 +19,15 @@
 </head>
 
 <body>
+  <script>
+    // Set theme immediately before React loads — zero flash, zero delay
+    try {
+      var t = localStorage.getItem('nss-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    } catch(e) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  </script>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>

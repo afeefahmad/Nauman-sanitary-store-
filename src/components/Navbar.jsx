@@ -5,19 +5,19 @@ import { normalizeBrand } from '../utils/brandUtils';
 
 /* ── Stretchy Toggle ── */
 function ThemeToggle() {
-  const { theme, toggleTheme } = useTheme();
-  const isDark = theme === 'dark';
+  const { toggleTheme } = useTheme();
 
   return (
     <button
-      className={`theme-toggle${isDark ? ' dark' : ' light'}`}
+      className="theme-toggle"
       onClick={toggleTheme}
-      aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
-      title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+      aria-label="Toggle light/dark mode"
+      title="Toggle light/dark mode"
     >
       <span className="tt-track">
         <span className="tt-thumb">
-          <span className="tt-icon">{isDark ? '☀️' : '🌙'}</span>
+          <span className="tt-icon tt-icon-sun">☀️</span>
+          <span className="tt-icon tt-icon-moon">🌙</span>
         </span>
       </span>
     </button>

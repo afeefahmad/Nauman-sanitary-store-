@@ -11,8 +11,8 @@ export function ThemeProvider({ children }) {
     }
   });
 
+  // Persist to localStorage and update meta-theme-color (non-critical, can run after render)
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
     const themeColor = theme === 'dark' ? '#060708' : '#e4e5e7';
     let metaTheme = document.querySelector('meta[name="theme-color"]');
     if (!metaTheme) {
@@ -21,14 +21,18 @@ export function ThemeProvider({ children }) {
       document.head.appendChild(metaTheme);
     }
     metaTheme.content = themeColor;
-
     try {
       localStorage.setItem('nss-theme', theme);
     } catch {/* ignore */}
   }, [theme]);
 
-  const toggleTheme = () =>
-    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  const toggleTheme = () => {
+    // Set the attribute SYNCHRONOUSLY before React re-renders
+    // so CSS variables cascade instantly on click with zero delay
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    setTheme(next);
+  };
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
