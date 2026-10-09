@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 /* ─────────────────────────────────────────────
    HERO SECTION
@@ -11,6 +11,45 @@ import { useEffect } from 'react';
      onScrollTo(id) — smooth-scroll to a section
 ───────────────────────────────────────────── */
 export default function HeroSection({ onScrollTo }) {
+
+  /* ── Dual-Video Seamless Crossfade Buffer ── */
+  const v1Ref = useRef(null);
+  const v2Ref = useRef(null);
+  const [activeVideo, setActiveVideo] = useState(1);
+
+  useEffect(() => {
+    const v1 = v1Ref.current;
+    const v2 = v2Ref.current;
+    if (!v1 || !v2) return;
+
+    // Start primary video on mount
+    v1.play().catch(() => {});
+
+    let isSwitching = false;
+
+    const checkCrossfade = () => {
+      const activeEl = activeVideo === 1 ? v1 : v2;
+      const nextEl = activeVideo === 1 ? v2 : v1;
+
+      if (!activeEl || !nextEl || isSwitching) return;
+
+      // When active video reaches ~1.5s (of 2.0s), start next video & crossfade
+      if (activeEl.currentTime >= 1.5) {
+        isSwitching = true;
+        nextEl.currentTime = 0.01;
+        nextEl.play().then(() => {
+          setActiveVideo(prev => (prev === 1 ? 2 : 1));
+          setTimeout(() => { isSwitching = false; }, 400);
+        }).catch(() => {
+          isSwitching = false;
+        });
+      }
+    };
+
+    const activeEl = activeVideo === 1 ? v1 : v2;
+    activeEl.addEventListener('timeupdate', checkCrossfade);
+    return () => activeEl.removeEventListener('timeupdate', checkCrossfade);
+  }, [activeVideo]);
 
   /* ── Particles + Water Drops ── */
   useEffect(() => {
@@ -75,12 +114,29 @@ export default function HeroSection({ onScrollTo }) {
   return (
     <section id="hero">
 
-      {/* Background Video */}
+      {/* Dual-Video Seamless Crossfade Buffer for Infinite Continuous Flow */}
       <video
+        ref={v1Ref}
         className="hero-video-bg"
+        style={{
+          opacity: activeVideo === 1 ? 1 : 0,
+          transition: 'opacity 0.4s ease-in-out',
+          zIndex: 0
+        }}
         src="/hero-section-2sec-no-logo.mp4"
         autoPlay
-        loop
+        muted
+        playsInline
+      />
+      <video
+        ref={v2Ref}
+        className="hero-video-bg"
+        style={{
+          opacity: activeVideo === 2 ? 1 : 0,
+          transition: 'opacity 0.4s ease-in-out',
+          zIndex: 0
+        }}
+        src="/hero-section-2sec-no-logo.mp4"
         muted
         playsInline
       />
