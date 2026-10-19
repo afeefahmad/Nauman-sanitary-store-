@@ -174,6 +174,7 @@ export const ALL_CATEGORIES = [
     icon: '🚽',
     name: 'Commodes & Toilets',
     subs: 'One Piece · Two Piece · Wall Hung',
+    image: '/cat-commode-luxury.png',
     brands: ['Pool Sanitary Ware', 'Dell Sanitary Ware', 'Brite Sanitary Ware', 'Master Sanitary Ware', 'Nesco Ceramics', 'Porta'],
     subCategories: ['One Piece Toilet', 'Two Piece Toilets', 'Wall Hung Toilets'],
     products: [
@@ -371,10 +372,10 @@ export const ALL_CATEGORIES = [
   },
   {
     slug: 'accessories',
-    icon: 'https://tse3.mm.bing.net/th/id/OIP.83kjQ4i7fNh_mOafwlf6ggAAAA?r=0&rs=1&pid=ImgDetMain&o=7&rm=3',
+    icon: '/prod-accessories.png',
     name: 'Bathroom Accessories',
     subs: 'Bottle Traps · Basin Waste · Bibcock · Tee-cock · Shower Hose',
-    image: '/prod-faucet.png',
+    image: '/prod-accessories.png',
     brands: [],
     subCategories: ['Bottle Traps', 'Basin Waste', 'Double Bibcock', 'Tee-cock', 'Shower Hose'],
     products: [
@@ -573,10 +574,10 @@ export const ALL_CATEGORIES = [
 
   {
     slug: 'flush-tanks',
-    icon: 'https://th.bing.com/th/id/OIP.RaYu4aitQX7n5EH2bdoJDgHaHa?w=178&h=180&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3',
+    icon: '/prod-flushtank.png',
     name: 'Flush Tanks',
     subs: 'Concealed Cistern · Wall Hung · Standard Flush',
-    image: '/prod-commode.png',
+    image: '/prod-flushtank.png',
     brands: [],
     subCategories: ['Concealed Cistern', 'Wall Hung Cistern', 'Standard Flush Tank'],
     products: [

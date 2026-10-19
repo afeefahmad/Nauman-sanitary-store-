@@ -21,7 +21,7 @@ export default function AllCategoriesSection({ onGoCategory }) {
       <div className="all-cats-grid stg">
         {(categories || []).map(cat => {
           const catIconImg = (cat.img || cat.image || (typeof cat.icon === 'string' && (cat.icon.startsWith('http') || cat.icon.startsWith('/')) ? cat.icon : null));
-          const rawImg = catIconImg || PROD_IMAGES[cat.slug] || '/prod-commode.png';
+          const rawImg = catIconImg || PROD_IMAGES[cat.slug] || '/cat-commode-luxury.png';
           const imgSrc = formatImgUrl(rawImg);
 
           return (
@@ -34,7 +34,7 @@ export default function AllCategoriesSection({ onGoCategory }) {
                   decoding="async"
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = PROD_IMAGES[cat.slug] || '/prod-commode.png';
+                    e.target.src = PROD_IMAGES[cat.slug] || '/cat-commode-luxury.png';
                   }}
                 />
               </div>

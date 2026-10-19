@@ -8,17 +8,17 @@ import ProductCard from '../components/ProductCard';
 
 /* ── Image map ──────────────────────────────────────────── */
 const PROD_IMAGES = {
-  'toilets':        '/prod-commode.png',
-  'basins':         '/prod-basin.png',
-  'taps':           '/prod-taps.png',
+  'toilets':        '/cat-commode-luxury.png',
+  'basins':         '/cat-basin-luxury.png',
+  'taps':           '/cat-taps-luxury.png',
   'muslim-showers': '/prod-shower.png',
-  'accessories':    '/prod-faucet.png',
-  'vanities':       '/prod-vanity.png',
+  'accessories':    '/prod-accessories.png',
+  'vanities':       '/cat-vanity-luxury.png',
   'mirrors':        '/prod-mirror.png',
   'kitchen-ware':   '/prod-kitchensink.png',
   'bath-tubs':      '/prod-bathtub.png',
-  'pipes-fittings': '/prod-pprc.png',
-  'flush-tanks':    'https://th.bing.com/th/id/OIP.RaYu4aitQX7n5EH2bdoJDgHaHa?w=178&h=180&c=7&r=0&o=7&dpr=1.5&pid=1.7&rm=3',
+  'pipes-fittings': '/cat-pipes-luxury.png',
+  'flush-tanks':    '/prod-flushtank.png',
 };
 
 /* ── Brand colour pills ─────────────────────────────────── */
@@ -546,7 +546,7 @@ export default function CategoryPage() {
                 >
                   <div className="ac-icon">
                     <img 
-                      src={PROD_IMAGES[cat.slug] || '/prod-commode.png'} 
+                      src={PROD_IMAGES[cat.slug] || '/cat-commode-luxury.png'} 
                       alt={cat.name} 
                       loading="lazy"
                       decoding="async"
