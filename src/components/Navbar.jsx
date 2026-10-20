@@ -55,10 +55,11 @@ export default function Navbar() {
 
   const scrollTo = (id) => {
     setOpen(false);
+    const targetId = id === 'about' ? 'legacy' : id;
     if (!isHome) {
-      navigate('/', { state: { scrollTo: id } });
+      navigate('/', { state: { scrollTo: targetId } });
     } else {
-      const el = document.getElementById(id);
+      const el = document.getElementById(targetId) || document.getElementById(id);
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
@@ -72,7 +73,7 @@ export default function Navbar() {
     { label: 'Home', id: 'hero' },
     { label: 'Categories', id: 'categories' },
     { label: 'Brands', id: 'brand-showcase' },
-    { label: 'Products', id: 'all-cats' },
+    { label: 'About', id: 'about' },
     { label: 'Contact', id: 'contact' },
   ];
 
@@ -293,12 +294,12 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Products */}
+          {/* About */}
           <a
             className="mob-link"
-            onClick={() => scrollTo('products')}
+            onClick={() => scrollTo('about')}
           >
-            <span>Products</span>
+            <span>About</span>
           </a>
 
           {/* Contact */}

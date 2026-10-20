@@ -37,9 +37,10 @@ export default function Home() {
   useEffect(() => {
     if (location.state?.scrollTo) {
       const id = location.state.scrollTo;
+      const targetId = id === 'about' ? 'legacy' : id;
       window.history.replaceState({}, document.title);
       setTimeout(() => {
-        const el = document.getElementById(id);
+        const el = document.getElementById(targetId) || document.getElementById(id);
         if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
     }
@@ -47,7 +48,8 @@ export default function Home() {
 
   /* ── Shared helpers passed to sections ── */
   const scrollTo = (id) => {
-    const el = document.getElementById(id);
+    const targetId = id === 'about' ? 'legacy' : id;
+    const el = document.getElementById(targetId) || document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 

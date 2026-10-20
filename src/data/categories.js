@@ -5,7 +5,9 @@
 // ═══════════════════════════════════════════════════════════
 
 export const CONTACT = {
-  owner: 'Nauman Zaffar',
+  owner: 'Muhammad Nauman Zaffar',
+  ceo: 'Muhammad Nauman Zaffar',
+  title: 'Founder & Chief Executive Officer (CEO)',
   phone: '03008118085',
   phoneFormatted: '+92 300 8118085',
   whatsapp: '923008118085',
