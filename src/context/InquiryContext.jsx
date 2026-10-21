@@ -56,10 +56,25 @@ export function InquiryProvider({ children }) {
 
   const totalCount = items.reduce((sum, i) => sum + i.qty, 0);
 
-  const sendWhatsAppInquiry = () => {
+  const sendWhatsAppInquiry = (customerInfo = {}) => {
     if (items.length === 0) return;
     const phone = '923008118085';
     let message = `Hello Nauman Sanitary Store! 👋\nI would like to inquire about the following products:\n\n`;
+
+    const name = customerInfo?.name || (typeof window !== 'undefined' ? localStorage.getItem('nauman_customer_name') || '' : '');
+    const custPhone = customerInfo?.phone || (typeof window !== 'undefined' ? localStorage.getItem('nauman_customer_phone') || '' : '');
+
+    if (name.trim()) {
+      message += `👤 *Customer Name:* ${name.trim()}\n`;
+    }
+    if (custPhone.trim()) {
+      message += `📞 *Customer Phone:* ${custPhone.trim()}\n`;
+    }
+    if (name.trim() || custPhone.trim()) {
+      message += `──────────────────────\n\n`;
+    }
+
+    message += `*Selected Products:*\n`;
     items.forEach((item, index) => {
       message += `${index + 1}. *${item.name}* (Brand: ${item.brand || 'N/A'}) - Qty: ${item.qty}\n`;
     });

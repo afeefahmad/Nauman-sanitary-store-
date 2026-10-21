@@ -52,7 +52,11 @@ export function CatalogProvider({ children }) {
   const [contact, setContact] = useState(() => {
     try {
       const saved = localStorage.getItem('ns_catalog_contact');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.owner === 'Nauman Zaffar') parsed.owner = 'Muhammad Nauman Zaffar';
+        return { ...INITIAL_CONTACT, ...parsed };
+      }
     } catch (e) {}
     return INITIAL_CONTACT;
   });

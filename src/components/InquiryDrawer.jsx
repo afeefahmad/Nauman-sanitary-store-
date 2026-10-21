@@ -1,10 +1,26 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useInquiry } from '../context/InquiryContext';
-import { ShoppingBag, X, Plus, Minus, Trash2, MessageSquare, ShieldCheck } from 'lucide-react';
+import { ShoppingBag, X, Plus, Minus, Trash2, MessageSquare, ShieldCheck, User, Phone } from 'lucide-react';
 import './InquiryDrawer.css';
 
 export default function InquiryDrawer() {
   const { items, isOpen, setIsOpen, removeFromInquiry, updateQuantity, clearInquiry, sendWhatsAppInquiry, totalCount } = useInquiry();
+  const [customerName, setCustomerName] = useState(() => 
+    typeof window !== 'undefined' ? localStorage.getItem('nauman_customer_name') || '' : ''
+  );
+  const [customerPhone, setCustomerPhone] = useState(() => 
+    typeof window !== 'undefined' ? localStorage.getItem('nauman_customer_phone') || '' : ''
+  );
+
+  // Sync with localStorage if updated in contact form
+  useEffect(() => {
+    if (isOpen && typeof window !== 'undefined') {
+      const storedName = localStorage.getItem('nauman_customer_name');
+      const storedPhone = localStorage.getItem('nauman_customer_phone');
+      if (storedName && !customerName) setCustomerName(storedName);
+      if (storedPhone && !customerPhone) setCustomerPhone(storedPhone);
+    }
+  }, [isOpen]);
 
   // Scroll lock & Escape key listener
   useEffect(() => {
@@ -159,8 +175,37 @@ export default function InquiryDrawer() {
         {/* Footer Actions */}
         {items.length > 0 && (
           <div className="inquiry-drawer-footer">
+            <div className="inquiry-drawer-customer-box">
+              <div className="inquiry-drawer-cust-field">
+                <User className="inquiry-drawer-cust-icon" />
+                <input
+                  type="text"
+                  placeholder="Your Name (Optional)"
+                  value={customerName}
+                  onChange={(e) => {
+                    setCustomerName(e.target.value);
+                    try { localStorage.setItem('nauman_customer_name', e.target.value); } catch(err){}
+                  }}
+                  className="inquiry-drawer-cust-input"
+                />
+              </div>
+              <div className="inquiry-drawer-cust-field">
+                <Phone className="inquiry-drawer-cust-icon" />
+                <input
+                  type="tel"
+                  placeholder="Phone: 0300 0000000"
+                  value={customerPhone}
+                  onChange={(e) => {
+                    setCustomerPhone(e.target.value);
+                    try { localStorage.setItem('nauman_customer_phone', e.target.value); } catch(err){}
+                  }}
+                  className="inquiry-drawer-cust-input"
+                />
+              </div>
+            </div>
+
             <button
-              onClick={sendWhatsAppInquiry}
+              onClick={() => sendWhatsAppInquiry({ name: customerName, phone: customerPhone })}
               className="inquiry-drawer-submit-btn"
             >
               <MessageSquare className="w-4 h-4 inquiry-drawer-submit-icon" />
