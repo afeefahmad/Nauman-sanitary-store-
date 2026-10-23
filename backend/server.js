@@ -416,9 +416,9 @@ app.post('/api/categories', (req, res) => {
 
 app.delete('/api/categories/:slug', (req, res) => {
   const { slug } = req.params;
-  db.get('SELECT id FROM categories WHERE slug = ?', [slug], (err, cat) => {
+  db.get('SELECT id FROM categories WHERE slug = ? OR LOWER(slug) = LOWER(?)', [slug, slug], (err, cat) => {
     if (err) return res.status(500).json({ error: err.message });
-    if (!cat) return res.status(404).json({ error: 'Category not found' });
+    if (!cat) return res.json({ success: true, message: 'Category not in DB or already deleted' });
     
     db.run('DELETE FROM products WHERE categoryId = ?', [cat.id], (pErr) => {
       if (pErr) console.error('Error deleting category products:', pErr);

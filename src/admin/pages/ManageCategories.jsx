@@ -6,7 +6,7 @@ import { Plus, Trash2, Edit, Search, X, PackageX, RefreshCw, Download, Eye, Chev
 import { API_BASE, isVideoUrl } from '../../utils/apiConfig';
 import { normalizeBrand } from '../../utils/brandUtils';
 export default function ManageCategories() {
-  const { categories, addCategory, addProduct, deleteProduct, deleteProductsBulk, brands, updateProduct } = useCatalog();
+  const { categories, addCategory, deleteCategory, addProduct, deleteProduct, deleteProductsBulk, brands, updateProduct } = useCatalog();
   const { addToast, confirmAction } = useToast();
 
   const [activeCategorySlug, setActiveCategorySlug] = useState('all');
@@ -26,6 +26,10 @@ export default function ManageCategories() {
   const [newCatHint, setNewCatHint] = useState('');
   const [newCatSubCategories, setNewCatSubCategories] = useState('');
   const [isSubmittingCategory, setIsSubmittingCategory] = useState(false);
+
+  // Delete Category Modal states
+  const [deleteCategoryModalTarget, setDeleteCategoryModalTarget] = useState(null);
+  const [isDeletingCategory, setIsDeletingCategory] = useState(false);
 
   const handleCatNameChange = (e) => {
     const val = e.target.value;
@@ -62,6 +66,22 @@ export default function ManageCategories() {
       addToast(err.message || 'Failed to create category', 'error');
     } finally {
       setIsSubmittingCategory(false);
+    }
+  };
+
+  const handleDeleteCategory = async () => {
+    if (!deleteCategoryModalTarget) return;
+    setIsDeletingCategory(true);
+    try {
+      await deleteCategory(deleteCategoryModalTarget.slug);
+      addToast(`Category "${deleteCategoryModalTarget.name}" deleted from website! 🗑️`, 'info');
+      setActiveCategorySlug('all');
+      setDeleteCategoryModalTarget(null);
+    } catch (err) {
+      console.error(err);
+      addToast('Failed to delete category', 'error');
+    } finally {
+      setIsDeletingCategory(false);
     }
   };
 
@@ -398,14 +418,26 @@ export default function ManageCategories() {
           <>
             <div className="p-6 border-b flex flex-col sm:flex-row justify-between sm:items-center gap-4">
               <div>
-                <h2 className="text-xl font-bold flex items-center gap-2">
-                  {typeof activeCategory.icon === 'string' && (activeCategory.icon.startsWith('http') || activeCategory.icon.startsWith('/') || activeCategory.icon.startsWith('data:')) ? (
-                    <img src={activeCategory.icon} alt="" className="w-6 h-6 object-contain" />
-                  ) : (
-                    <span>{activeCategory.icon}</span>
+                <div className="flex items-center gap-2.5">
+                  <h2 className="text-xl font-bold flex items-center gap-2">
+                    {typeof activeCategory.icon === 'string' && (activeCategory.icon.startsWith('http') || activeCategory.icon.startsWith('/') || activeCategory.icon.startsWith('data:')) ? (
+                      <img src={activeCategory.icon} alt="" className="w-6 h-6 object-contain" />
+                    ) : (
+                      <span>{activeCategory.icon}</span>
+                    )}
+                    {activeCategory.name}
+                  </h2>
+                  {activeCategorySlug !== 'all' && (
+                    <button
+                      type="button"
+                      onClick={() => setDeleteCategoryModalTarget(activeCategory)}
+                      className="px-2.5 py-1 text-xs font-semibold text-red-600 hover:text-white bg-red-50 hover:bg-red-600 border border-red-200 hover:border-red-600 rounded-lg flex items-center gap-1 transition-all cursor-pointer shadow-xs ml-1"
+                      title={`Delete ${activeCategory.name} category from website`}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Delete Category
+                    </button>
                   )}
-                  {activeCategory.name}
-                </h2>
+                </div>
                 <p className="text-sm text-muted-foreground">{displayedProducts.length} products found in this view</p>
               </div>
 
@@ -466,6 +498,18 @@ export default function ManageCategories() {
                 >
                   <Plus className="w-4 h-4" /> Add Category
                 </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const target = (activeCategorySlug !== 'all' ? categories.find(c => c.slug === activeCategorySlug) : null) || categories[0];
+                    if (target) setDeleteCategoryModalTarget(target);
+                  }}
+                  className="h-9 px-3 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white border border-red-200 hover:border-red-600 rounded-lg text-sm font-semibold flex items-center gap-1.5 whitespace-nowrap shadow-sm transition-all cursor-pointer"
+                  title="Delete a category from website"
+                >
+                  <Trash2 className="w-4 h-4" /> Delete Category
+                </button>
               </div>
             </div>
             
@@ -475,14 +519,29 @@ export default function ManageCategories() {
                 <div className="flex flex-col gap-1 w-full xl:w-1/5">
                   <div className="flex items-center justify-between">
                     <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Category</label>
-                    <button
-                      type="button"
-                      onClick={() => setIsAddCategoryModalOpen(true)}
-                      className="text-[10px] font-semibold text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
-                      title="Add category manually"
-                    >
-                      <Plus className="w-2.5 h-2.5" /> New
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setIsAddCategoryModalOpen(true)}
+                        className="text-[10px] font-semibold text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
+                        title="Add category manually"
+                      >
+                        <Plus className="w-2.5 h-2.5" /> New
+                      </button>
+                      {activeCategorySlug !== 'all' && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const catToDelete = categories.find(c => c.slug === activeCategorySlug);
+                            if (catToDelete) setDeleteCategoryModalTarget(catToDelete);
+                          }}
+                          className="text-[10px] font-semibold text-red-600 hover:underline flex items-center gap-0.5 cursor-pointer"
+                          title="Delete selected category"
+                        >
+                          <Trash2 className="w-2.5 h-2.5" /> Delete
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <select 
                     className="w-full h-9 px-3 rounded-md border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
@@ -1428,6 +1487,98 @@ export default function ManageCategories() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Category Confirmation Modal */}
+      {deleteCategoryModalTarget && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-background border border-red-500/30 rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl space-y-4 animate-in zoom-in-95 relative">
+            <button
+              type="button"
+              onClick={() => setDeleteCategoryModalTarget(null)}
+              className="absolute top-4 right-4 p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl shrink-0">
+                <Trash2 className="w-6 h-6" />
+              </div>
+              <div className="flex-1 space-y-1">
+                <h3 className="text-lg font-bold text-foreground">Delete Category</h3>
+                <p className="text-xs text-muted-foreground">
+                  Remove this category from your website and catalog
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Select Category to Delete</label>
+              <select
+                className="w-full h-10 px-3 rounded-lg border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                value={deleteCategoryModalTarget.slug}
+                onChange={(e) => {
+                  const selectedCat = categories.find(c => c.slug === e.target.value);
+                  if (selectedCat) setDeleteCategoryModalTarget(selectedCat);
+                }}
+              >
+                {categories.map(cat => (
+                  <option key={cat.id || cat.slug} value={cat.slug}>
+                    {cat.name} ({cat.products?.length || 0} products)
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Target Category Overview Card */}
+            <div className="p-3.5 bg-muted/40 border rounded-xl flex items-center gap-3">
+              <div className="w-12 h-12 rounded-lg border bg-white flex items-center justify-center text-2xl shrink-0 shadow-xs">
+                {typeof deleteCategoryModalTarget.icon === 'string' && (deleteCategoryModalTarget.icon.startsWith('http') || deleteCategoryModalTarget.icon.startsWith('/') || deleteCategoryModalTarget.icon.startsWith('data:')) ? (
+                  <img src={deleteCategoryModalTarget.icon} alt="" className="w-8 h-8 object-contain" />
+                ) : (
+                  deleteCategoryModalTarget.icon || '📦'
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-bold text-foreground truncate">{deleteCategoryModalTarget.name}</div>
+                <div className="text-xs text-muted-foreground">URL Slug: <span className="font-mono text-[11px]">/category/{deleteCategoryModalTarget.slug}</span></div>
+                <div className="text-xs text-muted-foreground">Contains: <strong className="text-foreground">{deleteCategoryModalTarget.products?.length || 0}</strong> products</div>
+              </div>
+            </div>
+
+            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-xs text-red-600 space-y-1">
+              <p className="font-semibold flex items-center gap-1.5">
+                <span>⚠️</span> Warning: Permanent Removal
+              </p>
+              <p>
+                Deleting <strong>{deleteCategoryModalTarget.name}</strong> will remove it from your website navigation, categories section, and catalog.
+                {(deleteCategoryModalTarget.products?.length || 0) > 0 && (
+                  <span> All <strong>{deleteCategoryModalTarget.products.length}</strong> products in this category will also be deleted.</span>
+                )}
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t">
+              <button
+                type="button"
+                onClick={() => setDeleteCategoryModalTarget(null)}
+                className="px-4 py-2 bg-muted hover:bg-muted/80 text-foreground rounded-lg text-sm font-medium transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isDeletingCategory}
+                onClick={handleDeleteCategory}
+                className="px-5 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-sm font-semibold flex items-center gap-1.5 shadow-md disabled:opacity-50 transition-colors cursor-pointer"
+              >
+                <Trash2 className="w-4 h-4" />
+                {isDeletingCategory ? 'Deleting Category...' : 'Yes, Delete Category'}
+              </button>
+            </div>
           </div>
         </div>
       )}

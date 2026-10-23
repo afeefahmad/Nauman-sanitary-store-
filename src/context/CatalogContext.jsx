@@ -30,13 +30,26 @@ export function CatalogProvider({ children }) {
     }));
   };
 
+  const getDeletedCategories = () => {
+    try {
+      const d = localStorage.getItem('ns_deleted_categories');
+      return d ? JSON.parse(d) : [];
+    } catch (e) {
+      return [];
+    }
+  };
+
   const [categories, setCategories] = useState(() => {
     try {
+      const deletedList = getDeletedCategories();
       const saved = localStorage.getItem('ns_catalog_categories');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return ensureProductIds(parsed);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return ensureProductIds(parsed.filter(c => !deletedList.includes(c.slug)));
+        }
       }
+      return ensureProductIds(ALL_CATEGORIES.filter(c => !deletedList.includes(c.slug)));
     } catch (e) {}
     return ensureProductIds(ALL_CATEGORIES);
   });
@@ -118,8 +131,11 @@ export function CatalogProvider({ children }) {
         if (catsRes.ok) {
           const cData = await catsRes.json();
           if (Array.isArray(cData) && cData.length > 0) {
-            // 1. Merge backend categories with static definitions in ALL_CATEGORIES
-            const mergedCategories = ALL_CATEGORIES.map(staticCat => {
+            const deletedList = getDeletedCategories();
+
+            // 1. Merge backend categories with static definitions in ALL_CATEGORIES (ignoring deleted categories)
+            const activeStatic = ALL_CATEGORIES.filter(sc => !deletedList.includes(sc.slug));
+            const mergedCategories = activeStatic.map(staticCat => {
               const apiCat = cData.find(c => c.slug === staticCat.slug);
               if (!apiCat) return staticCat;
               return {
@@ -132,9 +148,9 @@ export function CatalogProvider({ children }) {
               };
             });
 
-            // Also preserve any custom categories created in DB not in ALL_CATEGORIES
+            // Also preserve any custom categories created in DB not in ALL_CATEGORIES, unless deleted
             cData.forEach(apiCat => {
-              if (!mergedCategories.some(mc => mc.slug === apiCat.slug)) {
+              if (!deletedList.includes(apiCat.slug) && !mergedCategories.some(mc => mc.slug === apiCat.slug)) {
                 mergedCategories.push({
                   ...apiCat,
                   subCategories: apiCat.subCategories || [],
@@ -143,14 +159,14 @@ export function CatalogProvider({ children }) {
               }
             });
 
-            // Also preserve any custom categories in localStorage that might not have reached DB yet
+            // Also preserve any custom categories in localStorage that might not have reached DB yet, unless deleted
             try {
               const saved = localStorage.getItem('ns_catalog_categories');
               if (saved) {
                 const parsed = JSON.parse(saved);
                 if (Array.isArray(parsed)) {
                   parsed.forEach(localCat => {
-                    if (!mergedCategories.some(mc => mc.slug === localCat.slug)) {
+                    if (!deletedList.includes(localCat.slug) && !mergedCategories.some(mc => mc.slug === localCat.slug)) {
                       mergedCategories.push(localCat);
                     }
                   });
@@ -436,6 +452,13 @@ export function CatalogProvider({ children }) {
       console.warn("Backend error when saving category, saved to local state:", e.message);
     }
 
+    // Un-mark from deleted list if previously deleted
+    try {
+      const deletedList = getDeletedCategories();
+      const filtered = deletedList.filter(s => s !== slug);
+      localStorage.setItem('ns_deleted_categories', JSON.stringify(filtered));
+    } catch (e) {}
+
     const updated = [...categories, newCat];
     saveCategories(updated);
     return newCat;
@@ -449,6 +472,15 @@ export function CatalogProvider({ children }) {
     } catch (e) {
       console.error(e);
     }
+
+    // Persist to deleted categories list
+    try {
+      const deletedList = getDeletedCategories();
+      if (!deletedList.includes(categorySlug)) {
+        localStorage.setItem('ns_deleted_categories', JSON.stringify([...deletedList, categorySlug]));
+      }
+    } catch (e) {}
+
     const updated = categories.filter(c => c.slug !== categorySlug);
     saveCategories(updated);
   };
