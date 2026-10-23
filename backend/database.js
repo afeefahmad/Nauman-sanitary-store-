@@ -116,6 +116,11 @@ db.serialize(() => {
   db.run(`ALTER TABLE products ADD COLUMN subCategory TEXT`, (err) => {
     // Ignore error if column already exists
   });
+
+  // Migration: Add subCategories column to categories table if it doesn't exist
+  db.run(`ALTER TABLE categories ADD COLUMN subCategories TEXT`, (err) => {
+    // Ignore error if column already exists
+  });
 });
 
 module.exports = db;

@@ -125,7 +125,9 @@ export function CatalogProvider({ children }) {
               return {
                 ...staticCat,
                 ...apiCat,
-                subCategories: staticCat.subCategories || [],
+                subCategories: (apiCat.subCategories && apiCat.subCategories.length > 0) 
+                  ? apiCat.subCategories 
+                  : (staticCat.subCategories || []),
                 products: apiCat.products || []
               };
             });
@@ -133,9 +135,28 @@ export function CatalogProvider({ children }) {
             // Also preserve any custom categories created in DB not in ALL_CATEGORIES
             cData.forEach(apiCat => {
               if (!mergedCategories.some(mc => mc.slug === apiCat.slug)) {
-                mergedCategories.push(apiCat);
+                mergedCategories.push({
+                  ...apiCat,
+                  subCategories: apiCat.subCategories || [],
+                  products: apiCat.products || []
+                });
               }
             });
+
+            // Also preserve any custom categories in localStorage that might not have reached DB yet
+            try {
+              const saved = localStorage.getItem('ns_catalog_categories');
+              if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed)) {
+                  parsed.forEach(localCat => {
+                    if (!mergedCategories.some(mc => mc.slug === localCat.slug)) {
+                      mergedCategories.push(localCat);
+                    }
+                  });
+                }
+              }
+            } catch (e) {}
 
             saveCategories(mergedCategories);
           }
@@ -363,6 +384,75 @@ export function CatalogProvider({ children }) {
     saveCategories(newCategories);
   };
 
+  const addCategory = async (catData) => {
+    const slug = (catData.slug || catData.name || '')
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+
+    if (!slug) throw new Error('Category name is required.');
+
+    if (categories.some(c => c.slug === slug || (c.name && c.name.toLowerCase() === catData.name.trim().toLowerCase()))) {
+      throw new Error(`Category "${catData.name}" already exists.`);
+    }
+
+    let parsedSubs = [];
+    if (Array.isArray(catData.subCategories)) {
+      parsedSubs = catData.subCategories.map(s => String(s).trim()).filter(Boolean);
+    } else if (typeof catData.subCategories === 'string' && catData.subCategories.trim()) {
+      try {
+        const parsed = JSON.parse(catData.subCategories);
+        parsedSubs = Array.isArray(parsed) ? parsed : [parsed];
+      } catch (e) {
+        parsedSubs = catData.subCategories.split(',').map(s => s.trim()).filter(Boolean);
+      }
+    }
+
+    const newCat = {
+      id: catData.id || `cat-${Date.now()}`,
+      slug,
+      name: catData.name.trim(),
+      hint: catData.hint?.trim() || 'Custom Collection',
+      icon: catData.icon?.trim() || '📦',
+      no: catData.no || String(categories.length + 1).padStart(2, '0'),
+      products: [],
+      subCategories: parsedSubs
+    };
+
+    try {
+      const res = await fetch(`${API_BASE}/categories`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newCat)
+      });
+      if (res.ok) {
+        const savedApiCat = await res.json();
+        if (savedApiCat && savedApiCat.id) {
+          newCat.id = savedApiCat.id;
+        }
+      }
+    } catch (e) {
+      console.warn("Backend error when saving category, saved to local state:", e.message);
+    }
+
+    const updated = [...categories, newCat];
+    saveCategories(updated);
+    return newCat;
+  };
+
+  const deleteCategory = async (categorySlug) => {
+    try {
+      await fetch(`${API_BASE}/categories/${encodeURIComponent(categorySlug)}`, {
+        method: 'DELETE'
+      });
+    } catch (e) {
+      console.error(e);
+    }
+    const updated = categories.filter(c => c.slug !== categorySlug);
+    saveCategories(updated);
+  };
+
   if (isLoading) {
     return <div className="flex items-center justify-center h-screen">Loading Catalog...</div>;
   }
@@ -370,6 +460,8 @@ export function CatalogProvider({ children }) {
   return (
     <CatalogContext.Provider value={{
       categories,
+      addCategory,
+      deleteCategory,
       addProduct,
       deleteProduct,
       deleteProductsBulk,

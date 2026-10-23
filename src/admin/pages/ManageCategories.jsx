@@ -2,11 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { useCatalog } from '../../context/CatalogContext';
 import { useToast } from '../../context/ToastContext';
 import { getProductImage } from '../../data/categories';
-import { Plus, Trash2, Edit, Search, X, PackageX, RefreshCw, Download, Eye, ChevronLeft, ChevronRight, CheckSquare, Square } from 'lucide-react';
+import { Plus, Trash2, Edit, Search, X, PackageX, RefreshCw, Download, Eye, ChevronLeft, ChevronRight, CheckSquare, Square, FolderPlus } from 'lucide-react';
 import { API_BASE, isVideoUrl } from '../../utils/apiConfig';
 import { normalizeBrand } from '../../utils/brandUtils';
 export default function ManageCategories() {
-  const { categories, addProduct, deleteProduct, deleteProductsBulk, brands, updateProduct } = useCatalog();
+  const { categories, addCategory, addProduct, deleteProduct, deleteProductsBulk, brands, updateProduct } = useCatalog();
   const { addToast, confirmAction } = useToast();
 
   const [activeCategorySlug, setActiveCategorySlug] = useState('all');
@@ -17,6 +17,53 @@ export default function ManageCategories() {
   const [newProductDesc, setNewProductDesc] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [editingProductId, setEditingProductId] = useState(null);
+
+  // Add Category Modal states
+  const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false);
+  const [newCatName, setNewCatName] = useState('');
+  const [newCatSlug, setNewCatSlug] = useState('');
+  const [newCatIcon, setNewCatIcon] = useState('📦');
+  const [newCatHint, setNewCatHint] = useState('');
+  const [newCatSubCategories, setNewCatSubCategories] = useState('');
+  const [isSubmittingCategory, setIsSubmittingCategory] = useState(false);
+
+  const handleCatNameChange = (e) => {
+    const val = e.target.value;
+    setNewCatName(val);
+    const autoSlug = val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    setNewCatSlug(autoSlug);
+  };
+
+  const handleCreateCategory = async (e) => {
+    e.preventDefault();
+    if (!newCatName.trim()) {
+      addToast('Please enter a category name', 'error');
+      return;
+    }
+
+    setIsSubmittingCategory(true);
+    try {
+      const created = await addCategory({
+        name: newCatName.trim(),
+        slug: newCatSlug.trim(),
+        icon: newCatIcon.trim() || '📦',
+        hint: newCatHint.trim() || 'Custom Collection',
+        subCategories: newCatSubCategories
+      });
+      addToast(`Category "${created.name}" created successfully! 🎉`, 'success');
+      setActiveCategorySlug(created.slug);
+      setIsAddCategoryModalOpen(false);
+      setNewCatName('');
+      setNewCatSlug('');
+      setNewCatIcon('📦');
+      setNewCatHint('');
+      setNewCatSubCategories('');
+    } catch (err) {
+      addToast(err.message || 'Failed to create category', 'error');
+    } finally {
+      setIsSubmittingCategory(false);
+    }
+  };
 
   // Multiple product images states
   const [productFiles, setProductFiles] = useState([]); // Array of { id, file, preview }
@@ -410,6 +457,15 @@ export default function ManageCategories() {
                 >
                   <Download className="w-4 h-4 text-emerald-600" /> Export CSV
                 </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsAddCategoryModalOpen(true)}
+                  className="h-9 px-3.5 bg-primary text-primary-foreground rounded-lg text-sm font-semibold hover:bg-primary/90 flex items-center gap-1.5 whitespace-nowrap shadow-sm transition-all cursor-pointer"
+                  title="Add New Category manually"
+                >
+                  <Plus className="w-4 h-4" /> Add Category
+                </button>
               </div>
             </div>
             
@@ -417,7 +473,17 @@ export default function ManageCategories() {
             <div className="p-4 border-b bg-muted/10">
               <form onSubmit={handleAddProduct} className="flex flex-col xl:flex-row items-stretch xl:items-end gap-3">
                 <div className="flex flex-col gap-1 w-full xl:w-1/5">
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Category</label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Category</label>
+                    <button
+                      type="button"
+                      onClick={() => setIsAddCategoryModalOpen(true)}
+                      className="text-[10px] font-semibold text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
+                      title="Add category manually"
+                    >
+                      <Plus className="w-2.5 h-2.5" /> New
+                    </button>
+                  </div>
                   <select 
                     className="w-full h-9 px-3 rounded-md border bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
                     value={activeCategorySlug || ''}
@@ -1231,6 +1297,137 @@ export default function ManageCategories() {
                 {isDeletingModal ? 'Deleting...' : 'Yes, Delete Product'}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Category Modal */}
+      {isAddCategoryModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-background border rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl space-y-4 animate-in zoom-in-95 relative">
+            <button
+              type="button"
+              onClick={() => setIsAddCategoryModalOpen(false)}
+              className="absolute top-4 right-4 p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 border-b pb-3.5">
+              <div className="p-2.5 bg-primary/10 border border-primary/20 text-primary rounded-xl shrink-0">
+                <FolderPlus className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-foreground">Add New Category</h3>
+                <p className="text-xs text-muted-foreground">Create a new category in your sanitary ware catalog</p>
+              </div>
+            </div>
+
+            <form onSubmit={handleCreateCategory} className="space-y-3.5">
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-foreground flex items-center gap-1">
+                  Category Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  autoFocus
+                  placeholder="E.g. Shower Cabins, Jacuzzis, Mirrors..."
+                  value={newCatName}
+                  onChange={handleCatNameChange}
+                  className="w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-foreground">
+                  URL Slug <span className="text-muted-foreground font-normal">(auto-generated, editable)</span>
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground font-mono">/category/</span>
+                  <input
+                    type="text"
+                    required
+                    placeholder="shower-cabins"
+                    value={newCatSlug}
+                    onChange={(e) => setNewCatSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                    className="w-full h-10 pl-22 pr-3 rounded-lg border bg-background text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">Icon / Emoji</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="📦"
+                    value={newCatIcon}
+                    onChange={(e) => setNewCatIcon(e.target.value)}
+                    className="w-16 h-10 text-center text-lg rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  />
+                  <div className="flex flex-wrap gap-1.5 flex-1">
+                    {['🚿', '🛁', '🚽', '🚰', '🧼', '🧴', '🪞', '✨', '📦', '🏷️'].map((emoji) => (
+                      <button
+                        key={emoji}
+                        type="button"
+                        onClick={() => setNewCatIcon(emoji)}
+                        className={`w-8 h-8 rounded-md border text-sm flex items-center justify-center transition-all cursor-pointer ${
+                          newCatIcon === emoji ? 'bg-primary/20 border-primary ring-2 ring-primary/30' : 'bg-muted/40 hover:bg-muted'
+                        }`}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-foreground">
+                  Subtitle / Hint <span className="text-muted-foreground font-normal">(Optional)</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="E.g. Modern Walk-in Cabins & Enclosures"
+                  value={newCatHint}
+                  onChange={(e) => setNewCatHint(e.target.value)}
+                  className="w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-foreground">
+                  Subcategories <span className="text-muted-foreground font-normal">(Optional, comma-separated)</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="E.g. Corner Cabins, Sliding Glass, Shower Trays"
+                  value={newCatSubCategories}
+                  onChange={(e) => setNewCatSubCategories(e.target.value)}
+                  className="w-full h-10 px-3 rounded-lg border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+                <p className="text-[11px] text-muted-foreground">Separate multiple subcategories with commas</p>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t">
+                <button
+                  type="button"
+                  onClick={() => setIsAddCategoryModalOpen(false)}
+                  className="px-4 py-2 bg-muted hover:bg-muted/80 text-foreground rounded-lg text-sm font-medium transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingCategory || !newCatName.trim()}
+                  className="px-5 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg text-sm font-semibold flex items-center gap-1.5 shadow-md disabled:opacity-50 transition-colors cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                  {isSubmittingCategory ? 'Creating Category...' : 'Create Category'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

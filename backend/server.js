@@ -331,9 +331,101 @@ app.get('/api/categories', (req, res) => {
       });
       const result = cats.map(cat => {
         cat.products = processedProds.filter(p => p.categoryId === cat.id);
+        if (cat.subCategories) {
+          try {
+            cat.subCategories = typeof cat.subCategories === 'string' ? JSON.parse(cat.subCategories) : cat.subCategories;
+          } catch(e) {
+            cat.subCategories = cat.subCategories.split(',').map(s => s.trim()).filter(Boolean);
+          }
+        } else {
+          cat.subCategories = [];
+        }
         return cat;
       });
       res.json(result);
+    });
+  });
+});
+
+app.post('/api/categories', (req, res) => {
+  const { slug, name, hint, icon, no, subCategories } = req.body;
+  if (!name || !name.trim()) {
+    return res.status(400).json({ error: 'Category name is required' });
+  }
+
+  const cleanName = name.trim();
+  const generatedSlug = (slug || cleanName)
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+
+  const categoryIcon = (icon || '📦').trim();
+  const categoryHint = (hint || 'Custom Collection').trim();
+
+  let subsArray = [];
+  if (Array.isArray(subCategories)) {
+    subsArray = subCategories.map(s => String(s).trim()).filter(Boolean);
+  } else if (typeof subCategories === 'string' && subCategories.trim()) {
+    try {
+      const parsed = JSON.parse(subCategories);
+      subsArray = Array.isArray(parsed) ? parsed : [parsed];
+    } catch (e) {
+      subsArray = subCategories.split(',').map(s => s.trim()).filter(Boolean);
+    }
+  }
+  const subsStr = JSON.stringify(subsArray);
+
+  // Check if category with same slug already exists
+  db.get('SELECT * FROM categories WHERE slug = ? OR LOWER(name) = LOWER(?)', [generatedSlug, cleanName], (err, existing) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (existing) {
+      return res.status(400).json({ error: `Category "${cleanName}" already exists` });
+    }
+
+    const insertCat = (categoryNo) => {
+      db.run(
+        'INSERT INTO categories (slug, name, hint, icon, no, subCategories) VALUES (?, ?, ?, ?, ?, ?)',
+        [generatedSlug, cleanName, categoryHint, categoryIcon, categoryNo, subsStr],
+        function(insertErr) {
+          if (insertErr) return res.status(500).json({ error: insertErr.message });
+          res.json({
+            id: this.lastID,
+            slug: generatedSlug,
+            name: cleanName,
+            hint: categoryHint,
+            icon: categoryIcon,
+            no: categoryNo,
+            subCategories: subsArray,
+            products: []
+          });
+        }
+      );
+    };
+
+    if (no) {
+      insertCat(no);
+    } else {
+      db.get('SELECT COUNT(*) as count FROM categories', (cErr, cRow) => {
+        const nextNo = String((cRow?.count || 0) + 1).padStart(2, '0');
+        insertCat(nextNo);
+      });
+    }
+  });
+});
+
+app.delete('/api/categories/:slug', (req, res) => {
+  const { slug } = req.params;
+  db.get('SELECT id FROM categories WHERE slug = ?', [slug], (err, cat) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!cat) return res.status(404).json({ error: 'Category not found' });
+    
+    db.run('DELETE FROM products WHERE categoryId = ?', [cat.id], (pErr) => {
+      if (pErr) console.error('Error deleting category products:', pErr);
+      db.run('DELETE FROM categories WHERE id = ?', [cat.id], (cErr) => {
+        if (cErr) return res.status(500).json({ error: cErr.message });
+        res.json({ success: true });
+      });
     });
   });
 });
