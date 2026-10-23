@@ -3455,21 +3455,22 @@ body {
 .soc-btn {
   width: 36px;
   height: 36px;
-  border: 1px solid rgba(200, 160, 96, .22);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
   display: grid;
   place-items: center;
-  color: var(--mist);
-  font-size: 12px;
-  cursor: pointer;
-  transition: all .28s;
-  text-decoration: none;
   border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  text-decoration: none;
 }
 
 .soc-btn:hover {
-  border-color: var(--bronze);
-  color: var(--bronze);
-  background: var(--bronze-dim);
+  background: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .soc-btn svg {
@@ -3477,7 +3478,7 @@ body {
 }
 
 .soc-btn:hover svg {
-  transform: scale(1.12);
+  transform: scale(1.1);
 }
 
 .ft-col h4 {

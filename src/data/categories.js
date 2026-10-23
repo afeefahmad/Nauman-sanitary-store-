@@ -13,9 +13,9 @@ export const CONTACT = {
   whatsapp: '923008118085',
   whatsappUrl: 'https://wa.me/923008118085',
   email: 'afeefzafar2@gmail.com',
-  facebook: 'https://facebook.com',
-  instagram: 'https://instagram.com',
-  tiktok: 'https://tiktok.com',
+  facebook: 'https://www.facebook.com/share/18pFrnY9rE/?mibextid=wwXIfr',
+  instagram: 'https://www.instagram.com/naumansanitarystore?exln=MXNvdHplZHFveDhsaA==',
+  tiktok: 'https://www.tiktok.com/@nauman.sanitary?_r=1&_t=ZS-9AnmczGOnbx',
   address: 'Nauman Sanitary Store, Lahore & Multan, Punjab, Pakistan',
   hours: {
     weekdays: 'Mon – Sat: 9:00 AM – 8:00 PM',
