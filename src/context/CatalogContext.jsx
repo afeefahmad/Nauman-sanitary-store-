@@ -184,8 +184,11 @@ export function CatalogProvider({ children }) {
         }
         if (contactRes.ok) {
           const ctnData = await contactRes.json();
-          setContact(ctnData);
-          try { localStorage.setItem('ns_catalog_contact', JSON.stringify(ctnData)); } catch (e) {}
+          if (ctnData && typeof ctnData === 'object' && Object.keys(ctnData).length > 0) {
+            const mergedContact = { ...INITIAL_CONTACT, ...ctnData };
+            setContact(mergedContact);
+            try { localStorage.setItem('ns_catalog_contact', JSON.stringify(mergedContact)); } catch (e) {}
+          }
         }
         if (tickerRes.ok) {
           const tData = await tickerRes.json();
