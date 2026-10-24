@@ -114,17 +114,38 @@ export default function Navbar() {
               )}
               {l.id === 'brand-showcase' && brands && brands.length > 0 && (
                 <div className="nav-dropdown">
-                  {brands.map(brand => {
+                  {brands.map((brand, bIdx) => {
                     const normBrand = normalizeBrand(brand.name);
                     const brandCats = categories ? categories.filter(c =>
                       c.products && c.products.some(p => normalizeBrand(p.brand) === normBrand)
                     ) : [];
 
+                    // Align upwards/bottom-anchored if in the lower portion of the list so it never crops off screen
+                    const isBottomHalf = bIdx >= Math.max(3, brands.length - 6);
+
                     return (
                       <div
                         key={brand.id || brand.name}
-                        className="nav-dropdown-item has-submenu"
+                        className={`nav-dropdown-item has-submenu ${isBottomHalf ? 'submenu-bottom-aligned' : ''}`}
                         style={{ padding: 0 }}
+                        onMouseEnter={(e) => {
+                          const submenu = e.currentTarget.querySelector('.nav-submenu');
+                          if (submenu) {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const spaceBelow = window.innerHeight - rect.bottom;
+                            const estimatedHeight = Math.min(
+                              window.innerHeight - 100,
+                              submenu.scrollHeight || (brandCats.length * 38 + 16)
+                            );
+                            if (spaceBelow < estimatedHeight) {
+                              submenu.style.top = 'auto';
+                              submenu.style.bottom = '-4px';
+                            } else if (!isBottomHalf) {
+                              submenu.style.top = '0';
+                              submenu.style.bottom = 'auto';
+                            }
+                          }
+                        }}
                       >
                         <a
                           onClick={() => { setOpen(false); navigate(`/brand/${encodeURIComponent(brand.name)}`); window.scrollTo(0, 0); }}
