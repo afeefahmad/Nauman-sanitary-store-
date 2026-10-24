@@ -166,6 +166,16 @@ function getPageNumbers(currentPage, totalPages) {
 
 import { normalizeBrand } from '../utils/brandUtils';
 
+/* ── Brand Priority: 1. Porta, 2. Kale, 3. Pool, then all others ── */
+function getBrandPriority(brandName) {
+  if (!brandName) return 99;
+  const norm = normalizeBrand(brandName).toLowerCase();
+  if (norm.includes('porta')) return 1;
+  if (norm.includes('kale')) return 2;
+  if (norm.includes('pool')) return 3;
+  return 99;
+}
+
 export default function CategoryPage() {
   const { slug }    = useParams();
   const navigate    = useNavigate();
@@ -220,13 +230,19 @@ export default function CategoryPage() {
     setCurrentPage(1);
   }, [slug]);
 
-  /* Unique brands in this category — hooks MUST be called before any early return */
+  /* Unique brands in this category sorted by brand priority (Porta, Kale, Pool first) */
   const brandList = useMemo(() => {
     if (!category) return [];
     const set = new Set(
       category.products.map(p => normalizeBrand(p.brand)).filter(Boolean)
     );
-    return Array.from(set);
+    const list = Array.from(set);
+    return list.sort((a, b) => {
+      const pA = getBrandPriority(a);
+      const pB = getBrandPriority(b);
+      if (pA !== pB) return pA - pB;
+      return a.localeCompare(b);
+    });
   }, [category]);
 
   const subCategoryList = useMemo(() => {
@@ -240,10 +256,10 @@ export default function CategoryPage() {
   const hasBrands  = brandList.length > 1;
   const hasSubCats = subCategoryList.length > 0;
 
-  /* Filtered products */
+  /* Filtered products with Porta, Kale, then Pool prioritized on top in All Products */
   const filtered = useMemo(() => {
     if (!category) return [];
-    let prods = category.products;
+    let prods = category.products || [];
     if (activeBrand !== 'all' && activeBrand !== '') {
       prods = prods.filter(p => normalizeBrand(p.brand) === activeBrand);
     }
@@ -253,6 +269,18 @@ export default function CategoryPage() {
         return itemSubCat === activeSubCat;
       });
     }
+
+    // In All Products view (activeBrand === 'all'):
+    // Prioritize Porta products first, Kale products second, Pool products third, then others
+    if (activeBrand === 'all') {
+      prods = [...prods].sort((a, b) => {
+        const pA = getBrandPriority(a.brand);
+        const pB = getBrandPriority(b.brand);
+        if (pA !== pB) return pA - pB;
+        return 0; // preserve original order within the same brand
+      });
+    }
+
     return prods;
   }, [category, slug, activeBrand, activeSubCat]);
 
